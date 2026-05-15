@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colgan Lab Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            /* Modernized Color Palette */
+            --lab-blue: #e2e8f0; 
+            --lab-blue-light: #f8fafc;
+            --flask-teal: #0ea5e9; 
+            --flask-teal-hover: #0284c7;
+            --molecule-navy: #0f172a;
+            --dna-purple: #6366f1;
+            --dna-purple-hover: #4f46e5;
+            --beaker-bg: #ffffff;
+            --danger-red: #ef4444;
+            --danger-red-hover: #dc2626;
+            
+            /* Enhanced Shadows & Radii */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9; 
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            margin: 0; 
+            padding: 20px; 
+            color: var(--molecule-navy); 
+            line-height: 1.5;
+        }
+
+        /* --- Layout & Containers --- */
+        .container { 
+            max-width: 1440px; 
+            margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 20px; 
+            border-radius: 24px; 
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .layout-grid { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 24px; 
+        }
+
+        @media (min-width: 768px) { 
+            .container { padding: 40px; }
+            .header-controls { flex-direction: row; justify-content: space-between; }
+        }
+
+        @media (min-width: 1024px) { 
+            .layout-grid { display: grid; grid-template-columns: 320px 1fr 300px; align-items: start; } 
+        }
+
+        /* --- Header --- */
+        header { 
+            margin-bottom: 30px; 
+        }
+        
+        h1 { 
+            font-size: 1.8rem; 
+            color: var(--molecule-navy); 
+            margin: 0 0 20px 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        @media (min-width: 768px) { 
+            h1 { font-size: 2.2rem; justify-content: flex-start; } 
+        }
+        
+        .header-controls { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            align-items: center; 
+            background: #f8fafc; 
+            padding: 16px 20px; 
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--lab-blue);
+        }
+
+        /* --- Inputs, Selects & Forms --- */
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+        }
+        
+        input, select, textarea { 
+            padding: 10px 14px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 10px; 
+            font-size: 0.95rem; 
+            width: 100%; 
+            box-sizing: border-box; 
+            transition: all 0.2s ease; 
+            font-family: inherit;
+            background-color: #fff;
+            color: var(--molecule-navy);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--flask-teal);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        .user-select-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        #userSearch {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        /* --- Buttons --- */
+        button { 
+            cursor: pointer; 
+            font-weight: 600; 
+            border: none; 
+            padding: 10px 16px;
+            border-radius: 10px; 
+            font-size: 0.95rem; 
+            width: 100%; 
+            box-sizing: border-box; 
+            transition: all 0.2s ease; 
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover { 
+            transform: translateY(-1px); 
+            box-shadow: var(--shadow-md);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-add { background: var(--flask-teal); color: white; }
+        .btn-add:hover { background: var(--flask-teal-hover); }
+
+        .btn-gen { background: var(--dna-purple); color: white; margin-top: 10px; }
+        .btn-gen:hover { background: var(--dna-purple-hover); }
+
+        .btn-io { background: white; color: var(--molecule-navy); border: 1px solid var(--lab-blue); box-shadow: var(--shadow-sm); }
+        .btn-io:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        .btn-logout { background: #64748b; color: white; padding: 6px 12px; width: auto; font-size: 0.8rem; border-radius: 8px; }
+        .btn-logout:hover { background: #475569; }
+        
+        .btn-cancel-shift { 
+            background: #fff1f2; color: var(--danger-red); border: 1px solid #fecdd3;
+            padding: 6px; font-size: 0.7rem; margin-top: 8px; border-radius: 8px; 
+            display: none; width: 100%; font-weight: 600;
+        }
+        .btn-cancel-shift:hover { background: var(--danger-red); color: white; }
+
+        .btn-insert-shift { 
+            background: #f0f9ff; color: var(--flask-teal); border: 1px solid #bae6fd;
+            padding: 6px; font-size: 0.7rem; margin-top: 4px; border-radius: 8px; 
+            display: none; width: 100%; font-weight: 600;
+        }
+        .btn-insert-shift:hover { background: var(--flask-teal); color: white; }
+        
+        .btn-admin-save { background: var(--molecule-navy); color: white; display: none; margin-top: 10px; }
+        
+        .btn-delete-event { background: var(--danger-red); color: white; flex: 1; }
+        .btn-delete-event:hover { background: var(--danger-red-hover); }
+        .btn-resched-event { background: var(--molecule-navy); color: white; flex: 1; }
+
+        /* --- Admin Privileges --- */
+        .admin-only { display: none; }
+        body.is-admin .admin-only { display: block !important; }
+        body.is-admin .btn-cancel-shift, 
+        body.is-admin .btn-insert-shift,
+        body.is-admin .btn-admin-save,
+        body.is-admin .delete-user { display: block !important; }
+
+        /* --- Sections & Cards --- */
+        section { 
+            background: #ffffff; 
+            border: 1px solid var(--lab-blue); 
+            padding: 24px; 
+            border-radius: var(--radius-lg); 
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        /* --- Calendar Grid --- */
+        .month-block { margin-bottom: 40px; }
+        .month-title { 
+            color: var(--molecule-navy); 
+            margin-bottom: 16px; 
+            font-weight: 700; 
+            letter-spacing: -0.02em; 
+            font-size: 1.4rem; 
+        }
+        
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+            background: var(--lab-blue-light); 
+            border-radius: var(--radius-lg); 
+            padding: 12px;
+            border: 1px solid var(--lab-blue);
+        }
+        
+        .cal-header { 
+            padding: 8px; 
+            text-align: center; 
+            font-weight: 600; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            color: #64748b; 
+            letter-spacing: 0.05em;
+        }
+        
+        .cal-day { 
+            background: white; 
+            min-height: 120px; 
+            border-radius: var(--radius-md); 
+            padding: 10px; 
+            position: relative; 
+            border: 1px solid #e2e8f0; 
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .cal-day:not(.other-month):hover { 
+            border-color: #cbd5e1; 
+            box-shadow: var(--shadow-md);
+            cursor: copy; 
+        }
+        .cal-day.other-month { background: transparent; border-color: transparent; box-shadow: none; opacity: 0.5; cursor: default; }
+        .day-num { font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; display: block; color: #94a3b8; pointer-events: none; }
+
+        .cal-day.drag-over { 
+            background: #f0fdf4 !important; 
+            border: 2px dashed #22c55e !important;
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        /* --- Events (Calendar Badges) --- */
+        .event { 
+            font-size: 0.75rem; 
+            padding: 8px 10px; 
+            border-radius: 8px; 
+            margin-top: 6px; 
+            border-left: 3px solid transparent; 
+            line-height: 1.4; 
+            cursor: pointer; 
+            user-select: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .event:hover {
+            filter: brightness(0.95);
+        }
+        .event:active { cursor: grabbing; }
+        .event.is-dragging { opacity: 0.5; transform: scale(0.95); }
+
+        .event-presentation { background: #e0f2fe; color: #0369a1; border-left-color: #0ea5e9; }
+        .event-whole { background: #ffedd5; color: #c2410c; border-left-color: #f97316; }
+        .event-holiday { background: #f1f5f9; color: #475569; border-left-color: #94a3b8; }
+        .event-custom { background: #e0e7ff; color: #4338ca; border-left-color: #6366f1; }
+        .event-canceled { background: #fee2e2; color: #b91c1c; border-left-color: #ef4444; text-decoration: line-through; opacity: 0.7; }
+        
+        /* --- Modals --- */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(6px); display: none; align-items: center; 
+            justify-content: center; z-index: 1000; padding: 20px; 
+            animation: fadeIn 0.2s ease;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-card { 
+            background: white; padding: 32px; border-radius: 24px; max-width: 480px; 
+            width: 100%; border: 1px solid var(--lab-blue); position: relative; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
+            animation: slideUp 0.3s ease cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp { 
+            from { transform: translateY(20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+
+        .close-modal { 
+            position: absolute; right: 24px; top: 20px; font-size: 1.5rem; 
+            cursor: pointer; color: #94a3b8; transition: color 0.2s;
+            line-height: 1; font-weight: 300;
+        }
+        .close-modal:hover { color: var(--molecule-navy); }
+        
+        /* --- Sidebar Lists & Stats --- */
+        #upcomingList .up-item { 
+            padding: 14px 0; border-bottom: 1px solid var(--lab-blue); 
+            font-size: 0.85rem; transition: background 0.2s; 
+        }
+        #upcomingList .up-item:last-child { border-bottom: none; }
+        #upcomingList .up-item:hover { padding-left: 8px; background: #f8fafc; border-radius: 8px; margin-left: -8px; width: calc(100% + 16px); }
+        
+        .delete-user { 
+            color: #94a3b8; background: none; width: auto; padding: 4px 8px; 
+            font-size: 1.2rem; display: none; border-radius: 6px; line-height: 1;
+        }
+        .delete-user:hover { background: #fee2e2; color: var(--danger-red); }
+        
+        .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #475569; margin-top: 5px; cursor: pointer; }
+        .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--flask-teal); }
+        .checkbox-row label { cursor: pointer; }
+
+        body.is-admin .scientist-name-btn { 
+            cursor: pointer; 
+            text-decoration: underline; 
+            text-decoration-style: dotted;
+            text-underline-offset: 4px;
+            color: var(--flask-teal); 
+        }
+
+        .stats-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .stat-card { 
+            background: #ffffff; 
+            padding: 16px; 
+            border-radius: var(--radius-md); 
+            border: 1px solid var(--lab-blue); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-card:hover { border-color: var(--flask-teal); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-info { flex-grow: 1; cursor: pointer; }
+        .stat-val { font-weight: 700; color: var(--molecule-navy); font-size: 1.5rem; line-height: 1; }
+        .stat-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; font-weight: 600; }
+        
+        .mail-btn { 
+            background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; 
+            cursor: pointer; padding: 0; width: 36px; height: 36px;
+            border-radius: 10px; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .mail-btn:hover { background: var(--flask-teal); border-color: var(--flask-teal); color: white; transform: scale(1.05); }
+        
+        .retired-section { background: #f8fafc; border-color: #cbd5e1; opacity: 0.8; }
+        
+        /* --- Firebase Info Box --- */
+        .fb-login-info {
+            background: #f8fafc; padding: 12px; border-radius: 10px;
+            font-size: 0.8rem; color: #475569; margin-top: 16px;
+            border: 1px dashed #cbd5e1; line-height: 1.5;
+        }
+
+        /* Custom Scrollbar for participant list */
+        #participantList::-webkit-scrollbar { width: 6px; }
+        #participantList::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        #participantList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        #participantList::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<div id="eventModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('eventModal')">×</span>
+        <div id="eventViewMode">
+            <h3 id="viewTitle" style="margin: 0; color: var(--flask-teal); font-size: 1.4rem;"></h3>
+            <p id="viewSubtitle" style="margin: 4px 0 0 0; font-weight: 500; color: #64748b; font-size: 0.9rem;"></p>
+            <hr style="border: 0; border-top: 1px solid var(--lab-blue); margin: 20px 0;">
+            <div id="viewDetails" style="font-size: 0.95rem; line-height: 1.6; color: #334155;"></div>
+            <div id="presenterSpecifics" style="display:none; margin-top:16px;">
+                <div style="font-weight:600; color:var(--dna-purple); font-size: 0.9rem; margin-bottom: 8px;">Future Rotations:</div>
+                <ul id="mDates" style="margin: 0; padding-left: 20px; color: #475569; font-size: 0.9rem; line-height: 1.6;"></ul>
+                <button id="mSwapBtn" class="btn-io" style="margin-top: 24px;">Draft Swap Email</button>
+            </div>
+            <div id="eventActions" style="display:flex; gap:12px; margin-top:24px;">
+                <button id="deleteEventBtn" class="btn-delete-event" style="display:none;">Delete Event</button>
+                <button id="reschedEventBtn" class="btn-resched-event" style="display:none;">Reschedule</button>
+            </div>
+        </div>
+        <div id="eventEditMode" style="display:none;">
+            <h3 id="editModalTitle" style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;">Add Quick Event</h3>
+            <div class="input-group">
+                <input type="text" id="qeTitle" placeholder="Event Name">
+                
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 4px;">Date</label>
+                <input type="date" id="qeDateInput">
+
+                <div style="display: flex; gap: 12px;">
+                    <div style="flex:1">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Starts</label>
+                        <input type="time" id="qeTime" value="09:00">
+                    </div>
+                    <div style="flex:1">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Ends</label>
+                        <input type="time" id="qeEndTime" value="10:00">
+                    </div>
+                </div>
+                <input type="text" id="qeLoc" placeholder="Location">
+                
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 4px;">Recurrence</label>
+                <select id="qeRepeat">
+                    <option value="none">Does not repeat</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly (Same Date)</option>
+                    <option value="lastworkday">Last Workday of Month</option>
+                </select>
+
+                <textarea id="qeNotes" placeholder="Notes/Description" rows="3"></textarea>
+                <input type="hidden" id="qeDate">
+                <input type="hidden" id="qeIdx">
+                <button class="btn-add" id="qeSaveBtn" onclick="saveQuickEvent()" style="margin-top: 8px;">Save Event</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="directoryModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('directoryModal')">×</span>
+        <h3 id="directoryTitle" style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;"></h3>
+        <div id="directoryContent" style="max-height: 400px; overflow-y: auto; font-size: 0.95rem;"></div>
+    </div>
+</div>
+
+<div id="editScientistModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('editScientistModal')">×</span>
+        <h3 style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;">Edit Scientist Info</h3>
+        <div class="input-group">
+            <input type="hidden" id="editKey">
+            <input type="text" id="editName" placeholder="Full Name">
+            <input type="text" id="editGroup" placeholder="Lab Group">
+            <input type="email" id="editEmail" placeholder="Work Email">
+            <select id="editRole">
+                <option value="Student">Student</option>
+                <option value="PRA">PRA</option>
+                <option value="Postdoc">Postdoc</option>
+                <option value="Faculty">Faculty</option>
+                <option value="Other">Other</option>
+            </select>
+            <div class="checkbox-row" style="margin-top: 8px;">
+                <input type="checkbox" id="editHold">
+                <label for="editHold">Hold Presentation (Exclude from Rotation)</label>
+            </div>
+            
+            <div style="margin-top:16px; padding-top:16px; border-top: 1px solid var(--lab-blue);">
+                <div class="checkbox-row">
+                    <input type="checkbox" id="editRetired" onchange="toggleRetiredFields()">
+                    <label for="editRetired" style="font-weight:600; color:var(--danger-red);">Retired Personnel</label>
+                </div>
+                <div id="retiredFields" style="display:none; margin-top:12px; gap:8px; flex-direction: column;">
+                    <input type="text" id="editAltContact" placeholder="Forwarding Email/Phone">
+                </div>
+            </div>
+
+            <button class="btn-add" onclick="saveEditedPerson()" style="margin-top: 12px;">Update Information</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>🧪 Colgan Lab Calendar</h1>
+        <div class="header-controls">
+            <button class="btn-io" onclick="downloadICS()" style="width:auto; padding: 10px 20px;">💾 Export to Calendar</button>
+            <div id="adminLoginArea" style="display:flex; gap:8px;">
+                <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
+                <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">Login</button>
+            </div>
+            <div class="user-select-container">
+                <input type="text" id="userSearch" placeholder="Search your name..." onkeyup="filterUsers()">
+                <select id="currentUser">
+                    <option value="">Who are you?</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout-grid">
+        <aside class="controls-column">
+            <section class="admin-only">
+                <h3 style="color: var(--flask-teal);">Register Scientist</h3>
+                <div class="input-group">
+                    <input type="text" id="pName" placeholder="Full Name">
+                    <input type="text" id="pGroup" placeholder="Lab Group">
+                    <input type="email" id="pEmail" placeholder="Email Address">
+                    <select id="pRole">
+                        <option value="Student">Student</option>
+                        <option value="PRA">PRA</option>
+                        <option value="Postdoc">Postdoc</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="checkbox-row" style="margin-bottom: 8px;">
+                        <input type="checkbox" id="pHold">
+                        <label for="pHold">Hold Presentation</label>
+                    </div>
+                    <button class="btn-add" onclick="addPerson()">+ Add to Queue</button>
+                </div>
+                <div id="participantList" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--lab-blue); border-radius: 12px; padding: 8px; margin-top: 16px; background: #f8fafc;"></div>
+            </section>
+
+            <section class="admin-only">
+                <h3 style="color: var(--danger-red);">Admin Presentation Swap</h3>
+                <p style="font-size:0.8rem; color:#64748b; margin: -10px 0 12px 0; line-height: 1.4;">Select two slots to exchange (Presenters or Whole Lab).</p>
+                <div class="input-group">
+                    <select id="swapSlot1"></select>
+                    <select id="swapSlot2"></select>
+                    <button class="btn-io" onclick="adminExecuteSwap()" style="background:var(--molecule-navy); color:white; border-color:var(--molecule-navy); margin-top: 4px;">Execute Swap</button>
+                </div>
+            </section>
+
+            <section class="admin-only">
+                <h3 style="color: var(--dna-purple);">Parameters</h3>
+                <div class="input-group">
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569;">Cycle Start Date:</label>
+                    <input type="date" id="startDate">
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569; margin-top: 8px;">Duration (Months):</label>
+                    <input type="number" id="months" value="4" min="1" max="24">
+                </div>
+                <button class="btn-gen" onclick="handleGenerateClick()" style="margin-top: 16px;">Generate New Rotation</button>
+                <button id="adminSaveBtn" class="btn-admin-save" onclick="saveCurrentToFirebase()">Force Sync Database</button>
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="https://console.firebase.google.com/u/3/" target="_blank" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none; font-weight: 500;">🔥 Open Firebase Console</a>
+                    <div class="fb-login-info">
+                        <strong>Firebase Login Details:</strong><br>
+                        User: ColganLabGeneral@gmail.com<br>
+                        Pass: ColganLab123!@#
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <main id="calendarContainer"></main>
+
+        <aside class="sidebar-panel">
+            <section style="border: none; background: transparent; padding: 0; box-shadow: none;">
+                <h3 style="color: var(--molecule-navy); border-bottom: 2px solid var(--lab-blue); padding-bottom: 12px; margin-bottom: 20px;">Lab Personnel</h3>
+                <button class="btn-io" onclick="emailEquipmentAdmin()" style="font-size:0.85rem; background: #fff1f2; border-color: #fecdd3; color: var(--danger-red); margin-bottom: 20px; width: 100%;">⚠️ Email Equipment Admin</button>
+                <div class="stats-grid" id="personnelStats"></div>
+            </section>
+            
+            <section style="margin-top: 30px;">
+                <h3 style="color: var(--flask-teal); margin-bottom: 16px;">Upcoming Slots</h3>
+                <div id="upcomingList"></div>
+            </section>
+        </aside>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBzPqdfIkuDknOw91epsBvvHjGx6Saf6I4",
+        authDomain: "colgan-lab-calendar-efb7a.firebaseapp.com",
+        databaseURL: "https://colgan-lab-calendar-efb7a-default-rtdb.firebaseio.com",
+        projectId: "colgan-lab-calendar-efb7a",
+        storageBucket: "colgan-lab-calendar-efb7a.firebasestorage.app",
+        messagingSenderId: "671642193278",
+        appId: "1:671642193278:web:17fd43b883840c3091772f",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let participants = [];
+    let participantsObj = {}; 
+    let schedule = [];
+    let draggedEventIdx = null;
+
+    db.ref().on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        participantsObj = data.participants || {};
+        participants = Object.values(participantsObj);
+        
+        if (data.scheduleState) {
+            schedule = data.scheduleState.map(item => ({
+                ...item,
+                date: new Date(item.date),
+                endDate: item.endDate ? new Date(item.endDate) : null
+            }));
+        }
+        
+        updatePersonnelUI();
+        updateAdminSwapLists();
+        renderCalendar();
+        renderUpcoming();
+        updateStats();
+    });
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function loginAdmin() {
+        const pass = document.getElementById('adminPass').value;
+        if (pass === "Password") {
+            document.body.classList.add('is-admin');
+            document.getElementById('adminLoginArea').innerHTML = `
+                <span style='color:var(--flask-teal); font-weight:600; display:flex; align-items:center; gap:12px;'>
+                    🛡️ Admin
+                    <button onclick="logoutAdmin()" class="btn-logout">Logout</button>
+                </span>`;
+            renderCalendar();
+            updatePersonnelUI();
+        } else {
+            alert("Incorrect password.");
+        }
+    }
+
+    function logoutAdmin() {
+        document.body.classList.remove('is-admin');
+        document.getElementById('adminLoginArea').innerHTML = `
+            <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
+            <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">Login</button>`;
+        renderCalendar();
+        updatePersonnelUI();
+    }
+
+    function addPerson() {
+        const name = document.getElementById('pName').value.trim();
+        const group = document.getElementById('pGroup').value.trim() || "Unassigned";
+        const email = document.getElementById('pEmail').value.trim();
+        const role = document.getElementById('pRole').value;
+        const hold = document.getElementById('pHold').checked;
+
+        if (!name) return alert("Please enter a name.");
+        
+        db.ref('participants').push({ name, group, email, role, hold, retired: false });
+        document.getElementById('pName').value = '';
+        document.getElementById('pGroup').value = '';
+        document.getElementById('pEmail').value = '';
+        document.getElementById('pHold').checked = false;
+    }
+
+    function editPerson(key) {
+        if(!document.body.classList.contains('is-admin')) return;
+        const p = participantsObj[key];
+        document.getElementById('editKey').value = key;
+        document.getElementById('editName').value = p.name;
+        document.getElementById('editGroup').value = p.group;
+        document.getElementById('editEmail').value = p.email || '';
+        document.getElementById('editRole').value = p.role;
+        document.getElementById('editHold').checked = !!p.hold;
+        document.getElementById('editRetired').checked = !!p.retired;
+        document.getElementById('editAltContact').value = p.altContact || '';
+        
+        toggleRetiredFields();
+        document.getElementById('editScientistModal').style.display = 'flex';
+    }
+
+    function toggleRetiredFields() {
+        const isRetired = document.getElementById('editRetired').checked;
+        document.getElementById('retiredFields').style.display = isRetired ? 'flex' : 'none';
+    }
+
+    function saveEditedPerson() {
+        const key = document.getElementById('editKey').value;
+        const oldData = participantsObj[key];
+        const isNowRetired = document.getElementById('editRetired').checked;
+        const updates = {
+            name: document.getElementById('editName').value.trim(),
+            group: document.getElementById('editGroup').value.trim(),
+            email: document.getElementById('editEmail').value.trim(),
+            role: document.getElementById('editRole').value,
+            hold: document.getElementById('editHold').checked,
+            retired: isNowRetired,
+            altContact: document.getElementById('editAltContact').value.trim()
+        };
+        
+        if(!updates.name) return alert("Name is required.");
+
+        if (isNowRetired && !oldData.retired) {
+            handlePersonRetirement(updates.name);
+        }
+
+        db.ref('participants/' + key).update(updates)
+            .then(() => closeModal('editScientistModal'));
+    }
+
+    function handlePersonRetirement(name) {
+        const activeSequence = schedule.filter(s => {
+            if (s.type === 'PRES') {
+                return s.presenter && s.presenter.name !== name;
+            }
+            return s.type === 'WHOLE';
+        });
+
+        const mondayDates = schedule
+            .filter(s => s.type === 'PRES' || s.type === 'WHOLE' || s.type === 'CANCELED')
+            .map(s => new Date(s.date))
+            .sort((a, b) => a - b);
+
+        const staticItems = schedule.filter(s => s.type === 'HOLIDAY' || s.type === 'CUSTOM');
+
+        let newSchedule = [...staticItems];
+
+        for (let i = 0; i < mondayDates.length; i++) {
+            if (i < activeSequence.length) {
+                newSchedule.push({
+                    ...activeSequence[i],
+                    date: mondayDates[i]
+                });
+            }
+        }
+
+        schedule = newSchedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+    }
+
+    function deletePerson(key) {
+        if (confirm("Permanently remove this scientist?")) {
+            db.ref('participants/' + key).remove();
+        }
+    }
+
+    function updatePersonnelUI() {
+        const list = document.getElementById('participantList');
+        const picker = document.getElementById('currentUser');
+        
+        const activeParticipants = participants.filter(p => !p.retired);
+
+        list.innerHTML = Object.entries(participantsObj).map(([key, p]) => `
+            <div style="padding: 10px; background: ${p.retired ? 'transparent' : '#ffffff'}; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size:0.85rem; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <span class="scientist-name-btn" onclick="editPerson('${key}')">
+                    <strong style="color: var(--molecule-navy);">${p.name}</strong> 
+                    <span style="color:#64748b; font-size: 0.75rem; margin-left: 4px;">(${p.group} Lab)</span> 
+                    ${p.hold ? '<span style="color:var(--danger-red); font-size:0.75rem; font-weight:600; margin-left:4px;">[HOLD]</span>' : ''}
+                    ${p.retired ? '<span style="color:#94a3b8; font-size:0.75rem; font-weight:600; margin-left:4px;">[RETIRED]</span>' : ''}
+                </span>
+                <button onclick="deletePerson('${key}')" class="delete-user">×</button>
+            </div>`).join('');
+        
+        const currentVal = picker.value;
+        const sortedParticipants = [...activeParticipants].sort((a, b) => a.name.localeCompare(b.name));
+        
+        picker.innerHTML = '<option value="">Who are you?</option>' + sortedParticipants.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        picker.value = currentVal;
+    }
+
+    function updateStats() {
+        const activeOnly = participants.filter(p => !p.retired);
+        const total = activeOnly.length;
+
+        const counts = { 'Student': 0, 'PRA': 0, 'Postdoc': 0, 'Faculty': 0, 'Other': 0 };
+        activeOnly.forEach(p => { if (counts.hasOwnProperty(p.role)) counts[p.role]++; });
+
+        const statsHtml = `
+            <div class="stat-card" style="border-left: 4px solid var(--flask-teal);">
+                <div class="stat-info" onclick="showDirectory('All')">
+                    <div class="stat-val">${total}</div>
+                    <div class="stat-lbl">Active Members</div>
+                </div>
+                <button class="mail-btn" onclick="draftGroupEmail('all')" title="Email All">✉️</button>
+            </div>
+            ${Object.entries(counts).map(([role, count]) => `
+                <div class="stat-card">
+                    <div class="stat-info" onclick="showDirectory('${role}')">
+                        <div class="stat-val">${count}</div>
+                        <div class="stat-lbl">${role === 'Faculty' ? 'Faculty' : role + 's'}</div>
+                    </div>
+                    <button class="mail-btn" onclick="draftGroupEmail('${role}')" title="Email ${role}s">✉️</button>
+                </div>
+            `).join('')}
+        `;
+        document.getElementById('personnelStats').innerHTML = statsHtml;
+    }
+
+    function showDirectory(role) {
+        const titleEl = document.getElementById('directoryTitle');
+        const contentEl = document.getElementById('directoryContent');
+        
+        let list = participants;
+        if (role !== 'All') {
+            list = participants.filter(p => p.role === role && !p.retired);
+        } else {
+            list = participants.filter(p => !p.retired);
+        }
+        
+        titleEl.innerText = `${role} Directory`;
+        
+        if (list.length === 0) {
+            contentEl.innerHTML = `<p style="color:#94a3b8; padding: 10px 0;">No members found in this category.</p>`;
+        } else {
+            contentEl.innerHTML = list.sort((a,b) => a.name.localeCompare(b.name)).map(p => `
+                <div style="padding: 14px 10px; border-bottom: 1px solid var(--lab-blue);">
+                    <strong style="color: var(--molecule-navy); font-size: 1.05rem;">${p.name}</strong><br>
+                    <span style="font-size: 0.85rem; color: #64748b; display: inline-block; margin-top: 4px;">${p.group} Lab • ${p.role}</span><br>
+                    <a href="mailto:${p.email}" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none; display: inline-block; margin-top: 4px;">${p.email || 'No email provided'}</a>
+                </div>
+            `).join('');
+        }
+        
+        document.getElementById('directoryModal').style.display = 'flex';
+    }
+
+    function filterUsers() {
+        const input = document.getElementById('userSearch').value.toLowerCase();
+        const select = document.getElementById('currentUser');
+        const options = select.options;
+        for (let i = 1; i < options.length; i++) {
+            const txt = options[i].text.toLowerCase();
+            options[i].style.display = txt.includes(input) ? "" : "none";
+        }
+    }
+
+    function draftGroupEmail(category) {
+        let targets = [];
+        if (category === 'all') {
+            targets = participants.filter(p => !p.retired);
+        } else {
+            targets = participants.filter(p => p.role === category && !p.retired);
+        }
+
+        const emails = targets.map(p => p.email).filter(e => !!e).join(',');
+        if (!emails) return alert("No email addresses found for this group.");
+
+        const subject = encodeURIComponent("Colgan Lab Calendar Update");
+        window.location.href = `mailto:?bcc=${emails}&subject=${subject}`;
+    }
+
+    function emailEquipmentAdmin() {
+        const subject = encodeURIComponent("Equipment Inquiry - Colgan Lab");
+        window.location.href = `mailto:GIHep.Equipment@Cuanschutz.edu?subject=${subject}`;
+    }
+
+    function handleGenerateClick() {
+        if (confirm("This will overwrite the current Monday rotation. Custom events will be kept. Continue?")) {
+            generateRotation(true);
+        }
+    }
+
+    function generateRotation(saveToCloud = false) {
+        const startInput = document.getElementById('startDate').value;
+        const activeParticipants = participants.filter(p => !p.hold && !p.retired);
+
+        if (!startInput || activeParticipants.length === 0) return alert("Select a start date and add active scientists first.");
+        
+        let preservedEvents = schedule.filter(s => s.type === 'CUSTOM');
+        
+        let iterDate = new Date(startInput + "T09:00:00");
+        while(iterDate.getDay() !== 1) iterDate.setDate(iterDate.getDate() + 1);
+        
+        const monthsCount = parseInt(document.getElementById('months').value);
+        const endDate = new Date(iterDate);
+        endDate.setMonth(endDate.getMonth() + monthsCount);
+        
+        let rotationOrder = getDiversifiedRotation(activeParticipants);
+        let newSchedule = [];
+        let pIdx = 0;
+        let currentSimDate = new Date(iterDate);
+
+        while (currentSimDate < endDate) {
+            const holiday = getHoliday(currentSimDate);
+            const firstDayOfMonth = new Date(currentSimDate.getFullYear(), currentSimDate.getMonth(), 1);
+            let firstMon = new Date(firstDayOfMonth);
+            while(firstMon.getDay() !== 1) firstMon.setDate(firstMon.getDate() + 1);
+            const isFirstMon = currentSimDate.getDate() === firstMon.getDate();
+
+            if (holiday) {
+                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'HOLIDAY', title: holiday });
+            } else if (isFirstMon) {
+                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'WHOLE', title: 'Whole Lab Update' });
+            } else {
+                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'PRES', presenter: rotationOrder[pIdx % rotationOrder.length] });
+                pIdx++;
+            }
+            currentSimDate.setDate(currentSimDate.getDate() + 7);
+        }
+
+        schedule = [
+            ...newSchedule.map(s => ({ ...s, date: new Date(s.date) })),
+            ...preservedEvents
+        ];
+        
+        schedule.sort((a, b) => a.date - b.date);
+
+        if (saveToCloud) {
+            saveCurrentToFirebase();
+        } else {
+            renderCalendar();
+            renderUpcoming();
+        }
+    }
+
+    function getDiversifiedRotation(activePool) {
+        if (activePool.length === 0) return [];
+        let pool = [...activePool];
+        let rotation = [];
+        let lastGroup = "";
+        while (pool.length > 0) {
+            let candidates = pool.filter(p => p.group !== lastGroup);
+            if (candidates.length === 0) candidates = pool;
+            const choice = candidates[Math.floor(Math.random() * candidates.length)];
+            rotation.push(choice);
+            lastGroup = choice.group;
+            pool = pool.filter(p => p !== choice);
+        }
+        return rotation;
+    }
+
+    function getHoliday(date) {
+        const d = date.getDate(), m = date.getMonth(), day = date.getDay();
+        if (day !== 1) return null; 
+        if (m === 0 && d === 1) return "New Year's Day";
+        if (m === 0 && d >= 15 && d <= 21) return "MLK Jr. Day";
+        if (m === 4 && d >= 25) return "Memorial Day";
+        if (m === 5 && d === 19) return "Juneteenth";
+        if (m === 8 && d <= 7) return "Labor Day";
+        if (m === 10 && d >= 22 && d <= 28) return "Thanksgiving Break";
+        return null;
+    }
+
+    function saveCurrentToFirebase() {
+        const uploadable = schedule.map(s => ({
+            ...s,
+            date: s.date instanceof Date ? s.date.toISOString() : s.date,
+            endDate: (s.endDate instanceof Date) ? s.endDate.toISOString() : (s.endDate || null)
+        }));
+        db.ref('scheduleState').set(uploadable)
+            .then(() => console.log("Schedule synced."))
+            .catch(err => alert("Sync error: " + err.message));
+    }
+
+    function handleDayDblClick(dateStr) {
+        openEditModal(null, dateStr);
+    }
+
+    function openEditModal(idx = null, dateStr = null) {
+        document.getElementById('eventViewMode').style.display = 'none';
+        document.getElementById('eventEditMode').style.display = 'block';
+        
+        const isEditing = idx !== null;
+        const item = isEditing ? schedule[idx] : null;
+
+        document.getElementById('editModalTitle').innerText = isEditing ? "Edit Event" : "Add Quick Event";
+        document.getElementById('qeIdx').value = isEditing ? idx : "";
+        
+        const cleanDateStr = isEditing ? item.date.toISOString().split('T')[0] : dateStr;
+        document.getElementById('qeDate').value = cleanDateStr;
+        document.getElementById('qeDateInput').value = cleanDateStr;
+        
+        document.getElementById('qeTitle').value = isEditing ? item.title : '';
+        document.getElementById('qeLoc').value = isEditing ? (item.location || '') : '';
+        document.getElementById('qeNotes').value = isEditing ? (item.notes || '') : '';
+        document.getElementById('qeRepeat').value = 'none';
+        document.getElementById('qeRepeat').disabled = isEditing;
+
+        if (isEditing) {
+            const pad = (n) => n.toString().padStart(2, '0');
+            document.getElementById('qeTime').value = `${pad(item.date.getHours())}:${pad(item.date.getMinutes())}`;
+            if (item.endDate) {
+                document.getElementById('qeEndTime').value = `${pad(item.endDate.getHours())}:${pad(item.endDate.getMinutes())}`;
+            }
+        } else {
+            document.getElementById('qeTime').value = "09:00";
+            document.getElementById('qeEndTime').value = "10:00";
+        }
+        
+        document.getElementById('eventModal').style.display = 'flex';
+    }
+
+    function saveQuickEvent() {
+        const idx = document.getElementById('qeIdx').value;
+        const title = document.getElementById('qeTitle').value.trim();
+        const dateStr = document.getElementById('qeDateInput').value; 
+        const timeStr = document.getElementById('qeTime').value;
+        const endTimeStr = document.getElementById('qeEndTime').value;
+        const loc = document.getElementById('qeLoc').value.trim();
+        const notes = document.getElementById('qeNotes').value.trim();
+        const repeat = document.getElementById('qeRepeat').value;
+
+        if (!title || !dateStr) return alert("Please enter event name and date.");
+
+        const start = new Date(`${dateStr}T${timeStr}:00`);
+        const end = new Date(`${dateStr}T${endTimeStr}:00`);
+
+        if (idx !== "") {
+            const i = parseInt(idx);
+            schedule[i].title = title;
+            schedule[i].date = start;
+            schedule[i].endDate = end;
+            schedule[i].location = loc;
+            schedule[i].notes = notes;
+        } else {
+            const baseEvent = { type: 'CUSTOM', title, location: loc || 'TBD', notes: notes || '' };
+            if (repeat === 'none') {
+                schedule.push({ ...baseEvent, date: start, endDate: end });
+            } else {
+                let current = new Date(start);
+                let currentEnd = new Date(end);
+                const endLimit = new Date(start);
+                endLimit.setMonth(endLimit.getMonth() + 12);
+                while (current <= endLimit) {
+                    let instanceStart = new Date(current);
+                    let instanceEnd = new Date(currentEnd);
+                    if (repeat === 'lastworkday') {
+                        let lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+                        while (lastDay.getDay() === 0 || lastDay.getDay() === 6) lastDay.setDate(lastDay.getDate() - 1);
+                        instanceStart.setDate(lastDay.getDate()); instanceEnd.setDate(lastDay.getDate());
+                    }
+                    schedule.push({ ...baseEvent, date: instanceStart, endDate: instanceEnd });
+                    if (repeat === 'weekly') { current.setDate(current.getDate() + 7); currentEnd.setDate(currentEnd.getDate() + 7); }
+                    else { current.setMonth(current.getMonth() + 1); currentEnd.setMonth(currentEnd.getMonth() + 1); }
+                }
+            }
+        }
+
+        schedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+        closeModal('eventModal');
+    }
+
+    function deleteCustomEvent(index) {
+        if (confirm("Are you sure you want to delete this event?")) {
+            schedule.splice(index, 1);
+            saveCurrentToFirebase();
+            closeModal('eventModal');
+        }
+    }
+
+    function updateAdminSwapLists() {
+        const s1 = document.getElementById('swapSlot1');
+        const s2 = document.getElementById('swapSlot2');
+        if(!s1 || !s2) return;
+        
+        const swappableSlots = schedule
+            .map((s, idx) => ({ ...s, originalIdx: idx }))
+            .filter(s => s && (s.type === 'PRES' || s.type === 'WHOLE'));
+
+        const options = swappableSlots.map(s => {
+            const label = s.type === 'PRES' ? s.presenter.name : "WHOLE LAB UPDATE";
+            return `<option value="${s.originalIdx}">${s.date.toLocaleDateString()} - ${label}</option>`;
+        }).join('');
+
+        s1.innerHTML = '<option value="">Select Slot A</option>' + options;
+        s2.innerHTML = '<option value="">Select Slot B</option>' + options;
+    }
+
+    function adminExecuteSwap() {
+        const idx1 = document.getElementById('swapSlot1').value;
+        const idx2 = document.getElementById('swapSlot2').value;
+        if (idx1 === "" || idx2 === "" || idx1 === idx2) return alert("Please select two different slots to swap.");
+        const slot1 = schedule[idx1]; const slot2 = schedule[idx2];
+        const type1 = slot1.type; const pres1 = slot1.presenter || null; const title1 = slot1.title || null;
+        slot1.type = slot2.type; slot1.presenter = slot2.presenter || null; slot1.title = slot2.title || null;
+        slot2.type = type1; slot2.presenter = pres1; slot2.title = title1;
+        saveCurrentToFirebase();
+        alert("Slots swapped successfully.");
+    }
+
+    function handleDragStart(e, index) {
+        draggedEventIdx = index;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index);
+        setTimeout(() => e.target.classList.add('is-dragging'), 0);
+    }
+
+    function handleDragEnd(e) {
+        e.target.classList.remove('is-dragging');
+        document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        const day = e.currentTarget;
+        if (!day.classList.contains('other-month')) day.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+    function handleDrop(e, targetDateStr) {
+        e.preventDefault();
+        const day = e.currentTarget;
+        day.classList.remove('drag-over');
+        if (draggedEventIdx === null || day.classList.contains('other-month')) return;
+        const event = schedule[draggedEventIdx];
+        const newDateBase = new Date(targetDateStr + "T00:00:00");
+        const newDate = new Date(newDateBase.getFullYear(), newDateBase.getMonth(), newDateBase.getDate(), event.date.getHours(), event.date.getMinutes());
+        if (event.endDate) {
+            const duration = event.endDate.getTime() - event.date.getTime();
+            event.endDate = new Date(newDate.getTime() + duration);
+        }
+        event.date = newDate;
+        schedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+        draggedEventIdx = null;
+    }
+
+    function showEventDetails(index) {
+        const slot = schedule[index];
+        document.getElementById('eventEditMode').style.display = 'none';
+        document.getElementById('eventViewMode').style.display = 'block';
+        
+        const titleEl = document.getElementById('viewTitle');
+        const subEl = document.getElementById('viewSubtitle');
+        const detEl = document.getElementById('viewDetails');
+        const presArea = document.getElementById('presenterSpecifics');
+        const delBtn = document.getElementById('deleteEventBtn');
+        const resBtn = document.getElementById('reschedEventBtn');
+
+        presArea.style.display = 'none';
+        delBtn.style.display = 'none';
+        resBtn.style.display = 'none';
+        
+        if (slot.type === 'PRES') {
+            titleEl.innerText = slot.presenter.name;
+            subEl.innerText = `${slot.presenter.role} | ${slot.presenter.group} Lab`;
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><div><strong>Email:</strong> <a href="mailto:${slot.presenter.email}" style="color:var(--flask-teal); text-decoration:none;">${slot.presenter.email || 'N/A'}</a></div>`;
+            const today = new Date().setHours(0,0,0,0);
+            const futureDates = schedule.filter(s => s.type === 'PRES' && s.presenter.name === slot.presenter.name && new Date(s.date) >= today).map(s => new Date(s.date).toLocaleDateString());
+            document.getElementById('mDates').innerHTML = futureDates.length ? futureDates.map(d => `<li>${d}</li>`).join('') : "<li>No more scheduled dates</li>";
+            document.getElementById('mSwapBtn').onclick = () => requestSwap(slot.presenter.name, slot.presenter.email, slot.date.toDateString());
+            presArea.style.display = 'block';
+        } else if (slot.type === 'CUSTOM') {
+            const timeFormat = { hour: '2-digit', minute: '2-digit' };
+            const startTime = slot.date.toLocaleTimeString([], timeFormat);
+            const endTime = slot.endDate ? slot.endDate.toLocaleTimeString([], timeFormat) : 'TBD';
+            titleEl.innerText = slot.title; subEl.innerText = "Custom Event";
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toLocaleDateString()}</div><div style="margin-bottom:8px;"><strong>Time:</strong> ${startTime} - ${endTime}</div><div style="margin-bottom:8px;"><strong>Location:</strong> ${slot.location || 'TBD'}</div><div style="margin-top:16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"><strong>Notes:</strong><br>${slot.notes || 'No notes provided.'}</div>`;
+            delBtn.style.display = 'block'; resBtn.style.display = 'block';
+            delBtn.onclick = () => deleteCustomEvent(index);
+            resBtn.onclick = () => openEditModal(index);
+        } else if (slot.type === 'WHOLE') {
+            titleEl.innerText = "Whole Lab Update"; subEl.innerText = "Lab Meeting";
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">Standard update session for the entire research group.</p>`;
+        } else if (slot.type === 'HOLIDAY') {
+            titleEl.innerText = slot.title; subEl.innerText = "Holiday / Break";
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">No lab meeting scheduled due to holiday observance.</p>`;
+        } else if (slot.type === 'CANCELED') {
+            titleEl.innerText = "Session Canceled"; subEl.innerText = slot.reason ? `Reason: ${slot.reason}` : "Slot Voided";
+            detEl.innerHTML = `<p style="color:var(--danger-red); margin:0; font-weight: 500;">This meeting was canceled.</p>`;
+        }
+
+        document.getElementById('eventModal').style.display = 'flex';
+    }
+
+    function renderCalendar() {
+        const container = document.getElementById('calendarContainer');
+        container.innerHTML = '';
+        if (schedule.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding: 80px 20px; color: #94a3b8; background: #f8fafc; border-radius: 16px; border: 2px dashed #cbd5e1;"><h2 style="margin:0 0 10px 0; color:#64748b;">No Schedule Found</h2><p style="margin:0;">Admin must set parameters and click "Generate" to populate the calendar.</p></div>`;
+            return;
+        }
+
+        const monthKeys = [...new Set(schedule.map(s => s.date.toLocaleString('default', { month: 'long', year: 'numeric' })))];
+        monthKeys.forEach(mKey => {
+            const [mName, mYear] = mKey.split(' ');
+            const monthIdx = new Date(Date.parse(mName +" 1, 2024")).getMonth();
+            const year = parseInt(mYear);
+            const monthSection = document.createElement('div');
+            monthSection.className = 'month-block';
+            monthSection.innerHTML = `<div class="month-title">${mKey}</div>`;
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => { grid.innerHTML += `<div class="cal-header">${d}</div>`; });
+            const firstDay = new Date(year, monthIdx, 1);
+            const lastDay = new Date(year, monthIdx + 1, 0);
+            let startOffset = firstDay.getDay(); 
+            for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="cal-day other-month"></div>`;
+
+            for(let d=1; d<=lastDay.getDate(); d++) {
+                const currentDate = new Date(year, monthIdx, d);
+                const isoDate = currentDate.toISOString().split('T')[0];
+                const slots = schedule.map((s, idx) => ({...s, originalIdx: idx})).filter(s => s.date.getDate() === d && s.date.getMonth() === monthIdx && s.date.getFullYear() === year);
+                let eventHtml = '', adminBtns = '';
+
+                slots.forEach(slot => {
+                    const startTimeStr = slot.date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    const isCustom = slot.type === 'CUSTOM';
+                    const dragAttr = isCustom ? `draggable="true" ondragstart="handleDragStart(event, ${slot.originalIdx})" ondragend="handleDragEnd(event)"` : '';
+                    if (slot.type === 'PRES') {
+                        eventHtml += `<div class="event event-presentation" onclick="showEventDetails(${slot.originalIdx})"><b>${slot.presenter.name}</b><br><span style="font-size:0.7rem; opacity:0.8;">${slot.presenter.group} Lab</span></div>`;
+                        adminBtns = `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
+                    } else if (slot.type === 'WHOLE') {
+                        eventHtml += `<div class="event event-whole" onclick="showEventDetails(${slot.originalIdx})">📢 Whole Lab<br><span style="font-size:0.7rem; opacity:0.8;">🕒 ${startTimeStr}</span></div>`;
+                        adminBtns = `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
+                    } else if (slot.type === 'HOLIDAY') { eventHtml += `<div class="event event-holiday" onclick="showEventDetails(${slot.originalIdx})">🏖️ ${slot.title}</div>`; }
+                    else if (slot.type === 'CUSTOM') { eventHtml += `<div class="event event-custom" ${dragAttr} onclick="showEventDetails(${slot.originalIdx})">📌 ${slot.title}<br><span style="font-size:0.7rem; opacity:0.8;">🕒 ${startTimeStr}</span></div>`; }
+                    else if (slot.type === 'CANCELED') { eventHtml += `<div class="event event-canceled" onclick="showEventDetails(${slot.originalIdx})">Canceled${slot.reason ? ': ' + slot.reason : ''}</div>`; }
+                });
+
+                grid.innerHTML += `<div class="cal-day" ondblclick="handleDayDblClick('${isoDate}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${isoDate}')"><span class="day-num">${d}</span>${eventHtml}${adminBtns}</div>`;
+            }
+            monthSection.appendChild(grid);
+            container.appendChild(monthSection);
+        });
+    }
+
+    function renderUpcoming() {
+        const list = document.getElementById('upcomingList');
+        const today = new Date(); today.setHours(0,0,0,0);
+        const future = schedule.filter(s => new Date(s.date) >= today && s.type !== 'CANCELED').slice(0, 8);
+        if (future.length === 0) { list.innerHTML = `<div style="color:#94a3b8; font-size:0.85rem; padding: 10px 0;">No upcoming meetings found.</div>`; return; }
+        list.innerHTML = future.map(s => {
+            let label = s.type === 'PRES' ? `<strong style="color:var(--molecule-navy);">${s.presenter.name}</strong>` : `<span style="font-weight:500; color:#334155;">${s.title || "Meeting"}</span>`;
+            return `<div class="up-item"><div style="font-weight:600; color:var(--flask-teal); margin-bottom:4px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">${s.date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</div><div style="font-size:0.95rem;">${label}</div></div>`;
+        }).join('');
+    }
+
+    function requestSwap(targetName, targetEmail, targetDate) {
+        const currentUser = document.getElementById('currentUser').value;
+        if (!currentUser) { alert("Please select your name from the 'Who are you?' dropdown first."); return; }
+        const targetFirstName = targetName.split(' ')[0];
+        const today = new Date();
+        const myNextSlot = schedule.find(s => s.type === 'PRES' && s.presenter && s.presenter.name === currentUser && new Date(s.date) > today);
+        const myDateString = myNextSlot ? new Date(myNextSlot.date).toLocaleDateString() : "[No future date found]";
+        const subject = encodeURIComponent(`Lab Meeting Swap Request: ${targetDate}`);
+        const body = encodeURIComponent(`Hi ${targetFirstName},\n\nI was looking at the lab schedule and noticed you are scheduled to present on ${targetDate}.\n\nI am currently scheduled for ${myDateString}. I have a conflict with my slot and was wondering if you would be open to swapping dates with me?\n\nBest,\n${currentUser}`);
+        window.location.href = `mailto:${targetEmail || ''}?subject=${subject}&body=${body}`;
+    }
+
+    function cancelAndShift(index, autoReason = null, promptUser = true) {
+        let reason = autoReason;
+        if (promptUser && !autoReason) {
+            reason = prompt("Cancel this date and delay future lab meetings?\nEnter reason (optional):");
+            if (reason === null) return; 
+        }
+
+        const itemsToShift = [];
+        for (let i = index; i < schedule.length; i++) { 
+            if (schedule[i].type === 'PRES' || schedule[i].type === 'WHOLE') itemsToShift.push({ ...schedule[i] }); 
+        }
+        
+        const originalDate = new Date(schedule[index].date); 
+        schedule[index] = { 
+            date: originalDate, 
+            type: 'CANCELED', 
+            reason: reason || "" 
+        };
+
+        let itemIdx = 0;
+        for (let i = index + 1; i < schedule.length && itemIdx < itemsToShift.length; i++) {
+            if (schedule[i].type !== 'HOLIDAY' && schedule[i].type !== 'CUSTOM') {
+                const targetDate = new Date(schedule[i].date); 
+                schedule[i] = { ...itemsToShift[itemIdx], date: targetDate }; 
+                itemIdx++;
+            }
+        }
+        
+        let lastDate = new Date(schedule[schedule.length - 1].date);
+        while (itemIdx < itemsToShift.length) {
+            lastDate.setDate(lastDate.getDate() + 7);
+            const holiday = getHoliday(lastDate);
+            if (holiday) schedule.push({ date: new Date(lastDate), type: 'HOLIDAY', title: holiday });
+            else { schedule.push({ ...itemsToShift[itemIdx], date: new Date(lastDate) }); itemIdx++; }
+        }
+        saveCurrentToFirebase();
+    }
+
+    function insertSpeakerAt(index) {
+        const speakerName = prompt("Enter the name of the speaker to insert:");
+        if (!speakerName) return;
+        const itemsToShift = [];
+        for (let i = index; i < schedule.length; i++) { if (schedule[i].type === 'PRES' || schedule[i].type === 'WHOLE') itemsToShift.push({ ...schedule[i] }); }
+        const originalDate = new Date(schedule[index].date);
+        schedule[index] = { date: originalDate, type: 'PRES', presenter: { name: speakerName, group: 'Guest Speaker', role: 'Guest', email: '' } };
+        let itemIdx = 0;
+        for (let i = index + 1; i < schedule.length && itemIdx < itemsToShift.length; i++) {
+            if (schedule[i].type !== 'HOLIDAY' && schedule[i].type !== 'CUSTOM') {
+                const targetDate = new Date(schedule[i].date); schedule[i] = { ...itemsToShift[itemIdx], date: targetDate }; itemIdx++;
+            }
+        }
+        let lastDate = new Date(schedule[schedule.length - 1].date);
+        while (itemIdx < itemsToShift.length) {
+            lastDate.setDate(lastDate.getDate() + 7);
+            const holiday = getHoliday(lastDate);
+            if (holiday) schedule.push({ date: new Date(lastDate), type: 'HOLIDAY', title: holiday });
+            else { schedule.push({ ...itemsToShift[itemIdx], date: new Date(lastDate) }); itemIdx++; }
+        }
+        saveCurrentToFirebase();
+    }
+
+    function downloadICS() {
+        if (schedule.length === 0) return alert("Nothing to export.");
+        let ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Colgan Lab//Calendar//EN', 'CALSCALE:GREGORIAN'];
+        schedule.forEach(slot => {
+            if (!slot || slot.type === 'CANCELED') return;
+            let summary = '', desc = '', loc = 'Lab';
+            let start = slot.date; let end = slot.endDate || new Date(new Date(slot.date).setHours(slot.date.getHours() + 1));
+            if (slot.type === 'PRES') { summary = `Lab Presentation: ${slot.presenter.name}`; desc = `Presenter: ${slot.presenter.name} (${slot.presenter.role})`; }
+            else if (slot.type === 'WHOLE') { summary = "Whole Lab Update"; }
+            else if (slot.type === 'HOLIDAY') { summary = `Holiday: ${slot.title}`; }
+            else if (slot.type === 'CUSTOM') { summary = slot.title; loc = slot.location || 'TBD'; desc = slot.notes || ''; }
+            ics.push('BEGIN:VEVENT', `DTSTART:${formatICSDate(start)}`, `DTEND:${formatICSDate(end)}`, `SUMMARY:${summary}`, `DESCRIPTION:${desc}`, `LOCATION:${loc}`, 'END:VEVENT');
+        });
+        ics.push('END:VCALENDAR');
+        const blob = new Blob([ics.join('\n')], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Colgan_Lab_Schedule.ics`; a.click();
+    }
+
+    function formatICSDate(date) {
+        const d = new Date(date);
+        const y = d.getUTCFullYear(), m = String(d.getUTCMonth() + 1).padStart(2, '0'), day = String(d.getUTCDate()).padStart(2, '0'), hh = String(d.getUTCHours()).padStart(2, '0'), mm = String(d.getUTCMinutes()).padStart(2, '0');
+        return `${y}${m}${day}T${hh}${mm}00Z`;
+    }
+
+    window.addEventListener('load', () => {
+        const startInput = document.getElementById('startDate');
+        if(!startInput.value) startInput.value = new Date().toISOString().split('T')[0];
+    });
+</script>
+</body>
+</html>
