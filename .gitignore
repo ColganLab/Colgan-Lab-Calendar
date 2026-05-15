@@ -1,0 +1,13 @@
+// firebase-config.js  ← ADD THIS FILE TO .gitignore
+// This file is intentionally excluded from version control.
+// It contains your real Firebase credentials for local use.
+
+window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBzPqdfIkuDknOw91epsBvvHjGx6Saf6I4",
+    authDomain: "colgan-lab-calendar-efb7a.firebaseapp.com",
+    databaseURL: "https://colgan-lab-calendar-efb7a-default-rtdb.firebaseio.com",
+    projectId: "colgan-lab-calendar-efb7a",
+    storageBucket: "colgan-lab-calendar-efb7a.firebasestorage.app",
+    messagingSenderId: "671642193278",
+    appId: "1:671642193278:web:17fd43b883840c3091772f"
+};
