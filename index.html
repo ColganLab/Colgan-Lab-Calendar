@@ -332,12 +332,22 @@
         
         /* --- Sidebar Lists & Stats --- */
         #upcomingList .up-item { 
-            padding: 14px 0; border-bottom: 1px solid var(--lab-blue); 
-            font-size: 0.85rem; transition: background 0.2s; 
+            padding: 14px 12px; 
+            border-bottom: 1px solid var(--lab-blue); 
+            font-size: 0.85rem; 
+            transition: all 0.2s; 
+            border-left: 4px solid transparent;
+            margin-bottom: 4px;
         }
         #upcomingList .up-item:last-child { border-bottom: none; }
-        #upcomingList .up-item:hover { padding-left: 8px; background: #f8fafc; border-radius: 8px; margin-left: -8px; width: calc(100% + 16px); }
+        #upcomingList .up-item:hover { transform: translateX(4px); border-radius: 0 8px 8px 0; }
         
+        /* Sidebar Color Coordination */
+        .up-pres { background: #f0f9ff; border-left-color: var(--flask-teal); }
+        .up-whole { background: #fffaf5; border-left-color: #f97316; }
+        .up-custom { background: #f5f3ff; border-left-color: var(--dna-purple); }
+        .up-holiday { background: #f8fafc; border-left-color: #94a3b8; }
+
         .delete-user { 
             color: #94a3b8; background: none; width: auto; padding: 4px 8px; 
             font-size: 1.2rem; display: none; border-radius: 6px; line-height: 1;
@@ -575,7 +585,7 @@
 
         <aside class="sidebar-panel">
             <section>
-                <h3 style="color: var(--flask-teal); margin-bottom: 16px;">Upcoming Slots</h3>
+                <h3 style="color: var(--flask-teal); margin-bottom: 16px;">Upcoming Events</h3>
                 <div id="upcomingList"></div>
             </section>
 
@@ -1033,17 +1043,27 @@
                 let currentEnd = new Date(end);
                 const endLimit = new Date(start);
                 endLimit.setMonth(endLimit.getMonth() + 12);
+                
                 while (current <= endLimit) {
                     let instanceStart = new Date(current);
                     let instanceEnd = new Date(currentEnd);
+                    
                     if (repeat === 'lastworkday') {
                         let lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
                         while (lastDay.getDay() === 0 || lastDay.getDay() === 6) lastDay.setDate(lastDay.getDate() - 1);
-                        instanceStart.setDate(lastDay.getDate()); instanceEnd.setDate(lastDay.getDate());
+                        instanceStart.setDate(lastDay.getDate()); 
+                        instanceEnd.setDate(lastDay.getDate());
                     }
+                    
                     schedule.push({ ...baseEvent, date: instanceStart, endDate: instanceEnd });
-                    if (repeat === 'weekly') { current.setDate(current.getDate() + 7); currentEnd.setDate(currentEnd.getDate() + 7); }
-                    else { current.setMonth(current.setMonth() + 1); currentEnd.setMonth(currentEnd.getMonth() + 1); }
+                    
+                    if (repeat === 'weekly') { 
+                        current.setDate(current.getDate() + 7); 
+                        currentEnd.setDate(currentEnd.getDate() + 7); 
+                    } else if (repeat === 'monthly' || repeat === 'lastworkday') { 
+                        current.setMonth(current.getMonth() + 1); 
+                        currentEnd.setMonth(currentEnd.getMonth() + 1); 
+                    }
                 }
             }
         }
@@ -1251,9 +1271,24 @@
         const today = new Date(); today.setHours(0,0,0,0);
         const future = schedule.filter(s => new Date(s.date) >= today && s.type !== 'CANCELED').slice(0, 8);
         if (future.length === 0) { list.innerHTML = `<div style="color:#94a3b8; font-size:0.85rem; padding: 10px 0;">No upcoming meetings found.</div>`; return; }
+        
         list.innerHTML = future.map(s => {
-            let label = s.type === 'PRES' ? `<strong style="color:var(--molecule-navy);">${s.presenter.name}</strong>` : `<span style="font-weight:500; color:#334155;">${s.title || "Meeting"}</span>`;
-            return `<div class="up-item"><div style="font-weight:600; color:var(--flask-teal); margin-bottom:4px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">${s.date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</div><div style="font-size:0.95rem;">${label}</div></div>`;
+            let label = s.type === 'PRES' ? `<strong style="color:var(--molecule-navy);">${s.presenter.name}</strong>` : `<span style="font-weight:600; color:#334155;">${s.title || "Meeting"}</span>`;
+            let colorClass = '';
+            switch(s.type) {
+                case 'PRES': colorClass = 'up-pres'; break;
+                case 'WHOLE': colorClass = 'up-whole'; break;
+                case 'CUSTOM': colorClass = 'up-custom'; break;
+                case 'HOLIDAY': colorClass = 'up-holiday'; break;
+            }
+            
+            return `
+                <div class="up-item ${colorClass}">
+                    <div style="font-weight:700; color:var(--molecule-navy); opacity: 0.6; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">
+                        ${s.date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}
+                    </div>
+                    <div style="font-size:0.95rem;">${label}</div>
+                </div>`;
         }).join('');
     }
 
