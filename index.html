@@ -574,15 +574,15 @@
         <main id="calendarContainer"></main>
 
         <aside class="sidebar-panel">
-            <section style="border: none; background: transparent; padding: 0; box-shadow: none;">
+            <section>
+                <h3 style="color: var(--flask-teal); margin-bottom: 16px;">Upcoming Slots</h3>
+                <div id="upcomingList"></div>
+            </section>
+
+            <section style="margin-top: 30px; border: none; background: transparent; padding: 0; box-shadow: none;">
                 <h3 style="color: var(--molecule-navy); border-bottom: 2px solid var(--lab-blue); padding-bottom: 12px; margin-bottom: 20px;">Lab Personnel</h3>
                 <button class="btn-io" onclick="emailEquipmentAdmin()" style="font-size:0.85rem; background: #fff1f2; border-color: #fecdd3; color: var(--danger-red); margin-bottom: 20px; width: 100%;">⚠️ Email Equipment Admin</button>
                 <div class="stats-grid" id="personnelStats"></div>
-            </section>
-            
-            <section style="margin-top: 30px;">
-                <h3 style="color: var(--flask-teal); margin-bottom: 16px;">Upcoming Slots</h3>
-                <div id="upcomingList"></div>
             </section>
         </aside>
     </div>
@@ -1023,7 +1023,9 @@
             schedule[i].location = loc;
             schedule[i].notes = notes;
         } else {
-            const baseEvent = { type: 'CUSTOM', title, location: loc || 'TBD', notes: notes || '' };
+            const seriesId = repeat !== 'none' ? 'series_' + Date.now() : null;
+            const baseEvent = { type: 'CUSTOM', title, location: loc || 'TBD', notes: notes || '', seriesId: seriesId };
+            
             if (repeat === 'none') {
                 schedule.push({ ...baseEvent, date: start, endDate: end });
             } else {
@@ -1041,7 +1043,7 @@
                     }
                     schedule.push({ ...baseEvent, date: instanceStart, endDate: instanceEnd });
                     if (repeat === 'weekly') { current.setDate(current.getDate() + 7); currentEnd.setDate(currentEnd.getDate() + 7); }
-                    else { current.setMonth(current.getMonth() + 1); currentEnd.setMonth(currentEnd.getMonth() + 1); }
+                    else { current.setMonth(current.setMonth() + 1); currentEnd.setMonth(currentEnd.getMonth() + 1); }
                 }
             }
         }
@@ -1052,11 +1054,28 @@
     }
 
     function deleteCustomEvent(index) {
-        if (confirm("Are you sure you want to delete this event?")) {
+        const event = schedule[index];
+        
+        if (event.seriesId) {
+            const choice = confirm("This is a recurring event.\n\nClick OK to delete the ENTIRE SERIES.\nClick CANCEL to delete ONLY THIS INSTANCE.");
+            if (choice) {
+                // Delete entire series
+                schedule = schedule.filter(s => s.seriesId !== event.seriesId);
+            } else {
+                // Delete only this instance (check if user still wants to delete at all)
+                if(confirm("Confirm: Delete only this specific instance?")) {
+                    schedule.splice(index, 1);
+                } else {
+                    return; // Abort
+                }
+            }
+        } else {
+            if (!confirm("Are you sure you want to delete this event?")) return;
             schedule.splice(index, 1);
-            saveCurrentToFirebase();
-            closeModal('eventModal');
         }
+        
+        saveCurrentToFirebase();
+        closeModal('eventModal');
     }
 
     function updateAdminSwapLists() {
@@ -1156,7 +1175,7 @@
             const timeFormat = { hour: '2-digit', minute: '2-digit' };
             const startTime = slot.date.toLocaleTimeString([], timeFormat);
             const endTime = slot.endDate ? slot.endDate.toLocaleTimeString([], timeFormat) : 'TBD';
-            titleEl.innerText = slot.title; subEl.innerText = "Custom Event";
+            titleEl.innerText = slot.title; subEl.innerText = slot.seriesId ? "Recurring Custom Event" : "Custom Event";
             detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toLocaleDateString()}</div><div style="margin-bottom:8px;"><strong>Time:</strong> ${startTime} - ${endTime}</div><div style="margin-bottom:8px;"><strong>Location:</strong> ${slot.location || 'TBD'}</div><div style="margin-top:16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"><strong>Notes:</strong><br>${slot.notes || 'No notes provided.'}</div>`;
             delBtn.style.display = 'block'; resBtn.style.display = 'block';
             delBtn.onclick = () => deleteCustomEvent(index);
