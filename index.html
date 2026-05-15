@@ -631,6 +631,8 @@
                 date: new Date(item.date),
                 endDate: item.endDate ? new Date(item.endDate) : null
             }));
+        } else {
+            schedule = [];
         }
         
         updatePersonnelUI();
@@ -850,7 +852,7 @@
         const options = select.options;
         for (let i = 1; i < options.length; i++) {
             const txt = options[i].text.toLowerCase();
-            options[i].style.display = txt.includes(input) ? "" : "none";
+            options[i].hidden = !txt.includes(input);
         }
     }
 
@@ -957,7 +959,7 @@
         if (m === 4 && d >= 25) return "Memorial Day";
         if (m === 5 && d === 19) return "Juneteenth";
         if (m === 8 && d <= 7) return "Labor Day";
-        if (m === 10 && d >= 22 && d <= 28) return "Thanksgiving Break";
+        if (m === 10 && d >= 19 && d <= 25) return "Thanksgiving Break";
         return null;
     }
 
@@ -1061,8 +1063,13 @@
                         current.setDate(current.getDate() + 7); 
                         currentEnd.setDate(currentEnd.getDate() + 7); 
                     } else if (repeat === 'monthly' || repeat === 'lastworkday') { 
+                        let d = current.getDate();
                         current.setMonth(current.getMonth() + 1); 
+                        if (current.getDate() !== d) current.setDate(0);
+                        
+                        let dEnd = currentEnd.getDate();
                         currentEnd.setMonth(currentEnd.getMonth() + 1); 
+                        if (currentEnd.getDate() !== dEnd) currentEnd.setDate(0);
                     }
                 }
             }
