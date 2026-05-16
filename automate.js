@@ -154,7 +154,7 @@ async function runAutomation() {
                 endDate: s.endDate ? s.endDate.toISOString() : null
             }));
 
-            await db.ref('schedule').set(serializedSchedule);
+            await db.ref('scheduleState').set(serializedSchedule);
             console.log("✅ Database expanded with new presentations successfully.");
         } else {
             console.log(`📅 Schedule healthy. (${Math.round(daysRemaining)} days planned out ahead)`);
