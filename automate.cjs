@@ -9,13 +9,13 @@ const nodemailer = require('nodemailer');
 */
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
@@ -43,6 +43,7 @@ const transporter = nodemailer.createTransport({
 */
 
 function getHoliday(date) {
+
     const d = date.getDate();
     const m = date.getMonth();
     const day = date.getDay();
@@ -88,8 +89,8 @@ async function runAutomation() {
                 ? Object.values(data.participants)
                 : [];
 
-        // IMPORTANT FIX:
-        // Frontend uses scheduleState
+        // IMPORTANT:
+        // Frontend calendar uses scheduleState
         let rawSchedule = data.scheduleState || [];
 
         /*
@@ -129,7 +130,7 @@ async function runAutomation() {
 
         /*
         |--------------------------------------------------------------------------
-        | Determine If Schedule Needs Extending
+        | Determine Current Schedule Length
         |--------------------------------------------------------------------------
         */
 
@@ -165,7 +166,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Start Next Monday After Last Event
+            | Start Next Monday
             |--------------------------------------------------------------------------
             */
 
@@ -176,6 +177,7 @@ async function runAutomation() {
             );
 
             while (iterDate.getDay() !== 1) {
+
                 iterDate.setDate(
                     iterDate.getDate() + 1
                 );
@@ -195,7 +197,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Presentation History
+            | Track Presentation History
             |--------------------------------------------------------------------------
             */
 
@@ -227,7 +229,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Last Group Tracking
+            | Track Last Group
             |--------------------------------------------------------------------------
             */
 
@@ -243,6 +245,7 @@ async function runAutomation() {
                     );
 
             if (lastPresEvent) {
+
                 lastGroup =
                     lastPresEvent.presenter.group;
             }
@@ -300,7 +303,7 @@ async function runAutomation() {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Presenter Rotation
+                | Presentation Rotation
                 |--------------------------------------------------------------------------
                 */
 
@@ -320,6 +323,7 @@ async function runAutomation() {
                     if (
                         diffGroupCands.length > 0
                     ) {
+
                         candidates =
                             diffGroupCands;
                     }
@@ -371,6 +375,7 @@ async function runAutomation() {
             const serializedSchedule =
                 schedule.map(s => ({
                     ...s,
+
                     date:
                         s.date instanceof Date
                             ? s.date.toISOString()
@@ -386,7 +391,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Debug Logging
+            | Debug Logs
             |--------------------------------------------------------------------------
             */
 
@@ -409,8 +414,6 @@ async function runAutomation() {
             |--------------------------------------------------------------------------
             */
 
-            // IMPORTANT FIX:
-            // Must save to scheduleState
             await db
                 .ref('scheduleState')
                 .set(serializedSchedule);
@@ -443,6 +446,7 @@ async function runAutomation() {
                     s.type !== 'PRES' ||
                     !s.presenter
                 ) {
+
                     return false;
                 }
 
