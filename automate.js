@@ -56,7 +56,7 @@ async function runAutomation() {
         const data = snapshot.val() || {};
         
         let rawParticipants = data.participants ? Object.values(data.participants) : [];
-        let rawSchedule = data.schedule || [];
+        let rawSchedule = data.scheduleState || [];
 
         // Parse dates out of raw schedule data
         let schedule = rawSchedule.map(s => ({
