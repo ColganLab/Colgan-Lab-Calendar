@@ -144,6 +144,40 @@
         }
         .btn-insert-shift:hover { background: var(--flask-teal); color: white; }
         
+        .btn-calendar-action {
+            display:inline-flex; align-items:center; justify-content:center; min-height:34px;
+            padding:8px 10px; border-radius:7px; border:none; cursor:pointer;
+            font-size:0.72rem; font-weight:600; gap:4px; transition:all 0.2s;
+            flex:1 1 140px; white-space:nowrap; max-width:100%;
+        }
+
+        .my-pres-card-header {
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:12px;
+            margin-top:6px;
+            flex-wrap:wrap;
+        }
+
+        .my-pres-actions {
+            display:flex;
+            flex-wrap:wrap;
+            gap:6px;
+            width:100%;
+        }
+
+        @media (min-width: 480px) {
+            .my-pres-actions {
+                width:auto;
+                justify-content:flex-end;
+            }
+        }
+        .btn-google-calendar { background:#e0f2fe; color:#0369a1; }
+        .btn-google-calendar:hover { background:#0ea5e9; color:white; }
+        .btn-outlook-calendar { background:#eff6ff; color:#1d4ed8; }
+        .btn-outlook-calendar:hover { background:#2563eb; color:white; }
+
         .btn-admin-save { background: var(--molecule-navy); color: white; display: none; margin-top: 10px; }
         .btn-delete-event { background: var(--danger-red); color: white; flex: 1; }
         .btn-delete-event:hover { background: var(--danger-red-hover); }
@@ -575,6 +609,10 @@
             </section>
         </aside>
     </div>
+<footer style="margin-top: 32px; padding: 16px; text-align: center; font-size: 0.9rem; color: #92400e; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; line-height: 1.6;">
+    <strong>Security Notice:</strong> This website uses a non-secured database environment for testing and demonstration purposes only. Do not store, upload, or share any confidential, sensitive, personal, or regulated information on this website. Use of this website is at your own risk.
+</footer>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1125,7 +1163,19 @@
         }
         
         const presSelect = document.getElementById('qePresenterSelect');
-        presSelect.innerHTML = participants.filter(p => !p.retired).map(p => `<option value="${p.name}">${p.name} (${p.group})</option>`).join('');
+        const sortedPresenters = participants
+            .filter(p => !p.retired)
+            .sort((a, b) => {
+                const aFirst = (a.name || '').trim().split(/\s+/)[0].toLowerCase();
+                const bFirst = (b.name || '').trim().split(/\s+/)[0].toLowerCase();
+                const firstCompare = aFirst.localeCompare(bFirst);
+                return firstCompare !== 0
+                    ? firstCompare
+                    : (a.name || '').localeCompare(b.name || '');
+            });
+        presSelect.innerHTML = sortedPresenters
+            .map(p => `<option value="${p.name}">${p.name} (${p.group})</option>`)
+            .join('');
 
         if (isEditing) {
             document.getElementById('qeEventType').value = item.type;
@@ -1293,7 +1343,7 @@
 
         if (slot.type === 'PRES') {
             titleEl.innerText = slot.presenter.name; subEl.innerText = `${slot.presenter.role} | ${slot.presenter.group} Lab`;
-            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><div><strong>Email:</strong> <a href="mailto:${slot.presenter.email}" style="color:var(--flask-teal); text-decoration:none;">${slot.presenter.email || 'N/A'}</a></div>`;
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><div><strong>Email:</strong> <a href="mailto:${slot.presenter.email}" style="color:var(--flask-teal); text-decoration:none;">${slot.presenter.email || 'N/A'}</a></div>${buildCalendarButtons(index)}`;
             const today = new Date().setHours(0,0,0,0);
             const futureDates = schedule.filter(s => s.type === 'PRES' && s.presenter.name === slot.presenter.name && new Date(s.date) >= today).map(s => new Date(s.date).toLocaleDateString());
             document.getElementById('mDates').innerHTML = futureDates.length ? futureDates.map(d => `<li>${d}</li>`).join('') : "<li>No more scheduled dates</li>";
@@ -1308,11 +1358,11 @@
             const timeFormat = { hour: '2-digit', minute: '2-digit' };
             const startTime = slot.date.toLocaleTimeString([], timeFormat), endTime = slot.endDate ? slot.endDate.toLocaleTimeString([], timeFormat) : 'TBD';
             titleEl.innerText = slot.title; subEl.innerText = slot.seriesId ? "Recurring Custom Event" : "Custom Event";
-            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toLocaleDateString()}</div><div style="margin-bottom:8px;"><strong>Time:</strong> ${startTime} - ${endTime}</div><div style="margin-bottom:8px;"><strong>Location:</strong> ${slot.location || 'TBD'}</div><div style="margin-top:16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"><strong>Notes:</strong><br>${slot.notes || 'No notes provided.'}</div>`;
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toLocaleDateString()}</div><div style="margin-bottom:8px;"><strong>Time:</strong> ${startTime} - ${endTime}</div><div style="margin-bottom:8px;"><strong>Location:</strong> ${slot.location || 'TBD'}</div><div style="margin-top:16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"><strong>Notes:</strong><br>${slot.notes || 'No notes provided.'}</div>${buildCalendarButtons(index)}`;
             delBtn.style.display = 'block'; resBtn.style.display = 'block'; 
         } else if (slot.type === 'WHOLE') {
             titleEl.innerText = "Whole Lab Update"; subEl.innerText = "Lab Meeting";
-            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">Standard update session for the entire research group.</p>`;
+            detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">Standard update session for the entire research group.</p>${buildCalendarButtons(index)}`;
             if (isAdmin) {
                 delBtn.style.display = 'block'; resBtn.style.display = 'block';
                 cancelPresBtn.style.display = 'flex'; cancelPresBtn.onclick = () => { closeModal('eventModal'); cancelNoShift(index); };
@@ -1428,63 +1478,141 @@
         const today = new Date(); today.setHours(0,0,0,0);
         const myDates = schedule.filter(s => s.type === 'PRES' && s.presenter && s.presenter.name === userName && new Date(s.date) >= today).sort((a, b) => a.date - b.date);
         panel.style.display = 'block';
-        
+
         if (myDates.length === 0) list.innerHTML = `<div style="color:#64748b; font-size:0.85rem; padding: 10px 0;">No upcoming dates scheduled.</div>`;
         else list.innerHTML = myDates.map(s => {
             const safeDate = s.date.toISOString();
+            const presenterName = s.presenter.name.replace(/'/g, "\\'");
             return `<div class="up-item up-pres" onclick="showEventDetails(${schedule.indexOf(s)})" style="cursor:pointer;">
                 <div style="font-weight:700; color:#0369a1; opacity: 0.7; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">${s.date.toLocaleDateString('en-US', {weekday: 'long', month: 'short', day: 'numeric'})}</div>
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px;">
+                <div class="my-pres-card-header">
                     <div style="font-size:0.95rem; font-weight:600; color:#0369a1;">Lab Presentation</div>
-                    <div style="display:flex; gap:5px; flex-shrink:0;" onclick="event.stopPropagation()">
-                        <button onclick="downloadSingleEventICS('${s.presenter.name.replace(/'/g,"\\'")}', '${safeDate}')" title="Add to Calendar" style="display:inline-flex; align-items:center; justify-content:center; width:auto; height:28px; padding:0 10px; border-radius:7px; background:#e0f2fe; color:#0369a1; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; gap:4px; transition:all 0.2s;" onmouseover="this.style.background='#0ea5e9';this.style.color='white'" onmouseout="this.style.background='#e0f2fe';this.style.color='#0369a1'">📅 Add to Calendar</button>
+                    <div class="my-pres-actions" onclick="event.stopPropagation()">
+                        <button onclick="
+                        <button onclick="openOutlookCalendar('${presenterName}', '${safeDate}')" title="Add to Outlook Calendar" class="btn-calendar-action btn-outlook-calendar">📆 Outlook</button>
                     </div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    function requestSwap(targetName, targetEmail, targetDate) {
-        const currentUser = document.getElementById('currentUser').value;
-        if (!currentUser) { alert("Please select your name from the 'Who are you?' dropdown first."); return; }
-        const targetFirstName = targetName.split(' ')[0], today = new Date();
-        const myNextSlot = schedule.find(s => s.type === 'PRES' && s.presenter && s.presenter.name === currentUser && new Date(s.date) > today);
-        const myDateString = myNextSlot ? new Date(myNextSlot.date).toLocaleDateString() : "[No future date found]";
-        window.location.href = `mailto:${targetEmail || ''}?cc=GIHep.Equipment@Cuanschutz.edu&subject=${encodeURIComponent(`Lab Meeting Swap Request: ${targetDate}`)}&body=${encodeURIComponent(`Hi ${targetFirstName},\n\nI was looking at the lab schedule and noticed you are scheduled to present on ${targetDate}.\n\nI am currently scheduled for ${myDateString}. I have a conflict with my slot and was wondering if you would be open to swapping dates with me?\n\nBest,\n${currentUser}`)}`;
-    }
+    function buildEventCalendarDetails(eventIdx) {
+        const slot = schedule[eventIdx];
+        if (!slot) return null;
 
-    function _collectAndShift(index, replacementItem) {
-        const itemsToShift = [];
-        for (let i = index; i < schedule.length; i++) if (schedule[i].type === 'PRES' || schedule[i].type === 'WHOLE') itemsToShift.push({ ...schedule[i] });
-        schedule[index] = { ...replacementItem, date: new Date(schedule[index].date) };
-        let itemIdx = 0;
-        for (let i = index + 1; i < schedule.length && itemIdx < itemsToShift.length; i++) {
-            if (schedule[i].type !== 'HOLIDAY' && schedule[i].type !== 'CUSTOM') { schedule[i] = { ...itemsToShift[itemIdx], date: new Date(schedule[i].date) }; itemIdx++; }
+        const start = new Date(slot.date);
+        const end = slot.endDate
+            ? new Date(slot.endDate)
+            : new Date(start.getTime() + (60 * 60 * 1000));
+
+        const formatGoogle = (d) => {
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+        };
+
+        let title = 'Colgan Lab Event';
+        let description = '';
+        let location = slot.location || 'Colgan Lab';
+
+        if (slot.type === 'PRES') {
+            title = `Lab Presentation: ${slot.presenter.name}`;
+            description = `Presenter: ${slot.presenter.name} (${slot.presenter.role || 'Lab Member'})`;
+        } else if (slot.type === 'WHOLE') {
+            title = slot.title || 'Whole Lab Update';
+            description = slot.notes || 'Colgan Lab meeting';
+        } else if (slot.type === 'CUSTOM') {
+            title = slot.title || 'Custom Event';
+            description = slot.notes || '';
+            location = slot.location || 'TBD';
+        } else if (slot.type === 'HOLIDAY') {
+            title = `Holiday: ${slot.title}`;
+            description = slot.notes || '';
         }
-        let lastDate = new Date(schedule[schedule.length - 1].date);
-        while (itemIdx < itemsToShift.length) {
-            lastDate.setDate(lastDate.getDate() + 7); const holiday = getHoliday(lastDate);
-            if (holiday) schedule.push({ date: new Date(lastDate), type: 'HOLIDAY', title: holiday });
-            else { schedule.push({ ...itemsToShift[itemIdx], date: new Date(lastDate) }); itemIdx++; }
-        }
+
+        return {
+            title,
+            description,
+            location,
+            start,
+            end,
+            googleStart: formatGoogle(start),
+            googleEnd: formatGoogle(end)
+        };
     }
 
-    function cancelAndShift(index, autoReason = null, promptUser = true) {
-        let reason = autoReason;
-        if (promptUser && !autoReason) { reason = prompt("Cancel this date and delay future lab meetings?\nEnter reason (optional):"); if (reason === null) return; }
-        _collectAndShift(index, { type: 'CANCELED', reason: reason || "" }); saveCurrentToFirebase();
+    function openGoogleCalendar(eventIdx) {
+        const event = buildEventCalendarDetails(eventIdx);
+        if (!event) return;
+        const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+            + `&text=${encodeURIComponent(event.title)}`
+            + `&dates=${event.googleStart}/${event.googleEnd}`
+            + `&details=${encodeURIComponent(event.description)}`
+            + `&location=${encodeURIComponent(event.location)}`;
+        window.open(url, '_blank', 'noopener');
     }
 
-    function cancelNoShift(index) {
-        const reason = prompt("Cancel this presentation without shifting future meetings?\nEnter reason (optional):");
-        if (reason === null) return;
-        schedule[index] = { ...schedule[index], type: 'CANCELED', reason: reason || "" };
-        saveCurrentToFirebase();
+    function openOutlookCalendar(eventIdx) {
+        const event = buildEventCalendarDetails(eventIdx);
+        if (!event) return;
+
+        // Create local ICS calendar file
+        const pad = n => String(n).padStart(2, '0');
+
+        const formatICSDate = (date) => {
+            return (
+                date.getFullYear().toString() +
+                pad(date.getMonth() + 1) +
+                pad(date.getDate()) +
+                'T' +
+                pad(date.getHours()) +
+                pad(date.getMinutes()) +
+                '00'
+            );
+        };
+
+        const uid = `${Date.now()}@colganlab`;
+
+        const icsContent = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Colgan Lab//Calendar//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `UID:${uid}`,
+            `DTSTAMP:${formatICSDate(new Date())}`,
+            `DTSTART:${formatICSDate(event.start)}`,
+            `DTEND:${formatICSDate(event.end)}`,
+            `SUMMARY:${event.title}`,
+            `DESCRIPTION:${event.description}`,
+            `LOCATION:${event.location}`,
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+
+        // Generate downloadable .ics file
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        // Auto-download + trigger Outlook desktop import
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${event.title.replace(/[^a-z0-9]+/gi, '_')}.ics`;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    function insertSpeakerAt(index) {
-        const speakerName = prompt("Enter the name of the speaker to insert:"); if (!speakerName) return;
-        _collectAndShift(index, { type: 'PRES', presenter: { name: speakerName, group: 'Guest Speaker', role: 'Guest', email: '' } }); saveCurrentToFirebase();
+    function buildCalendarButtons(eventIdx) {
+        return `
+            <div style="display:flex; gap:8px; margin-top:18px; flex-wrap:wrap;">
+                <button onclick="openGoogleCalendar(${eventIdx})" class="btn-calendar-action btn-google-calendar">📅 Add to Google Calendar</button>
+                <button onclick="openOutlookCalendar(${eventIdx})" class="btn-calendar-action btn-outlook-calendar">📆 Add to Outlook Calendar</button>
+            </div>
+        `;
     }
 
     function executeClearAll() {
@@ -1521,7 +1649,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Lab_Presentation_${presenterName.replace(/\s+/g, '_')}.ics`;
+        a.download = `${event.title.replace(/[^a-z0-9]+/gi, '_')}.ics`;
         a.click();
         URL.revokeObjectURL(url);
     }
