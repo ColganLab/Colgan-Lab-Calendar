@@ -66,133 +66,57 @@
         }
 
         /* --- Header --- */
-        header { 
-            margin-bottom: 30px; 
-        }
+        header { margin-bottom: 30px; }
         
         h1 { 
-            font-size: 1.8rem; 
-            color: var(--molecule-navy); 
-            margin: 0 0 20px 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-size: 1.8rem; color: var(--molecule-navy); margin: 0 0 20px 0; 
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            font-weight: 700; letter-spacing: -0.02em;
         }
 
-        @media (min-width: 768px) { 
-            h1 { font-size: 2.2rem; justify-content: flex-start; } 
-        }
+        @media (min-width: 768px) { h1 { font-size: 2.2rem; justify-content: flex-start; } }
         
         .header-controls { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px; 
-            align-items: center; 
-            background: #f8fafc; 
-            padding: 16px 20px; 
-            border-radius: var(--radius-lg);
+            display: flex; flex-direction: column; gap: 16px; align-items: center; 
+            background: #f8fafc; padding: 16px 20px; border-radius: var(--radius-lg);
             border: 1px solid var(--lab-blue);
         }
 
         /* --- Inputs, Selects & Forms --- */
-        .input-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            margin-bottom: 15px; 
-        }
+        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         
         input, select, textarea { 
-            padding: 10px 14px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 10px; 
-            font-size: 0.95rem; 
-            width: 100%; 
-            box-sizing: border-box; 
-            transition: all 0.2s ease; 
-            font-family: inherit;
-            background-color: #fff;
-            color: var(--molecule-navy);
+            padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 10px; 
+            font-size: 0.95rem; width: 100%; box-sizing: border-box; 
+            transition: all 0.2s ease; font-family: inherit;
+            background-color: #fff; color: var(--molecule-navy);
         }
 
         input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--flask-teal);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+            outline: none; border-color: var(--flask-teal); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
         }
 
-        /* Searchable Select Dropdown */
-        .user-select-container {
-            display: flex;
-            width: 100%;
-            max-width: 250px;
-        }
-
-        .searchable-select {
-            position: relative;
-            width: 100%;
-        }
-
+        .user-select-container { display: flex; width: 100%; max-width: 250px; }
+        .searchable-select { position: relative; width: 100%; }
         .dropdown-list {
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            box-shadow: var(--shadow-md);
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: white; border: 1px solid #cbd5e1; border-radius: 10px;
+            box-shadow: var(--shadow-md); max-height: 250px; overflow-y: auto; z-index: 100; display: none;
         }
-
-        .dropdown-item {
-            padding: 10px 14px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f1f5f9;
-            transition: background 0.2s;
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background: #f0f9ff;
-            color: var(--flask-teal);
-        }
+        .dropdown-item { padding: 10px 14px; cursor: pointer; font-size: 0.95rem; border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: #f0f9ff; color: var(--flask-teal); }
 
         /* --- Buttons --- */
         button { 
-            cursor: pointer; 
-            font-weight: 600; 
-            border: none; 
-            padding: 10px 16px;
-            border-radius: 10px; 
-            font-size: 0.95rem; 
-            width: 100%; 
-            box-sizing: border-box; 
-            transition: all 0.2s ease; 
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            cursor: pointer; font-weight: 600; border: none; padding: 10px 16px;
+            border-radius: 10px; font-size: 0.95rem; width: 100%; box-sizing: border-box; 
+            transition: all 0.2s ease; font-family: inherit; display: inline-flex;
+            align-items: center; justify-content: center; gap: 8px;
         }
 
-        button:hover { 
-            transform: translateY(-1px); 
-            box-shadow: var(--shadow-md);
-        }
-        button:active {
-            transform: translateY(0);
-        }
+        button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        button:active { transform: translateY(0); }
 
         .btn-add { background: var(--flask-teal); color: white; }
         .btn-add:hover { background: var(--flask-teal-hover); }
@@ -221,7 +145,6 @@
         .btn-insert-shift:hover { background: var(--flask-teal); color: white; }
         
         .btn-admin-save { background: var(--molecule-navy); color: white; display: none; margin-top: 10px; }
-        
         .btn-delete-event { background: var(--danger-red); color: white; flex: 1; }
         .btn-delete-event:hover { background: var(--danger-red-hover); }
         .btn-resched-event { background: var(--molecule-navy); color: white; flex: 1; }
@@ -236,92 +159,41 @@
 
         /* --- Sections & Cards --- */
         section { 
-            background: #ffffff; 
-            border: 1px solid var(--lab-blue); 
-            padding: 24px; 
-            border-radius: var(--radius-lg); 
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-sm);
+            background: #ffffff; border: 1px solid var(--lab-blue); padding: 24px; 
+            border-radius: var(--radius-lg); margin-bottom: 24px; box-shadow: var(--shadow-sm);
         }
         
-        section h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            letter-spacing: -0.01em;
-        }
+        section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
 
         /* --- Calendar Grid --- */
         .month-block { margin-bottom: 40px; }
-        .month-title { 
-            color: var(--molecule-navy); 
-            margin-bottom: 16px; 
-            font-weight: 700; 
-            letter-spacing: -0.02em; 
-            font-size: 1.4rem; 
-        }
+        .month-title { color: var(--molecule-navy); margin-bottom: 16px; font-weight: 700; letter-spacing: -0.02em; font-size: 1.4rem; }
         
         .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 8px; 
-            background: var(--lab-blue-light); 
-            border-radius: var(--radius-lg); 
-            padding: 12px;
-            border: 1px solid var(--lab-blue);
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; 
+            background: var(--lab-blue-light); border-radius: var(--radius-lg); 
+            padding: 12px; border: 1px solid var(--lab-blue);
         }
         
-        .cal-header { 
-            padding: 8px; 
-            text-align: center; 
-            font-weight: 600; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            color: #64748b; 
-            letter-spacing: 0.05em;
-        }
+        .cal-header { padding: 8px; text-align: center; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; }
         
         .cal-day { 
-            background: white; 
-            min-height: 120px; 
-            border-radius: var(--radius-md); 
-            padding: 10px; 
-            position: relative; 
-            border: 1px solid #e2e8f0; 
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-sm);
+            background: white; min-height: 120px; border-radius: var(--radius-md); padding: 10px; 
+            position: relative; border: 1px solid #e2e8f0; transition: all 0.2s ease; box-shadow: var(--shadow-sm);
         }
-        .cal-day:not(.other-month):hover { 
-            border-color: #cbd5e1; 
-            box-shadow: var(--shadow-md);
-            cursor: copy; 
-        }
+        .cal-day:not(.other-month):hover { border-color: #cbd5e1; box-shadow: var(--shadow-md); cursor: copy; }
         .cal-day.other-month { background: transparent; border-color: transparent; box-shadow: none; opacity: 0.5; cursor: default; }
         .day-num { font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; display: block; color: #94a3b8; pointer-events: none; }
 
-        .cal-day.drag-over { 
-            background: #f0fdf4 !important; 
-            border: 2px dashed #22c55e !important;
-            transform: scale(1.02);
-            z-index: 10;
-        }
+        .cal-day.drag-over { background: #f0fdf4 !important; border: 2px dashed #22c55e !important; transform: scale(1.02); z-index: 10; }
 
         /* --- Events (Calendar Badges) --- */
         .event { 
-            font-size: 0.75rem; 
-            padding: 8px 10px; 
-            border-radius: 8px; 
-            margin-top: 6px; 
-            border-left: 3px solid transparent; 
-            line-height: 1.4; 
-            cursor: pointer; 
-            user-select: none;
-            transition: all 0.2s;
-            font-weight: 500;
+            font-size: 0.75rem; padding: 8px 10px; border-radius: 8px; margin-top: 6px; 
+            border-left: 3px solid transparent; line-height: 1.4; cursor: pointer; user-select: none;
+            transition: all 0.2s; font-weight: 500;
         }
-        .event:hover {
-            filter: brightness(0.95);
-        }
+        .event:hover { filter: brightness(0.95); }
         .event:active { cursor: grabbing; }
         .event.is-dragging { opacity: 0.5; transform: scale(0.95); }
 
@@ -330,114 +202,106 @@
         .event-holiday { background: #f1f5f9; color: #475569; border-left-color: #94a3b8; }
         .event-custom { background: #e0e7ff; color: #4338ca; border-left-color: #6366f1; }
         .event-canceled { background: #fee2e2; color: #b91c1c; border-left-color: #ef4444; text-decoration: line-through; opacity: 0.7; }
+        .event-birthday { background: #fef2f2; color: #be123c; border-left-color: #fb7185; }
         
         /* --- Modals --- */
         .modal-overlay { 
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); 
-            backdrop-filter: blur(6px); display: none; align-items: center; 
-            justify-content: center; z-index: 1000; padding: 20px; 
-            animation: fadeIn 0.2s ease;
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; animation: fadeIn 0.2s ease;
         }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-card { 
-            background: white; padding: 32px; border-radius: 24px; max-width: 480px; 
-            width: 100%; border: 1px solid var(--lab-blue); position: relative; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
-            animation: slideUp 0.3s ease cubic-bezier(0.16, 1, 0.3, 1);
+            background: white; padding: 32px; border-radius: 24px; max-width: 480px; width: 100%; border: 1px solid var(--lab-blue); position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: slideUp 0.3s ease cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh; overflow-y: auto;
         }
+        .modal-card-large { max-width: 1200px; height: 85vh; display: flex; flex-direction: column; padding: 40px; }
+        .modal-scroll-content { flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-top: 20px; }
 
-        @keyframes slideUp { 
-            from { transform: translateY(20px); opacity: 0; } 
-            to { transform: translateY(0); opacity: 1; } 
-        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .close-modal { 
-            position: absolute; right: 24px; top: 20px; font-size: 1.5rem; 
-            cursor: pointer; color: #94a3b8; transition: color 0.2s;
-            line-height: 1; font-weight: 300;
-        }
+        .close-modal { position: absolute; right: 24px; top: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; transition: color 0.2s; line-height: 1; font-weight: 300; }
         .close-modal:hover { color: var(--molecule-navy); }
         
         /* --- Sidebar Lists & Stats --- */
-        #upcomingList .up-item, #myPresList .up-item { 
-            padding: 14px 12px; 
-            border-bottom: 1px solid var(--lab-blue); 
-            font-size: 0.85rem; 
-            transition: all 0.2s; 
-            border-left: 4px solid transparent;
-            margin-bottom: 4px;
-        }
+        #upcomingList .up-item, #myPresList .up-item { padding: 14px 12px; border-bottom: 1px solid var(--lab-blue); font-size: 0.85rem; transition: all 0.2s; border-left: 4px solid transparent; margin-bottom: 4px; }
         #upcomingList .up-item:last-child, #myPresList .up-item:last-child { border-bottom: none; }
         #upcomingList .up-item:hover, #myPresList .up-item:hover { transform: translateX(4px); border-radius: 0 8px 8px 0; }
         
-        /* Sidebar Color Coordination */
         .up-pres { background: #f0f9ff; border-left-color: var(--flask-teal); }
         .up-whole { background: #fffaf5; border-left-color: #f97316; }
         .up-custom { background: #f5f3ff; border-left-color: var(--dna-purple); }
         .up-holiday { background: #f8fafc; border-left-color: #94a3b8; }
 
-        .delete-user { 
-            color: #94a3b8; background: none; width: auto; padding: 4px 8px; 
-            font-size: 1.2rem; display: none; border-radius: 6px; line-height: 1;
-        }
+        .delete-user { color: #94a3b8; background: none; width: auto; padding: 4px 8px; font-size: 1.2rem; display: none; border-radius: 6px; line-height: 1; }
         .delete-user:hover { background: #fee2e2; color: var(--danger-red); }
         
         .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #475569; margin-top: 5px; cursor: pointer; }
         .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--flask-teal); }
         .checkbox-row label { cursor: pointer; }
 
-        body.is-admin .scientist-name-btn { 
-            cursor: pointer; 
-            text-decoration: underline; 
-            text-decoration-style: dotted;
-            text-underline-offset: 4px;
-            color: var(--flask-teal); 
-        }
+        body.is-admin .scientist-name-btn { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px; color: var(--flask-teal); }
 
         .stats-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
-        .stat-card { 
-            background: #ffffff; 
-            padding: 16px; 
-            border-radius: var(--radius-md); 
-            border: 1px solid var(--lab-blue); 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-sm);
-        }
+        .stat-card { background: #ffffff; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--lab-blue); display: flex; align-items: center; justify-content: space-between; transition: all 0.2s ease; box-shadow: var(--shadow-sm); }
         .stat-card:hover { border-color: var(--flask-teal); box-shadow: var(--shadow-md); transform: translateY(-2px); }
         .stat-info { flex-grow: 1; cursor: pointer; }
         .stat-val { font-weight: 700; color: var(--molecule-navy); font-size: 1.5rem; line-height: 1; }
         .stat-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; font-weight: 600; }
         
-        .mail-btn { 
-            background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; 
-            cursor: pointer; padding: 0; width: 36px; height: 36px;
-            border-radius: 10px; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
+        .mail-btn { background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; cursor: pointer; padding: 0; width: 36px; height: 36px; border-radius: 10px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .mail-btn:hover { background: var(--flask-teal); border-color: var(--flask-teal); color: white; transform: scale(1.05); }
         
-        .retired-section { background: #f8fafc; border-color: #cbd5e1; opacity: 0.8; }
-        
-        /* --- Firebase Info Box --- */
-        .fb-login-info {
-            background: #f8fafc; padding: 12px; border-radius: 10px;
-            font-size: 0.8rem; color: #475569; margin-top: 16px;
-            border: 1px dashed #cbd5e1; line-height: 1.5;
+        .fb-login-info { background: #f8fafc; padding: 12px; border-radius: 10px; font-size: 0.8rem; color: #475569; margin-top: 16px; border: 1px dashed #cbd5e1; line-height: 1.5; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* --- Today Highlight --- */
+        .cal-day.is-today {
+            border: 2px solid var(--flask-teal) !important;
+            background: #f0f9ff !important;
+        }
+        .cal-day.is-today .day-num {
+            color: var(--flask-teal);
+            font-weight: 800;
+            background: var(--flask-teal);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.8rem;
         }
 
-        /* Custom Scrollbar for participant list */
-        #participantList::-webkit-scrollbar { width: 6px; }
-        #participantList::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        #participantList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        #participantList::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* --- Cancel Only Button --- */
+        .btn-cancel-only {
+            background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;
+            padding: 6px; font-size: 0.7rem; margin-top: 4px; border-radius: 8px;
+            display: none; width: 100%; font-weight: 600;
+        }
+        .btn-cancel-only:hover { background: #c2410c; color: white; }
+        body.is-admin .btn-cancel-only { display: block !important; }
     </style>
 </head>
 <body>
+
+<div id="fullCalendarModal" class="modal-overlay">
+    <div class="modal-card modal-card-large">
+        <span class="close-modal" onclick="closeModal('fullCalendarModal')">×</span>
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+                <h2 style="color: var(--molecule-navy); margin-top: 0; margin-bottom: 4px;">📅 Full Lab Calendar Archive</h2>
+                <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Viewing all past and future scheduled events.</p>
+            </div>
+            <button onclick="scrollToTodayInFullCal()" style="width:auto; padding: 8px 20px; background: var(--flask-teal); color:white; border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;">📍 Today</button>
+        </div>
+        <div id="fullCalendarContainer" class="modal-scroll-content"></div>
+    </div>
+</div>
 
 <div id="registerScientistModal" class="modal-overlay">
     <div class="modal-card">
@@ -480,20 +344,37 @@
                 <ul id="mDates" style="margin: 0; padding-left: 20px; color: #475569; font-size: 0.9rem; line-height: 1.6;"></ul>
                 <button id="mSwapBtn" class="btn-io" style="margin-top: 24px;">Draft Swap Email</button>
             </div>
-            <div id="eventActions" style="display:flex; gap:12px; margin-top:24px;">
+            <div id="eventActions" style="display:flex; gap:12px; margin-top:24px; flex-wrap:wrap;">
                 <button id="deleteEventBtn" class="btn-delete-event" style="display:none;">Delete Event</button>
-                <button id="reschedEventBtn" class="btn-resched-event" style="display:none;">Reschedule</button>
+                <button id="reschedEventBtn" class="btn-resched-event" style="display:none;">Edit Event</button>
+                <button id="modalCancelPresBtn" class="btn-cancel-only admin-only" style="display:none; flex:1; min-width:120px;">🚫 Cancel Only</button>
+                <button id="modalCancelShiftBtn" style="display:none; flex:1; min-width:120px; background:#fff1f2; color:var(--danger-red); border:1px solid #fecdd3; padding:10px 16px; border-radius:10px; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:inherit; align-items:center; justify-content:center; gap:8px;" class="admin-only">↕️ Cancel & Shift</button>
             </div>
         </div>
         <div id="eventEditMode" style="display:none;">
-            <h3 id="editModalTitle" style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;">Add Quick Event</h3>
+            <h3 id="editModalTitle" style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;">Schedule Event</h3>
             <div class="input-group">
-                <input type="text" id="qeTitle" placeholder="Event Name">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 2px;">Event Type</label>
+                <select id="qeEventType" onchange="toggleEventEditFields()">
+                    <option value="CUSTOM">Custom Event</option>
+                    <option value="PRES">Lab Presentation</option>
+                    <option value="WHOLE">Whole Lab Update</option>
+                </select>
                 
-                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 4px;">Date</label>
-                <input type="date" id="qeDateInput">
+                <div id="qeCustomFields" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                    <input type="text" id="qeTitle" placeholder="Event Name">
+                    <input type="text" id="qeLoc" placeholder="Location">
+                    <textarea id="qeNotes" placeholder="Notes/Description" rows="3"></textarea>
+                </div>
+                
+                <div id="qePresFields" style="display:none; flex-direction:column; gap:10px; margin-top:10px;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: -6px;">Select Presenter</label>
+                    <select id="qePresenterSelect"></select>
+                </div>
 
-                <div style="display: flex; gap: 12px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 10px;">Date</label>
+                <input type="date" id="qeDateInput">
+                <div style="display: flex; gap: 12px; margin-top: 4px;">
                     <div style="flex:1">
                         <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Starts</label>
                         <input type="time" id="qeTime" value="09:00">
@@ -503,20 +384,18 @@
                         <input type="time" id="qeEndTime" value="10:00">
                     </div>
                 </div>
-                <input type="text" id="qeLoc" placeholder="Location">
                 
-                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 4px;">Recurrence</label>
+                <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-top: 10px;">Recurrence</label>
                 <select id="qeRepeat">
                     <option value="none">Does not repeat</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly (Same Date)</option>
                     <option value="lastworkday">Last Workday of Month</option>
                 </select>
-
-                <textarea id="qeNotes" placeholder="Notes/Description" rows="3"></textarea>
+                
                 <input type="hidden" id="qeDate">
                 <input type="hidden" id="qeIdx">
-                <button class="btn-add" id="qeSaveBtn" onclick="saveQuickEvent()" style="margin-top: 8px;">Save Event</button>
+                <button class="btn-add" id="qeSaveBtn" onclick="saveQuickEvent()" style="margin-top: 16px;">Save Event</button>
             </div>
         </div>
     </div>
@@ -527,6 +406,15 @@
         <span class="close-modal" onclick="closeModal('directoryModal')">×</span>
         <h3 id="directoryTitle" style="margin: 0 0 20px 0; color: var(--molecule-navy); font-size: 1.2rem;"></h3>
         <div id="directoryContent" style="max-height: 400px; overflow-y: auto; font-size: 0.95rem;"></div>
+    </div>
+</div>
+
+<div id="pastMembersModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('pastMembersModal')">×</span>
+        <h3 style="margin: 0 0 12px 0; color: var(--molecule-navy); font-size: 1.2rem;">Past Lab Members</h3>
+        <input type="text" id="pastMembersSearch" placeholder="Search past members..." oninput="filterPastMembers()" style="margin-bottom: 14px; font-size: 0.9rem; padding: 9px 13px;">
+        <div id="pastMembersContent" style="max-height: 380px; overflow-y: auto; font-size: 0.95rem;"></div>
     </div>
 </div>
 
@@ -564,9 +452,33 @@
                     <input type="text" id="editAltContact" placeholder="Forwarding Email/Phone">
                 </div>
             </div>
-
             <button class="btn-add" onclick="saveEditedPerson()" style="margin-top: 12px;">Update Information</button>
         </div>
+    </div>
+</div>
+
+<div id="clearAllModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('clearAllModal')">×</span>
+        <h3 style="color: var(--danger-red); margin-top: 0;">⚠️ Clear All Calendar Events</h3>
+        <p style="color: #475569; font-size: 0.9rem; line-height: 1.6;">This will permanently erase <strong>every event</strong> from the calendar and sync the change to the database. This cannot be undone.</p>
+        <p style="color: #475569; font-size: 0.9rem; margin-bottom: 6px;">Type <strong style="color:var(--danger-red);">Delete all</strong> below to confirm:</p>
+        <input type="text" id="clearAllConfirmInput" placeholder='Type "Delete all" to confirm' style="border-color:#fecdd3;">
+        <button onclick="executeClearAll()" style="background: var(--danger-red); color:white; border:none; width:100%; margin-top:14px; padding:12px; border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">🗑️ Permanently Clear All Events</button>
+    </div>
+</div>
+
+<div id="exportCalModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('exportCalModal')">×</span>
+        <h3 style="color: var(--molecule-navy); margin-top: 0;">📅 Export Calendar</h3>
+        <p style="color: #64748b; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px;">Download the full calendar as an <strong>.ics</strong> file, then import it into any calendar app (Google Calendar, Outlook, Apple Calendar, etc.).</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <button onclick="downloadICS(); closeModal('exportCalModal');" style="background:var(--molecule-navy); color:white; border:none; width:100%; padding:12px 16px; border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s;">
+                📅 Download Calendar (.ics)
+            </button>
+        </div>
+        <p style="color:#94a3b8; font-size:0.78rem; margin-top:16px; text-align:center; line-height:1.5;">After downloading, open the file to import directly into your calendar app.</p>
     </div>
 </div>
 
@@ -574,7 +486,10 @@
     <header>
         <h1>🧪 Colgan Lab Calendar</h1>
         <div class="header-controls">
-            <button class="btn-io" onclick="downloadICS()" style="width:auto; padding: 10px 20px;">💾 Export to Calendar</button>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-io" onclick="openFullCalendar()" style="width:auto; padding: 10px 20px; background: var(--molecule-navy); color: white;">📂 View Full Calendar</button>
+                <button class="btn-io" onclick="document.getElementById('exportCalModal').style.display='flex'" style="width:auto; padding: 10px 20px;">📅 Export Calendar</button>
+            </div>
             <div id="adminLoginArea" style="display:flex; gap:8px;">
                 <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
                 <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">Login</button>
@@ -594,7 +509,8 @@
             <section class="admin-only">
                 <h3 style="color: var(--flask-teal);">Personnel Management</h3>
                 <button class="btn-add" onclick="document.getElementById('registerScientistModal').style.display='flex'">+ Register New Scientist</button>
-                <div id="participantList" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--lab-blue); border-radius: 12px; padding: 8px; margin-top: 16px; background: #f8fafc;"></div>
+                <input type="text" id="adminPersonnelSearch" placeholder="Search members..." onkeyup="updatePersonnelUI()" style="margin-top: 12px; font-size: 0.85rem; padding: 8px 12px; width: 100%;">
+                <div id="participantList" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--lab-blue); border-radius: 12px; padding: 8px; margin-top: 8px; background: #f8fafc;"></div>
             </section>
 
             <section class="admin-only">
@@ -608,15 +524,23 @@
             </section>
 
             <section class="admin-only">
-                <h3 style="color: var(--dna-purple);">Parameters</h3>
+                <h3 style="color: var(--dna-purple);">Rotation Parameters</h3>
                 <div class="input-group">
-                    <label style="font-size:0.85rem; font-weight:600; color:#475569;">Cycle Start Date:</label>
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569;">Chunk Start Date:</label>
                     <input type="date" id="startDate">
-                    <label style="font-size:0.85rem; font-weight:600; color:#475569; margin-top: 8px;">Duration (Months):</label>
-                    <input type="number" id="months" value="4" min="1" max="24">
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569; margin-top: 8px;">Chunk End Date:</label>
+                    <input type="date" id="endDate">
                 </div>
-                <button class="btn-gen" onclick="handleGenerateClick()" style="margin-top: 16px;">Generate New Rotation</button>
+                <button class="btn-gen" onclick="handleGenerateClick()" style="margin-top: 16px;">Generate Chunk Rotation</button>
                 <button id="adminSaveBtn" class="btn-admin-save" onclick="saveCurrentToFirebase()">Force Sync Database</button>
+                <button class="btn-admin-save" onclick="document.getElementById('clearAllModal').style.display='flex'" style="display:none; background:#fff1f2; color:var(--danger-red); border:1px solid #fecdd3; margin-top:6px;">🗑️ Clear All Events</button>
+                
+                <div style="margin-top: 24px; border-top: 1px solid var(--lab-blue); padding-top: 16px;">
+                    <h4 style="color: var(--molecule-navy); margin: 0 0 12px 0; font-size: 0.95rem;">Import Past/External Calendar</h4>
+                    <input type="file" id="icsUpload" accept=".ics" style="font-size: 0.8rem; margin-bottom: 8px; width: 100%;">
+                    <button class="btn-io" onclick="processICSUpload()" style="background:var(--molecule-navy); color:white; border:none;">Merge .ICS File</button>
+                </div>
+
                 <div style="margin-top: 20px; text-align: center;">
                     <a href="https://console.firebase.google.com/u/3/" target="_blank" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none; font-weight: 500;">🔥 Open Firebase Console</a>
                     <div class="fb-login-info">
@@ -645,6 +569,9 @@
                 <h3 style="color: var(--molecule-navy); border-bottom: 2px solid var(--lab-blue); padding-bottom: 12px; margin-bottom: 20px;">Lab Personnel</h3>
                 <button class="btn-io" onclick="emailEquipmentAdmin()" style="font-size:0.85rem; background: #fff1f2; border-color: #fecdd3; color: var(--danger-red); margin-bottom: 20px; width: 100%;">⚠️ Email Equipment Admin</button>
                 <div class="stats-grid" id="personnelStats"></div>
+                <div style="text-align: center; margin-top: 16px;">
+                    <button onclick="showPastMembers()" style="background: none; border: none; color: var(--flask-teal); text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0; display: inline-block;">View past lab members</button>
+                </div>
             </section>
         </aside>
     </div>
@@ -671,7 +598,7 @@
     let participantsObj = {}; 
     let schedule = [];
     let draggedEventIdx = null;
-    let dropdownData = []; // State for the custom dropdown search
+    let dropdownData = []; 
 
     db.ref().on('value', (snapshot) => {
         const data = snapshot.val() || {};
@@ -690,7 +617,7 @@
         
         updatePersonnelUI();
         updateAdminSwapLists();
-        renderCalendar();
+        renderCalendar(); 
         renderUpcoming();
         renderMyPresentations();
         updateStats();
@@ -788,67 +715,68 @@
             handlePersonRetirement(updates.name);
         }
 
-        db.ref('participants/' + key).update(updates)
-            .then(() => closeModal('editScientistModal'));
+        db.ref('participants/' + key).update(updates).then(() => closeModal('editScientistModal'));
     }
 
     function handlePersonRetirement(name) {
         const activeSequence = schedule.filter(s => {
-            if (s.type === 'PRES') {
-                return s.presenter && s.presenter.name !== name;
-            }
+            if (s.type === 'PRES') return s.presenter && s.presenter.name !== name;
             return s.type === 'WHOLE';
         });
 
         const mondayDates = schedule
             .filter(s => s.type === 'PRES' || s.type === 'WHOLE' || s.type === 'CANCELED')
-            .map(s => new Date(s.date))
-            .sort((a, b) => a - b);
+            .map(s => new Date(s.date)).sort((a, b) => a - b);
 
         const staticItems = schedule.filter(s => s.type === 'HOLIDAY' || s.type === 'CUSTOM');
-
         let newSchedule = [...staticItems];
 
         for (let i = 0; i < mondayDates.length; i++) {
             if (i < activeSequence.length) {
-                newSchedule.push({
-                    ...activeSequence[i],
-                    date: mondayDates[i]
-                });
+                newSchedule.push({ ...activeSequence[i], date: mondayDates[i] });
             }
         }
-
         schedule = newSchedule.sort((a, b) => a.date - b.date);
         saveCurrentToFirebase();
     }
 
     function deletePerson(key) {
-        if (confirm("Permanently remove this scientist?")) {
-            db.ref('participants/' + key).remove();
-        }
+        if (confirm("Permanently remove this scientist?")) db.ref('participants/' + key).remove();
     }
 
     function updatePersonnelUI() {
         const list = document.getElementById('participantList');
+        const searchInput = document.getElementById('adminPersonnelSearch');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
         const activeParticipants = participants.filter(p => !p.retired);
 
-        list.innerHTML = Object.entries(participantsObj).map(([key, p]) => `
+        let filteredEntries = Object.entries(participantsObj).filter(([key, p]) => {
+            return p.name.toLowerCase().includes(searchTerm) || (p.group && p.group.toLowerCase().includes(searchTerm));
+        });
+
+        filteredEntries.sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+        list.innerHTML = filteredEntries.map(([key, p]) => {
+            const hasMissing = !p.email || !p.phone || !p.birthday || !p.group || p.group === "Unassigned";
+            const missingDot = hasMissing ? `<span title="Missing profile information" style="display:inline-block; width:8px; height:8px; background-color:var(--flask-teal); border-radius:50%; margin-left:6px; vertical-align: middle;"></span>` : '';
+
+            return `
             <div style="padding: 10px; background: ${p.retired ? 'transparent' : '#ffffff'}; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size:0.85rem; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
                 <span class="scientist-name-btn" onclick="editPerson('${key}')">
-                    <strong style="color: var(--molecule-navy);">${p.name}</strong> 
+                    <strong style="color: var(--molecule-navy);">${p.name}</strong>${missingDot}
                     <span style="color:#64748b; font-size: 0.75rem; margin-left: 4px;">(${p.group} Lab)</span> 
                     ${p.hold ? '<span style="color:var(--danger-red); font-size:0.75rem; font-weight:600; margin-left:4px;">[HOLD]</span>' : ''}
                     ${p.retired ? '<span style="color:#94a3b8; font-size:0.75rem; font-weight:600; margin-left:4px;">[RETIRED]</span>' : ''}
                 </span>
                 <button onclick="deletePerson('${key}')" class="delete-user">×</button>
-            </div>`).join('');
+            </div>`
+        }).join('');
         
-        // Populate the dropdown logic
         const sortedParticipants = [...activeParticipants].sort((a, b) => a.name.localeCompare(b.name));
         dropdownData = sortedParticipants;
         renderDropdown(sortedParticipants);
 
-        // Keep existing valid selection if present
         const currentVal = document.getElementById('currentUser').value;
         if (currentVal && sortedParticipants.find(p => p.name === currentVal)) {
             document.getElementById('userSearchInput').value = currentVal;
@@ -858,7 +786,6 @@
         }
     }
 
-    // --- Searchable Dropdown Logic ---
     function renderDropdown(list) {
         const dropdown = document.getElementById('userDropdownList');
         if (list.length === 0) {
@@ -867,8 +794,7 @@
         }
         dropdown.innerHTML = list.map(p =>
             `<div class="dropdown-item" onclick="selectUser('${p.name}')">
-                <strong>${p.name}</strong> 
-                <span style="color:#94a3b8; font-size:0.8rem; margin-left:4px;">(${p.group})</span>
+                <strong>${p.name}</strong> <span style="color:#94a3b8; font-size:0.8rem; margin-left:4px;">(${p.group})</span>
              </div>`
         ).join('');
     }
@@ -877,45 +803,31 @@
         document.getElementById('currentUser').value = name;
         document.getElementById('userSearchInput').value = name;
         document.getElementById('userDropdownList').style.display = 'none';
-        renderMyPresentations(); // Trigger panel update
+        renderMyPresentations();
     }
 
     function filterDropdown() {
         const searchInput = document.getElementById('userSearchInput');
         const currentUser = document.getElementById('currentUser');
         const input = searchInput.value.toLowerCase();
-        const filtered = dropdownData.filter(p => 
-            p.name.toLowerCase().includes(input) || 
-            (p.group && p.group.toLowerCase().includes(input))
-        );
+        const filtered = dropdownData.filter(p => p.name.toLowerCase().includes(input) || (p.group && p.group.toLowerCase().includes(input)));
         renderDropdown(filtered);
-        if (currentUser.value !== searchInput.value) {
-            currentUser.value = '';
-            renderMyPresentations();
-        }
+        if (currentUser.value !== searchInput.value) { currentUser.value = ''; renderMyPresentations(); }
     }
 
     function updateStats() {
         const activeOnly = participants.filter(p => !p.retired);
-        const total = activeOnly.length;
-
         const counts = { 'Student': 0, 'PRA': 0, 'Postdoc': 0, 'Faculty': 0, 'Other': 0 };
         activeOnly.forEach(p => { if (counts.hasOwnProperty(p.role)) counts[p.role]++; });
 
         const statsHtml = `
             <div class="stat-card" style="border-left: 4px solid var(--flask-teal);">
-                <div class="stat-info" onclick="showDirectory('All')">
-                    <div class="stat-val">${total}</div>
-                    <div class="stat-lbl">Active Members</div>
-                </div>
+                <div class="stat-info" onclick="showDirectory('All')"><div class="stat-val">${activeOnly.length}</div><div class="stat-lbl">Active Members</div></div>
                 <button class="mail-btn" onclick="draftGroupEmail('all')" title="Email All">✉️</button>
             </div>
             ${Object.entries(counts).map(([role, count]) => `
                 <div class="stat-card">
-                    <div class="stat-info" onclick="showDirectory('${role}')">
-                        <div class="stat-val">${count}</div>
-                        <div class="stat-lbl">${role === 'Faculty' ? 'Faculty' : role + 's'}</div>
-                    </div>
+                    <div class="stat-info" onclick="showDirectory('${role}')"><div class="stat-val">${count}</div><div class="stat-lbl">${role === 'Faculty' ? 'Faculty' : role + 's'}</div></div>
                     <button class="mail-btn" onclick="draftGroupEmail('${role}')" title="Email ${role}s">✉️</button>
                 </div>
             `).join('')}
@@ -924,120 +836,241 @@
     }
 
     function showDirectory(role) {
-        const titleEl = document.getElementById('directoryTitle');
         const contentEl = document.getElementById('directoryContent');
-        
         const list = participants.filter(p => !p.retired && (role === 'All' || p.role === role));
+        document.getElementById('directoryTitle').innerText = `${role} Directory`;
         
-        titleEl.innerText = `${role} Directory`;
-        
-        if (list.length === 0) {
-            contentEl.innerHTML = `<p style="color:#94a3b8; padding: 10px 0;">No members found in this category.</p>`;
-        } else {
-            contentEl.innerHTML = list.sort((a,b) => a.name.localeCompare(b.name)).map(p => `
-                <div style="padding: 14px 10px; border-bottom: 1px solid var(--lab-blue);">
-                    <strong style="color: var(--molecule-navy); font-size: 1.05rem;">${p.name}</strong><br>
-                    <span style="font-size: 0.85rem; color: #64748b; display: inline-block; margin-top: 4px;">${p.group} Lab • ${p.role}</span><br>
-                    <div style="display: flex; gap: 15px; margin-top: 6px;">
-                        <a href="mailto:${p.email}" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none;">✉️ ${p.email || 'N/A'}</a>
-                        <span style="font-size: 0.85rem; color: #64748b;">📞 ${p.phone || 'No Phone'}</span>
-                        <span style="font-size: 0.85rem; color: #64748b;">🎂 ${p.birthday || 'No Bday'}</span>
-                    </div>
+        if (list.length === 0) contentEl.innerHTML = `<p style="color:#94a3b8; padding: 10px 0;">No members found in this category.</p>`;
+        else contentEl.innerHTML = list.sort((a,b) => a.name.localeCompare(b.name)).map(p => `
+            <div style="padding: 14px 10px; border-bottom: 1px solid var(--lab-blue);">
+                <strong style="color: var(--molecule-navy); font-size: 1.05rem;">${p.name}</strong><br>
+                <span style="font-size: 0.85rem; color: #64748b; display: inline-block; margin-top: 4px;">${p.group} Lab • ${p.role}</span><br>
+                <div style="display: flex; gap: 15px; margin-top: 6px;">
+                    <a href="mailto:${p.email}" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none;">✉️ ${p.email || 'N/A'}</a>
+                    <span style="font-size: 0.85rem; color: #64748b;">📞 ${p.phone || 'No Phone'}</span>
+                    <span style="font-size: 0.85rem; color: #64748b;">🎂 ${p.birthday || 'No Bday'}</span>
                 </div>
-            `).join('');
-        }
+            </div>
+        `).join('');
         
         document.getElementById('directoryModal').style.display = 'flex';
     }
 
+    function showPastMembers() {
+        document.getElementById('pastMembersSearch').value = '';
+        renderPastMembersContent('');
+        document.getElementById('pastMembersModal').style.display = 'flex';
+    }
+
+    function filterPastMembers() {
+        const query = document.getElementById('pastMembersSearch').value;
+        renderPastMembersContent(query);
+    }
+
+    function renderPastMembersContent(searchTerm) {
+        const contentEl = document.getElementById('pastMembersContent');
+        const q = searchTerm.toLowerCase();
+        const pastMembers = participants.filter(p => p.retired && (
+            !q || p.name.toLowerCase().includes(q) || (p.altContact && p.altContact.toLowerCase().includes(q))
+        ));
+        if (pastMembers.length === 0) contentEl.innerHTML = '<p style="color:#94a3b8; padding: 10px 0;">No past members found.</p>';
+        else contentEl.innerHTML = pastMembers.sort((a,b) => a.name.localeCompare(b.name)).map(p => `
+            <div style="padding: 14px 10px; border-bottom: 1px solid var(--lab-blue);">
+                <strong style="color: var(--molecule-navy); font-size: 1.05rem;">${p.name}</strong><br>
+                <span style="font-size: 0.85rem; color: #64748b; display: inline-block; margin-top: 4px;">Forwarding Contact: ${p.altContact || 'Not provided'}</span>
+            </div>`).join('');
+    }
+
     function draftGroupEmail(category) {
         const targets = participants.filter(p => !p.retired && (category === 'all' || p.role === category));
-
         const emails = targets.map(p => p.email).filter(e => !!e).join(',');
         if (!emails) return alert("No email addresses found for this group.");
-
-        const subject = encodeURIComponent("Colgan Lab Calendar Update");
-        window.location.href = `mailto:?bcc=${emails}&subject=${subject}`;
+        window.location.href = `mailto:?bcc=${emails}&subject=${encodeURIComponent("Colgan Lab Calendar Update")}`;
     }
 
-    function emailEquipmentAdmin() {
-        const subject = encodeURIComponent("Equipment Inquiry - Colgan Lab");
-        window.location.href = `mailto:GIHep.Equipment@Cuanschutz.edu?subject=${subject}`;
+    function emailEquipmentAdmin() { window.location.href = `mailto:GIHep.Equipment@Cuanschutz.edu?subject=${encodeURIComponent("Equipment Inquiry - Colgan Lab")}`; }
+
+    // --- ICS Parsing & Importing ---
+    function processICSUpload() {
+        const fileInput = document.getElementById('icsUpload');
+        const file = fileInput.files[0];
+        if (!file) return alert("Please select an .ics file first.");
+        const reader = new FileReader();
+        reader.onload = function(e) { parseICSAndMerge(e.target.result); };
+        reader.readAsText(file);
     }
 
+    function unfoldICS(icsString) { return icsString.replace(/\r?\n[ \t]/g, ''); }
+
+    function parseICSAndMerge(icsString) {
+        const lines = unfoldICS(icsString).split(/\r?\n/);
+        let currentEvent = null, importedCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            if (line.startsWith('BEGIN:VEVENT')) currentEvent = {};
+            else if (line.startsWith('END:VEVENT')) {
+                if (currentEvent && currentEvent.start) {
+                    mergeEventIntoSchedule(currentEvent); importedCount++;
+                }
+                currentEvent = null;
+            } else if (currentEvent) {
+                if (line.startsWith('DTSTART')) currentEvent.start = parseICSDate(line.substring(line.indexOf(':') + 1));
+                else if (line.startsWith('DTEND')) currentEvent.end = parseICSDate(line.substring(line.indexOf(':') + 1));
+                else if (line.startsWith('SUMMARY')) currentEvent.summary = line.substring(line.indexOf(':') + 1);
+                else if (line.startsWith('DESCRIPTION')) currentEvent.description = line.substring(line.indexOf(':') + 1);
+                else if (line.startsWith('LOCATION')) currentEvent.location = line.substring(line.indexOf(':') + 1);
+            }
+        }
+        if (importedCount > 0) {
+            schedule.sort((a, b) => a.date - b.date);
+            saveCurrentToFirebase();
+            alert(`Successfully merged ${importedCount} events! Re-generating the rotation algorithm will now account for these dates.`);
+        } else alert("No valid events found in the file.");
+    }
+
+    function parseICSDate(val) {
+        if (!val) return new Date();
+        const year = parseInt(val.substring(0, 4)); const month = parseInt(val.substring(4, 6)) - 1; const day = parseInt(val.substring(6, 8));
+        if (val.includes('T')) {
+            const tIndex = val.indexOf('T');
+            const hour = parseInt(val.substring(tIndex + 1, tIndex + 3)); const min = parseInt(val.substring(tIndex + 3, tIndex + 5)); const sec = parseInt(val.substring(tIndex + 5, tIndex + 7));
+            if (val.endsWith('Z')) return new Date(Date.UTC(year, month, day, hour, min, sec));
+            return new Date(year, month, day, hour, min, sec);
+        }
+        return new Date(year, month, day, 9, 0, 0);
+    }
+
+    function mergeEventIntoSchedule(ev) {
+        let matchedParticipant = null;
+        const sumLower = (ev.summary || '').toLowerCase();
+        const descLower = (ev.description || '').toLowerCase();
+
+        for (let p of participants) {
+            if (!p.retired && (sumLower.includes(p.name.toLowerCase()) || descLower.includes(p.name.toLowerCase()))) {
+                matchedParticipant = p; break;
+            }
+        }
+
+        const isDuplicate = schedule.some(s => {
+            const sameDay = s.date.getFullYear() === ev.start.getFullYear() && s.date.getMonth() === ev.start.getMonth() && s.date.getDate() === ev.start.getDate();
+            if (!sameDay) return false;
+            if (matchedParticipant && s.type === 'PRES' && s.presenter.name === matchedParticipant.name) return true;
+            if (!matchedParticipant && s.type === 'CUSTOM' && s.title === ev.summary) return true;
+            return false;
+        });
+        if (isDuplicate) return;
+
+        let newEntry = { date: ev.start, endDate: ev.end || null };
+        if (matchedParticipant) {
+            newEntry.type = 'PRES'; newEntry.presenter = matchedParticipant;
+        } else if (sumLower.includes("whole lab") || sumLower.includes("lab meeting")) {
+            newEntry.type = 'WHOLE'; newEntry.title = ev.summary;
+        } else {
+            newEntry.type = 'CUSTOM'; newEntry.title = ev.summary || 'Imported Event'; newEntry.notes = ev.description || ''; newEntry.location = ev.location || '';
+        }
+        schedule.push(newEntry);
+    }
+
+    // --- Generation & Rotation ---
     function handleGenerateClick() {
-        if (confirm("This will overwrite the current Monday rotation. Custom events will be kept. Continue?")) {
+        if (confirm("This will overwrite the regular Monday rotation purely within your selected date chunk. Existing custom events and manually scheduled presentations will be safely preserved. Continue?")) {
             generateRotation(true);
         }
     }
 
     function generateRotation(saveToCloud = false) {
         const startInput = document.getElementById('startDate').value;
+        const endInput = document.getElementById('endDate').value;
         const activeParticipants = participants.filter(p => !p.hold && !p.retired);
 
-        if (!startInput || activeParticipants.length === 0) return alert("Select a start date and add active scientists first.");
+        if (!startInput || !endInput || activeParticipants.length === 0) return alert("Select start and end dates, and ensure active scientists are registered.");
         
-        let preservedEvents = schedule.filter(s => s.type === 'CUSTOM');
-        
-        let iterDate = new Date(startInput + "T09:00:00");
-        while(iterDate.getDay() !== 1) iterDate.setDate(iterDate.getDate() + 1);
-        
-        const monthsCount = parseInt(document.getElementById('months').value);
-        const endDate = new Date(iterDate);
-        endDate.setMonth(endDate.getMonth() + monthsCount);
-        
-        let rotationOrder = getDiversifiedRotation(activeParticipants);
-        let newSchedule = [];
-        let pIdx = 0;
-        let currentSimDate = new Date(iterDate);
+        const chunkStart = new Date(startInput + "T00:00:00");
+        const chunkEnd = new Date(endInput + "T23:59:59");
+        if (chunkStart >= chunkEnd) return alert("End Date must be after Start Date.");
 
-        while (currentSimDate < endDate) {
-            const holiday = getHoliday(currentSimDate);
-            const firstDayOfMonth = new Date(currentSimDate.getFullYear(), currentSimDate.getMonth(), 1);
+        let retainedSchedule = schedule.filter(s => {
+            if (s.type === 'CUSTOM' || s.type === 'HOLIDAY') return true;
+            if (s.manual) return true; // Retain manually scheduled presentations & whole lab meetings
+            if (s.date < chunkStart || s.date > chunkEnd) return true;
+            return false;
+        });
+
+        let lastPresDateMap = {};
+        activeParticipants.forEach(p => lastPresDateMap[p.name] = 0);
+        retainedSchedule.forEach(s => {
+            if (s.type === 'PRES' && s.presenter && lastPresDateMap.hasOwnProperty(s.presenter.name)) {
+                if (s.date.getTime() > lastPresDateMap[s.presenter.name]) lastPresDateMap[s.presenter.name] = s.date.getTime();
+            }
+        });
+
+        let prevPresEvents = retainedSchedule.filter(s => s.type === 'PRES' && s.date < chunkStart);
+        prevPresEvents.sort((a,b) => b.date - a.date);
+        let lastGroup = prevPresEvents.length > 0 ? prevPresEvents[0].presenter.group : "";
+
+        let newScheduleChunk = [];
+        let iterDate = new Date(chunkStart);
+        iterDate.setHours(9, 0, 0, 0);
+        while(iterDate.getDay() !== 1) iterDate.setDate(iterDate.getDate() + 1);
+
+        while (iterDate <= chunkEnd) {
+            const holiday = getHoliday(iterDate);
+            const firstDayOfMonth = new Date(iterDate.getFullYear(), iterDate.getMonth(), 1);
             let firstMon = new Date(firstDayOfMonth);
             while(firstMon.getDay() !== 1) firstMon.setDate(firstMon.getDate() + 1);
-            const isFirstMon = currentSimDate.getDate() === firstMon.getDate();
+            const isFirstMon = iterDate.getDate() === firstMon.getDate();
+
+            // Check if there is already a retained PRES, WHOLE, or HOLIDAY event exactly on this date
+            let hasManualEvent = retainedSchedule.some(s => 
+                s.date.getFullYear() === iterDate.getFullYear() && 
+                s.date.getMonth() === iterDate.getMonth() && 
+                s.date.getDate() === iterDate.getDate() && 
+                (s.type === 'PRES' || s.type === 'WHOLE' || s.type === 'HOLIDAY')
+            );
+
+            if (hasManualEvent) {
+                // We do not generate a new event on this date, but we do update the sequence state
+                let manualEv = retainedSchedule.find(s => 
+                    s.date.getFullYear() === iterDate.getFullYear() && 
+                    s.date.getMonth() === iterDate.getMonth() && 
+                    s.date.getDate() === iterDate.getDate() && 
+                    s.type === 'PRES'
+                );
+                if (manualEv && manualEv.presenter) {
+                    lastGroup = manualEv.presenter.group;
+                    if(lastPresDateMap.hasOwnProperty(manualEv.presenter.name)) {
+                        lastPresDateMap[manualEv.presenter.name] = iterDate.getTime();
+                    }
+                }
+                iterDate.setDate(iterDate.getDate() + 7);
+                continue;
+            }
 
             if (holiday) {
-                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'HOLIDAY', title: holiday });
+                newScheduleChunk.push({ date: new Date(iterDate), type: 'HOLIDAY', title: holiday });
             } else if (isFirstMon) {
-                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'WHOLE', title: 'Whole Lab Update' });
+                newScheduleChunk.push({ date: new Date(iterDate), type: 'WHOLE', title: 'Whole Lab Update' });
             } else {
-                newSchedule.push({ date: new Date(currentSimDate).toISOString(), type: 'PRES', presenter: rotationOrder[pIdx % rotationOrder.length] });
-                pIdx++;
+                let candidates = activeParticipants;
+                let diffGroupCands = candidates.filter(p => p.group !== lastGroup);
+                if (diffGroupCands.length > 0) candidates = diffGroupCands;
+                
+                candidates.sort((a, b) => lastPresDateMap[a.name] - lastPresDateMap[b.name]);
+                let chosen = candidates[0];
+
+                newScheduleChunk.push({ date: new Date(iterDate), type: 'PRES', presenter: chosen });
+                lastGroup = chosen.group;
+                lastPresDateMap[chosen.name] = iterDate.getTime();
             }
-            currentSimDate.setDate(currentSimDate.getDate() + 7);
+            iterDate.setDate(iterDate.getDate() + 7);
         }
 
-        schedule = [
-            ...newSchedule.map(s => ({ ...s, date: new Date(s.date) })),
-            ...preservedEvents
-        ];
-        
+        schedule = [...retainedSchedule, ...newScheduleChunk];
         schedule.sort((a, b) => a.date - b.date);
 
-        if (saveToCloud) {
-            saveCurrentToFirebase();
-        } else {
-            renderCalendar();
-            renderUpcoming();
-        }
-    }
-
-    function getDiversifiedRotation(activePool) {
-        if (activePool.length === 0) return [];
-        let pool = [...activePool];
-        let rotation = [];
-        let lastGroup = "";
-        while (pool.length > 0) {
-            let candidates = pool.filter(p => p.group !== lastGroup);
-            if (candidates.length === 0) candidates = pool;
-            const choice = candidates[Math.floor(Math.random() * candidates.length)];
-            rotation.push(choice);
-            lastGroup = choice.group;
-            pool = pool.filter(p => p !== choice);
-        }
-        return rotation;
+        if (saveToCloud) saveCurrentToFirebase();
+        else { renderCalendar(); renderUpcoming(); }
     }
 
     function getHoliday(date) {
@@ -1054,398 +1087,383 @@
 
     function saveCurrentToFirebase() {
         const uploadable = schedule.map(s => ({
-            ...s,
-            date: s.date instanceof Date ? s.date.toISOString() : s.date,
+            ...s, date: s.date instanceof Date ? s.date.toISOString() : s.date,
             endDate: (s.endDate instanceof Date) ? s.endDate.toISOString() : (s.endDate || null)
         }));
-        db.ref('scheduleState').set(uploadable)
-            .then(() => console.log("Schedule synced."))
-            .catch(err => alert("Sync error: " + err.message));
+        db.ref('scheduleState').set(uploadable).then(() => console.log("Schedule synced.")).catch(err => alert("Sync error: " + err.message));
     }
 
-    function handleDayDblClick(dateStr) {
-        openEditModal(null, dateStr);
+    function handleDayDblClick(dateStr) { openEditModal(null, dateStr); }
+
+    function toggleEventEditFields() {
+        const type = document.getElementById('qeEventType').value;
+        document.getElementById('qeCustomFields').style.display = type === 'CUSTOM' ? 'flex' : 'none';
+        document.getElementById('qePresFields').style.display = type === 'PRES' ? 'flex' : 'none';
+        
+        document.getElementById('qeRepeat').disabled = type !== 'CUSTOM';
+        if (type !== 'CUSTOM') document.getElementById('qeRepeat').value = 'none';
     }
 
     function openEditModal(idx = null, dateStr = null) {
-        document.getElementById('eventViewMode').style.display = 'none';
-        document.getElementById('eventEditMode').style.display = 'block';
-        
-        const isEditing = idx !== null;
-        const item = isEditing ? schedule[idx] : null;
-
-        document.getElementById('editModalTitle').innerText = isEditing ? "Edit Event" : "Add Quick Event";
+        document.getElementById('eventViewMode').style.display = 'none'; document.getElementById('eventEditMode').style.display = 'block';
+        const isAdmin = document.body.classList.contains('is-admin');
+        const isEditing = idx !== null; const item = isEditing ? schedule[idx] : null;
+        document.getElementById('editModalTitle').innerText = isEditing ? "Edit Event" : "Schedule Event";
         document.getElementById('qeIdx').value = isEditing ? idx : "";
+        const cleanDateStr = isEditing ? (item.date instanceof Date ? item.date.toISOString().split('T')[0] : new Date(item.date).toISOString().split('T')[0]) : dateStr;
+        document.getElementById('qeDate').value = cleanDateStr; document.getElementById('qeDateInput').value = cleanDateStr;
         
-        const cleanDateStr = isEditing ? item.date.toISOString().split('T')[0] : dateStr;
-        document.getElementById('qeDate').value = cleanDateStr;
-        document.getElementById('qeDateInput').value = cleanDateStr;
+        // Restrict PRES/WHOLE event types to admin only when creating new events
+        const typeSelect = document.getElementById('qeEventType');
+        if (!isEditing) {
+            if (isAdmin) {
+                typeSelect.innerHTML = `<option value="CUSTOM">Custom Event</option><option value="PRES">Lab Presentation</option><option value="WHOLE">Whole Lab Update</option>`;
+            } else {
+                typeSelect.innerHTML = `<option value="CUSTOM">Custom Event</option>`;
+            }
+            typeSelect.disabled = false;
+        }
         
-        document.getElementById('qeTitle').value = isEditing ? item.title : '';
-        document.getElementById('qeLoc').value = isEditing ? (item.location || '') : '';
-        document.getElementById('qeNotes').value = isEditing ? (item.notes || '') : '';
-        document.getElementById('qeRepeat').value = 'none';
-        document.getElementById('qeRepeat').disabled = isEditing;
+        const presSelect = document.getElementById('qePresenterSelect');
+        presSelect.innerHTML = participants.filter(p => !p.retired).map(p => `<option value="${p.name}">${p.name} (${p.group})</option>`).join('');
 
+        if (isEditing) {
+            document.getElementById('qeEventType').value = item.type;
+            if (item.type === 'CUSTOM') {
+                document.getElementById('qeTitle').value = item.title || '';
+                document.getElementById('qeLoc').value = item.location || '';
+                document.getElementById('qeNotes').value = item.notes || '';
+            } else if (item.type === 'PRES') {
+                document.getElementById('qePresenterSelect').value = item.presenter ? item.presenter.name : '';
+            }
+            document.getElementById('qeRepeat').value = 'none'; 
+            document.getElementById('qeRepeat').disabled = true;
+            document.getElementById('qeEventType').disabled = true; 
+        } else {
+            document.getElementById('qeEventType').value = 'CUSTOM';
+            document.getElementById('qeTitle').value = '';
+            document.getElementById('qeLoc').value = '';
+            document.getElementById('qeNotes').value = '';
+            document.getElementById('qeRepeat').value = 'none'; 
+            document.getElementById('qeRepeat').disabled = false;
+            document.getElementById('qeTime').value = "09:00"; document.getElementById('qeEndTime').value = "10:00";
+        }
+        
         if (isEditing) {
             const pad = (n) => n.toString().padStart(2, '0');
             document.getElementById('qeTime').value = `${pad(item.date.getHours())}:${pad(item.date.getMinutes())}`;
-            if (item.endDate) {
-                document.getElementById('qeEndTime').value = `${pad(item.endDate.getHours())}:${pad(item.endDate.getMinutes())}`;
-            }
-        } else {
-            document.getElementById('qeTime').value = "09:00";
-            document.getElementById('qeEndTime').value = "10:00";
+            if (item.endDate) document.getElementById('qeEndTime').value = `${pad(item.endDate.getHours())}:${pad(item.endDate.getMinutes())}`;
         }
         
+        toggleEventEditFields();
         document.getElementById('eventModal').style.display = 'flex';
     }
 
     function saveQuickEvent() {
         const idx = document.getElementById('qeIdx').value;
-        const title = document.getElementById('qeTitle').value.trim();
+        const type = document.getElementById('qeEventType').value;
+        const isAdmin = document.body.classList.contains('is-admin');
+        if ((type === 'PRES' || type === 'WHOLE') && !isAdmin) {
+            alert("Admin access required to schedule Lab Presentations and Whole Lab Updates.");
+            return;
+        }
         const dateStr = document.getElementById('qeDateInput').value; 
         const timeStr = document.getElementById('qeTime').value;
         const endTimeStr = document.getElementById('qeEndTime').value;
-        const loc = document.getElementById('qeLoc').value.trim();
-        const notes = document.getElementById('qeNotes').value.trim();
-        const repeat = document.getElementById('qeRepeat').value;
-
-        if (!title || !dateStr) return alert("Please enter event name and date.");
-
+        
+        if (!dateStr) return alert("Please enter a date.");
         const start = new Date(`${dateStr}T${timeStr}:00`);
         const end = new Date(`${dateStr}T${endTimeStr}:00`);
 
         if (idx !== "") {
-            const i = parseInt(idx);
-            schedule[i].title = title;
-            schedule[i].date = start;
+            const i = parseInt(idx); 
+            schedule[i].date = start; 
             schedule[i].endDate = end;
-            schedule[i].location = loc;
-            schedule[i].notes = notes;
+            if (type === 'CUSTOM') {
+                schedule[i].title = document.getElementById('qeTitle').value.trim(); 
+                schedule[i].location = document.getElementById('qeLoc').value.trim(); 
+                schedule[i].notes = document.getElementById('qeNotes').value.trim();
+            } else if (type === 'PRES') {
+                const pName = document.getElementById('qePresenterSelect').value;
+                const presenter = participants.find(p => p.name === pName);
+                if(presenter) schedule[i].presenter = presenter;
+            }
         } else {
-            const seriesId = repeat !== 'none' ? 'series_' + Date.now() : null;
-            const baseEvent = { type: 'CUSTOM', title, location: loc || 'TBD', notes: notes || '', seriesId: seriesId };
-            
-            if (repeat === 'none') {
-                schedule.push({ ...baseEvent, date: start, endDate: end });
-            } else {
-                let current = new Date(start);
-                let currentEnd = new Date(end);
-                const endLimit = new Date(start);
-                endLimit.setMonth(endLimit.getMonth() + 12);
+            if (type === 'CUSTOM') {
+                const title = document.getElementById('qeTitle').value.trim();
+                const loc = document.getElementById('qeLoc').value.trim();
+                const notes = document.getElementById('qeNotes').value.trim();
+                const repeat = document.getElementById('qeRepeat').value;
+                if (!title) return alert("Please enter event name.");
+                const seriesId = repeat !== 'none' ? 'series_' + Date.now() : null;
+                const baseEvent = { type: 'CUSTOM', title, location: loc || 'TBD', notes: notes || '', seriesId: seriesId, manual: true };
                 
-                while (current <= endLimit) {
-                    let instanceStart = new Date(current);
-                    let instanceEnd = new Date(currentEnd);
-                    
-                    if (repeat === 'lastworkday') {
-                        let lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
-                        while (lastDay.getDay() === 0 || lastDay.getDay() === 6) lastDay.setDate(lastDay.getDate() - 1);
-                        instanceStart.setDate(lastDay.getDate()); 
-                        instanceEnd.setDate(lastDay.getDate());
-                    }
-                    
-                    schedule.push({ ...baseEvent, date: instanceStart, endDate: instanceEnd });
-                    
-                    if (repeat === 'weekly') { 
-                        current.setDate(current.getDate() + 7); 
-                        currentEnd.setDate(currentEnd.getDate() + 7); 
-                    } else if (repeat === 'monthly' || repeat === 'lastworkday') { 
-                        let d = current.getDate();
-                        current.setMonth(current.getMonth() + 1); 
-                        if (current.getDate() !== d) current.setDate(0);
-                        
-                        let dEnd = currentEnd.getDate();
-                        currentEnd.setMonth(currentEnd.getMonth() + 1); 
-                        if (currentEnd.getDate() !== dEnd) currentEnd.setDate(0);
+                if (repeat === 'none') schedule.push({ ...baseEvent, date: start, endDate: end });
+                else {
+                    let current = new Date(start), currentEnd = new Date(end), endLimit = new Date(start); endLimit.setMonth(endLimit.getMonth() + 12);
+                    while (current <= endLimit) {
+                        let instanceStart = new Date(current), instanceEnd = new Date(currentEnd);
+                        if (repeat === 'lastworkday') {
+                            let lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+                            while (lastDay.getDay() === 0 || lastDay.getDay() === 6) lastDay.setDate(lastDay.getDate() - 1);
+                            instanceStart.setDate(lastDay.getDate()); instanceEnd.setDate(lastDay.getDate());
+                        }
+                        schedule.push({ ...baseEvent, date: instanceStart, endDate: instanceEnd });
+                        if (repeat === 'weekly') { current.setDate(current.getDate() + 7); currentEnd.setDate(currentEnd.getDate() + 7); } 
+                        else if (repeat === 'monthly' || repeat === 'lastworkday') { 
+                            let d = current.getDate(); current.setMonth(current.getMonth() + 1); if (current.getDate() !== d) current.setDate(0);
+                            let dEnd = currentEnd.getDate(); currentEnd.setMonth(currentEnd.getMonth() + 1); if (currentEnd.getDate() !== dEnd) currentEnd.setDate(0);
+                        }
                     }
                 }
+            } else if (type === 'PRES') {
+                const pName = document.getElementById('qePresenterSelect').value;
+                const presenter = participants.find(p => p.name === pName);
+                if(!presenter) return alert("Please select a valid presenter.");
+                schedule.push({ type: 'PRES', presenter: presenter, date: start, endDate: end, manual: true });
+            } else if (type === 'WHOLE') {
+                schedule.push({ type: 'WHOLE', title: 'Whole Lab Update', date: start, endDate: end, manual: true });
             }
         }
-
-        schedule.sort((a, b) => a.date - b.date);
-        saveCurrentToFirebase();
+        schedule.sort((a, b) => a.date - b.date); 
+        saveCurrentToFirebase(); 
         closeModal('eventModal');
     }
 
-    function deleteCustomEvent(index) {
+    function deleteAnyEvent(index) {
         const event = schedule[index];
-        
         if (event.seriesId) {
             const choice = confirm("This is a recurring event.\n\nClick OK to delete the ENTIRE SERIES.\nClick CANCEL to delete ONLY THIS INSTANCE.");
-            if (choice) {
-                // Delete entire series
-                schedule = schedule.filter(s => s.seriesId !== event.seriesId);
-            } else {
-                // Delete only this instance (check if user still wants to delete at all)
-                if(confirm("Confirm: Delete only this specific instance?")) {
-                    schedule.splice(index, 1);
-                } else {
-                    return; // Abort
-                }
-            }
+            if (choice) schedule = schedule.filter(s => s.seriesId !== event.seriesId);
+            else { if(confirm("Confirm: Delete only this specific instance?")) schedule.splice(index, 1); else return; }
         } else {
-            if (!confirm("Are you sure you want to delete this event?")) return;
+            if (!confirm("Are you sure you want to completely delete this event without shifting other dates?")) return;
             schedule.splice(index, 1);
         }
-        
-        saveCurrentToFirebase();
-        closeModal('eventModal');
+        saveCurrentToFirebase(); closeModal('eventModal');
     }
 
     function updateAdminSwapLists() {
-        const s1 = document.getElementById('swapSlot1');
-        const s2 = document.getElementById('swapSlot2');
+        const s1 = document.getElementById('swapSlot1'), s2 = document.getElementById('swapSlot2');
         if(!s1 || !s2) return;
-        
-        const swappableSlots = schedule
-            .map((s, idx) => ({ ...s, originalIdx: idx }))
-            .filter(s => s && (s.type === 'PRES' || s.type === 'WHOLE'));
-
-        const options = swappableSlots.map(s => {
-            const label = s.type === 'PRES' ? s.presenter.name : "WHOLE LAB UPDATE";
-            return `<option value="${s.originalIdx}">${s.date.toLocaleDateString()} - ${label}</option>`;
-        }).join('');
-
-        s1.innerHTML = '<option value="">Select Slot A</option>' + options;
-        s2.innerHTML = '<option value="">Select Slot B</option>' + options;
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const swappableSlots = schedule.map((s, idx) => ({ ...s, originalIdx: idx })).filter(s => s && (s.type === 'PRES' || s.type === 'WHOLE') && new Date(s.date) >= today);
+        const options = swappableSlots.map(s => `<option value="${s.originalIdx}">${s.date.toLocaleDateString()} - ${s.type === 'PRES' ? s.presenter.name : "WHOLE LAB UPDATE"}</option>`).join('');
+        s1.innerHTML = '<option value="">Select Slot A</option>' + options; s2.innerHTML = '<option value="">Select Slot B</option>' + options;
     }
 
     function adminExecuteSwap() {
-        const idx1 = document.getElementById('swapSlot1').value;
-        const idx2 = document.getElementById('swapSlot2').value;
+        const idx1 = document.getElementById('swapSlot1').value, idx2 = document.getElementById('swapSlot2').value;
         if (!idx1 || !idx2 || idx1 === idx2) return alert("Please select two different slots to swap.");
         const s1 = schedule[idx1], s2 = schedule[idx2];
-        [s1.type,  s2.type]      = [s2.type,           s1.type];
+        [s1.type, s2.type] = [s2.type, s1.type];
         [s1.presenter, s2.presenter] = [s2.presenter || null, s1.presenter || null];
-        [s1.title, s2.title]     = [s2.title || null,  s1.title || null];
-        saveCurrentToFirebase();
-        alert("Slots swapped successfully.");
+        [s1.title, s2.title] = [s2.title || null, s1.title || null];
+        saveCurrentToFirebase(); alert("Slots swapped successfully.");
     }
 
-    function handleDragStart(e, index) {
-        draggedEventIdx = index;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', index);
-        setTimeout(() => e.target.classList.add('is-dragging'), 0);
-    }
-
-    function handleDragEnd(e) {
-        e.target.classList.remove('is-dragging');
-        document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over'));
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-        const day = e.currentTarget;
-        if (!day.classList.contains('other-month')) day.classList.add('drag-over');
-    }
-
+    function handleDragStart(e, index) { draggedEventIdx = index; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', index); setTimeout(() => e.target.classList.add('is-dragging'), 0); }
+    function handleDragEnd(e) { e.target.classList.remove('is-dragging'); document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over')); }
+    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const day = e.currentTarget; if (!day.classList.contains('other-month')) day.classList.add('drag-over'); }
     function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
-
     function handleDrop(e, targetDateStr) {
-        e.preventDefault();
-        const day = e.currentTarget;
-        day.classList.remove('drag-over');
+        e.preventDefault(); const day = e.currentTarget; day.classList.remove('drag-over');
         if (draggedEventIdx === null || day.classList.contains('other-month')) return;
-        const event = schedule[draggedEventIdx];
-        const newDateBase = new Date(targetDateStr + "T00:00:00");
+        const event = schedule[draggedEventIdx], newDateBase = new Date(targetDateStr + "T00:00:00");
         const newDate = new Date(newDateBase.getFullYear(), newDateBase.getMonth(), newDateBase.getDate(), event.date.getHours(), event.date.getMinutes());
-        if (event.endDate) {
-            const duration = event.endDate.getTime() - event.date.getTime();
-            event.endDate = new Date(newDate.getTime() + duration);
-        }
-        event.date = newDate;
-        schedule.sort((a, b) => a.date - b.date);
-        saveCurrentToFirebase();
-        draggedEventIdx = null;
+        if (event.endDate) event.endDate = new Date(newDate.getTime() + (event.endDate.getTime() - event.date.getTime()));
+        event.date = newDate; schedule.sort((a, b) => a.date - b.date); saveCurrentToFirebase(); draggedEventIdx = null;
     }
 
     function showEventDetails(index) {
+        if (index === null || typeof index === 'string') return;
         const slot = schedule[index];
-        document.getElementById('eventEditMode').style.display = 'none';
-        document.getElementById('eventViewMode').style.display = 'block';
-        
-        const titleEl = document.getElementById('viewTitle');
-        const subEl = document.getElementById('viewSubtitle');
-        const detEl = document.getElementById('viewDetails');
-        const presArea = document.getElementById('presenterSpecifics');
-        const delBtn = document.getElementById('deleteEventBtn');
-        const resBtn = document.getElementById('reschedEventBtn');
+        document.getElementById('eventEditMode').style.display = 'none'; document.getElementById('eventViewMode').style.display = 'block';
+        const titleEl = document.getElementById('viewTitle'), subEl = document.getElementById('viewSubtitle'), detEl = document.getElementById('viewDetails');
+        const presArea = document.getElementById('presenterSpecifics'), delBtn = document.getElementById('deleteEventBtn'), resBtn = document.getElementById('reschedEventBtn');
+        const cancelPresBtn = document.getElementById('modalCancelPresBtn');
+        const cancelShiftBtn = document.getElementById('modalCancelShiftBtn');
+        const isAdmin = document.body.classList.contains('is-admin');
 
-        presArea.style.display = 'none';
-        delBtn.style.display = 'none';
-        resBtn.style.display = 'none';
+        presArea.style.display = 'none'; delBtn.style.display = 'none'; resBtn.style.display = 'none';
+        cancelPresBtn.style.display = 'none'; cancelShiftBtn.style.display = 'none';
         
+        delBtn.onclick = () => deleteAnyEvent(index);
+        resBtn.onclick = () => openEditModal(index);
+
         if (slot.type === 'PRES') {
-            titleEl.innerText = slot.presenter.name;
-            subEl.innerText = `${slot.presenter.role} | ${slot.presenter.group} Lab`;
+            titleEl.innerText = slot.presenter.name; subEl.innerText = `${slot.presenter.role} | ${slot.presenter.group} Lab`;
             detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><div><strong>Email:</strong> <a href="mailto:${slot.presenter.email}" style="color:var(--flask-teal); text-decoration:none;">${slot.presenter.email || 'N/A'}</a></div>`;
             const today = new Date().setHours(0,0,0,0);
             const futureDates = schedule.filter(s => s.type === 'PRES' && s.presenter.name === slot.presenter.name && new Date(s.date) >= today).map(s => new Date(s.date).toLocaleDateString());
             document.getElementById('mDates').innerHTML = futureDates.length ? futureDates.map(d => `<li>${d}</li>`).join('') : "<li>No more scheduled dates</li>";
             document.getElementById('mSwapBtn').onclick = () => requestSwap(slot.presenter.name, slot.presenter.email, slot.date.toDateString());
             presArea.style.display = 'block';
+            if (isAdmin) {
+                delBtn.style.display = 'block'; resBtn.style.display = 'block';
+                cancelPresBtn.style.display = 'flex'; cancelPresBtn.onclick = () => { closeModal('eventModal'); cancelNoShift(index); };
+                cancelShiftBtn.style.display = 'flex'; cancelShiftBtn.onclick = () => { closeModal('eventModal'); cancelAndShift(index); };
+            }
         } else if (slot.type === 'CUSTOM') {
             const timeFormat = { hour: '2-digit', minute: '2-digit' };
-            const startTime = slot.date.toLocaleTimeString([], timeFormat);
-            const endTime = slot.endDate ? slot.endDate.toLocaleTimeString([], timeFormat) : 'TBD';
+            const startTime = slot.date.toLocaleTimeString([], timeFormat), endTime = slot.endDate ? slot.endDate.toLocaleTimeString([], timeFormat) : 'TBD';
             titleEl.innerText = slot.title; subEl.innerText = slot.seriesId ? "Recurring Custom Event" : "Custom Event";
             detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toLocaleDateString()}</div><div style="margin-bottom:8px;"><strong>Time:</strong> ${startTime} - ${endTime}</div><div style="margin-bottom:8px;"><strong>Location:</strong> ${slot.location || 'TBD'}</div><div style="margin-top:16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"><strong>Notes:</strong><br>${slot.notes || 'No notes provided.'}</div>`;
-            delBtn.style.display = 'block'; resBtn.style.display = 'block';
-            delBtn.onclick = () => deleteCustomEvent(index);
-            resBtn.onclick = () => openEditModal(index);
+            delBtn.style.display = 'block'; resBtn.style.display = 'block'; 
         } else if (slot.type === 'WHOLE') {
             titleEl.innerText = "Whole Lab Update"; subEl.innerText = "Lab Meeting";
             detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">Standard update session for the entire research group.</p>`;
+            if (isAdmin) {
+                delBtn.style.display = 'block'; resBtn.style.display = 'block';
+                cancelPresBtn.style.display = 'flex'; cancelPresBtn.onclick = () => { closeModal('eventModal'); cancelNoShift(index); };
+                cancelShiftBtn.style.display = 'flex'; cancelShiftBtn.onclick = () => { closeModal('eventModal'); cancelAndShift(index); };
+            }
         } else if (slot.type === 'HOLIDAY') {
             titleEl.innerText = slot.title; subEl.innerText = "Holiday / Break";
             detEl.innerHTML = `<div style="margin-bottom:8px;"><strong>Date:</strong> ${slot.date.toDateString()}</div><p style="margin:0; color:#475569;">No lab meeting scheduled due to holiday observance.</p>`;
+            if (isAdmin) delBtn.style.display = 'block';
         } else if (slot.type === 'CANCELED') {
             titleEl.innerText = "Session Canceled"; subEl.innerText = slot.reason ? `Reason: ${slot.reason}` : "Slot Voided";
             detEl.innerHTML = `<p style="color:var(--danger-red); margin:0; font-weight: 500;">This meeting was canceled.</p>`;
+            if (isAdmin) delBtn.style.display = 'block';
         }
-
         document.getElementById('eventModal').style.display = 'flex';
     }
 
-    function renderCalendar() {
-        const container = document.getElementById('calendarContainer');
-        container.innerHTML = '';
-        if (schedule.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding: 80px 20px; color: #94a3b8; background: #f8fafc; border-radius: 16px; border: 2px dashed #cbd5e1;"><h2 style="margin:0 0 10px 0; color:#64748b;">No Schedule Found</h2><p style="margin:0;">Admin must set parameters and click "Generate" to populate the calendar.</p></div>`;
-            return;
+    function openFullCalendar() {
+        const fullContainer = document.getElementById('fullCalendarContainer'); fullContainer.innerHTML = '';
+        renderCalendarUI(fullContainer, false); document.getElementById('fullCalendarModal').style.display = 'flex';
+        setTimeout(() => scrollToTodayInFullCal(false), 80);
+    }
+
+    function scrollToTodayInFullCal(smooth = true) {
+        const today = new Date();
+        const currentMonthKey = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const fullContainer = document.getElementById('fullCalendarContainer');
+        const monthBlocks = fullContainer.querySelectorAll('.month-block');
+        for (let block of monthBlocks) {
+            const title = block.querySelector('.month-title');
+            if (title && title.textContent.trim() === currentMonthKey) {
+                fullContainer.scrollTo({ top: block.offsetTop - 12, behavior: smooth ? 'smooth' : 'auto' });
+                break;
+            }
+        }
+    }
+
+    function renderCalendar() { const mainContainer = document.getElementById('calendarContainer'); mainContainer.innerHTML = ''; renderCalendarUI(mainContainer, true); }
+
+    function renderCalendarUI(targetContainer, limitView) {
+        const now = new Date();
+        const currentMonthKey = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const nextMonthKey = nextMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        let monthKeys = schedule.length > 0
+            ? [...new Set(schedule.map(s => s.date.toLocaleString('default', { month: 'long', year: 'numeric' })))]
+            : [];
+
+        if (limitView) {
+            // Always show current and next month; include schedule months that match
+            const baseKeys = [currentMonthKey, nextMonthKey];
+            const scheduleKeys = monthKeys.filter(key => key === currentMonthKey || key === nextMonthKey);
+            monthKeys = [...new Set([...baseKeys, ...scheduleKeys])];
+        } else if (monthKeys.length === 0) {
+            // Full calendar view with empty schedule: show current + next month
+            monthKeys = [currentMonthKey, nextMonthKey];
         }
 
-        const monthKeys = [...new Set(schedule.map(s => s.date.toLocaleString('default', { month: 'long', year: 'numeric' })))];
         monthKeys.forEach(mKey => {
-            const [mName, mYear] = mKey.split(' ');
-            const monthIdx = new Date(Date.parse(mName +" 1, 2024")).getMonth();
-            const year = parseInt(mYear);
-            const monthSection = document.createElement('div');
-            monthSection.className = 'month-block';
-            monthSection.innerHTML = `<div class="month-title">${mKey}</div>`;
-            const grid = document.createElement('div');
-            grid.className = 'calendar-grid';
-            grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="cal-header">${d}</div>`).join('');
-            const firstDay = new Date(year, monthIdx, 1);
-            const lastDay = new Date(year, monthIdx + 1, 0);
-            let startOffset = firstDay.getDay(); 
-            for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="cal-day other-month"></div>`;
+            const [mName, mYear] = mKey.split(' '); const monthIdx = new Date(Date.parse(mName +" 1, 2024")).getMonth(); const year = parseInt(mYear);
+            const monthSection = document.createElement('div'); monthSection.className = 'month-block'; monthSection.innerHTML = `<div class="month-title">${mKey}</div>`;
+            const grid = document.createElement('div'); grid.className = 'calendar-grid'; grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="cal-header">${d}</div>`).join('');
+            
+            const firstDay = new Date(year, monthIdx, 1), lastDay = new Date(year, monthIdx + 1, 0);
+            let startOffset = firstDay.getDay(); for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="cal-day other-month"></div>`;
 
-            for(let d=1; d<=lastDay.getDate(); d++) {
-                const currentDate = new Date(year, monthIdx, d);
-                const isoDate = currentDate.toISOString().split('T')[0];
+        for(let d=1; d<=lastDay.getDate(); d++) {
+                const currentDate = new Date(year, monthIdx, d), isoDate = currentDate.toISOString().split('T')[0];
+                const todayRef = new Date(); todayRef.setHours(0,0,0,0);
+                const isToday = currentDate.getTime() === todayRef.getTime();
                 const slots = schedule.map((s, idx) => ({...s, originalIdx: idx})).filter(s => s.date.getDate() === d && s.date.getMonth() === monthIdx && s.date.getFullYear() === year);
+                const birthdaysFound = participants.filter(p => !p.retired && p.birthday === `${String(monthIdx + 1).padStart(2, '0')}/${String(d).padStart(2, '0')}`);
                 let eventHtml = '', adminBtns = '';
 
+                birthdaysFound.forEach(p => { eventHtml += `<div class="event event-birthday">🎂 ${p.name}'s Bday</div>`; });
                 slots.forEach(slot => {
-                    const startTimeStr = slot.date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                    const isCustom = slot.type === 'CUSTOM';
-                    const dragAttr = isCustom ? `draggable="true" ondragstart="handleDragStart(event, ${slot.originalIdx})" ondragend="handleDragEnd(event)"` : '';
+                    const startTimeStr = slot.date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), dragAttr = slot.type === 'CUSTOM' ? `draggable="true" ondragstart="handleDragStart(event, ${slot.originalIdx})" ondragend="handleDragEnd(event)"` : '';
                     if (slot.type === 'PRES') {
                         eventHtml += `<div class="event event-presentation" onclick="showEventDetails(${slot.originalIdx})"><b>${slot.presenter.name}</b><br><span style="font-size:0.7rem; opacity:0.8;">${slot.presenter.group} Lab</span></div>`;
-                        adminBtns = `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
+                        adminBtns += `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-cancel-only" onclick="cancelNoShift(${slot.originalIdx})">Cancel Only</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
                     } else if (slot.type === 'WHOLE') {
                         eventHtml += `<div class="event event-whole" onclick="showEventDetails(${slot.originalIdx})">📢 Whole Lab<br><span style="font-size:0.7rem; opacity:0.8;">🕒 ${startTimeStr}</span></div>`;
-                        adminBtns = `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
-                    } else if (slot.type === 'HOLIDAY') { eventHtml += `<div class="event event-holiday" onclick="showEventDetails(${slot.originalIdx})">🏖️ ${slot.title}</div>`; }
-                    else if (slot.type === 'CUSTOM') { eventHtml += `<div class="event event-custom" ${dragAttr} onclick="showEventDetails(${slot.originalIdx})">📌 ${slot.title}<br><span style="font-size:0.7rem; opacity:0.8;">🕒 ${startTimeStr}</span></div>`; }
-                    else if (slot.type === 'CANCELED') { eventHtml += `<div class="event event-canceled" onclick="showEventDetails(${slot.originalIdx})">Canceled${slot.reason ? ': ' + slot.reason : ''}</div>`; }
+                        adminBtns += `<button class="btn-cancel-shift" onclick="cancelAndShift(${slot.originalIdx})">Cancel & Shift</button><button class="btn-cancel-only" onclick="cancelNoShift(${slot.originalIdx})">Cancel Only</button><button class="btn-insert-shift" onclick="insertSpeakerAt(${slot.originalIdx})">Insert Speaker</button>`;
+                    } else if (slot.type === 'HOLIDAY') eventHtml += `<div class="event event-holiday" onclick="showEventDetails(${slot.originalIdx})">🏖️ ${slot.title}</div>`;
+                    else if (slot.type === 'CUSTOM') {
+                        eventHtml += `<div class="event event-custom" ${dragAttr} onclick="showEventDetails(${slot.originalIdx})">📌 ${slot.title}<br><span style="font-size:0.7rem; opacity:0.8;">🕒 ${startTimeStr}</span></div>`;
+                    }
+                    else if (slot.type === 'CANCELED') eventHtml += `<div class="event event-canceled" onclick="showEventDetails(${slot.originalIdx})">Canceled${slot.reason ? ': ' + slot.reason : ''}</div>`;
                 });
-
-                grid.innerHTML += `<div class="cal-day" ondblclick="handleDayDblClick('${isoDate}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${isoDate}')"><span class="day-num">${d}</span>${eventHtml}${adminBtns}</div>`;
+                const todayClass = isToday ? ' is-today' : '';
+                grid.innerHTML += `<div class="cal-day${todayClass}" ondblclick="handleDayDblClick('${isoDate}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${isoDate}')"><span class="day-num">${d}</span>${eventHtml}${adminBtns}</div>`;
             }
-            monthSection.appendChild(grid);
-            container.appendChild(monthSection);
+            monthSection.appendChild(grid); targetContainer.appendChild(monthSection);
         });
     }
 
     function renderUpcoming() {
-        const list = document.getElementById('upcomingList');
-        const today = new Date(); today.setHours(0,0,0,0);
+        const list = document.getElementById('upcomingList'); const today = new Date(); today.setHours(0,0,0,0);
         const future = schedule.filter(s => new Date(s.date) >= today && s.type !== 'CANCELED').slice(0, 8);
         if (future.length === 0) { list.innerHTML = `<div style="color:#94a3b8; font-size:0.85rem; padding: 10px 0;">No upcoming meetings found.</div>`; return; }
         
         list.innerHTML = future.map(s => {
             let label = s.type === 'PRES' ? `<strong style="color:var(--molecule-navy);">${s.presenter.name}</strong>` : `<span style="font-weight:600; color:#334155;">${s.title || "Meeting"}</span>`;
-            const colorMap = { PRES: 'up-pres', WHOLE: 'up-whole', CUSTOM: 'up-custom', HOLIDAY: 'up-holiday' };
-            const colorClass = colorMap[s.type] || '';
-            
-            return `
-                <div class="up-item ${colorClass}">
-                    <div style="font-weight:700; color:var(--molecule-navy); opacity: 0.6; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">
-                        ${s.date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}
-                    </div>
-                    <div style="font-size:0.95rem;">${label}</div>
-                </div>`;
+            const colorClass = { PRES: 'up-pres', WHOLE: 'up-whole', CUSTOM: 'up-custom', HOLIDAY: 'up-holiday' }[s.type] || '';
+            return `<div class="up-item ${colorClass}"><div style="font-weight:700; color:var(--molecule-navy); opacity: 0.6; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">${s.date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})}</div><div style="font-size:0.95rem;">${label}</div></div>`;
         }).join('');
     }
 
     function renderMyPresentations() {
-        const userName = document.getElementById('currentUser').value;
-        const panel = document.getElementById('myPresentationsPanel');
-        const list = document.getElementById('myPresList');
-        
-        if (!userName) {
-            panel.style.display = 'none';
-            return;
-        }
-
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const myDates = schedule
-            .filter(s => s.type === 'PRES' && s.presenter && s.presenter.name === userName && new Date(s.date) >= today)
-            .sort((a, b) => a.date - b.date);
-
+        const userName = document.getElementById('currentUser').value, panel = document.getElementById('myPresentationsPanel'), list = document.getElementById('myPresList');
+        if (!userName) { panel.style.display = 'none'; return; }
+        const today = new Date(); today.setHours(0,0,0,0);
+        const myDates = schedule.filter(s => s.type === 'PRES' && s.presenter && s.presenter.name === userName && new Date(s.date) >= today).sort((a, b) => a.date - b.date);
         panel.style.display = 'block';
         
-        if (myDates.length === 0) {
-            list.innerHTML = `<div style="color:#64748b; font-size:0.85rem; padding: 10px 0;">No upcoming dates scheduled.</div>`;
-        } else {
-            list.innerHTML = myDates.map(s => `
-                <div class="up-item up-pres" onclick="showEventDetails(${schedule.indexOf(s)})" style="cursor:pointer;">
-                    <div style="font-weight:700; color:#0369a1; opacity: 0.7; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">
-                        ${s.date.toLocaleDateString('en-US', {weekday: 'long', month: 'short', day: 'numeric'})}
-                    </div>
+        if (myDates.length === 0) list.innerHTML = `<div style="color:#64748b; font-size:0.85rem; padding: 10px 0;">No upcoming dates scheduled.</div>`;
+        else list.innerHTML = myDates.map(s => {
+            const safeDate = s.date.toISOString();
+            return `<div class="up-item up-pres" onclick="showEventDetails(${schedule.indexOf(s)})" style="cursor:pointer;">
+                <div style="font-weight:700; color:#0369a1; opacity: 0.7; margin-bottom:2px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em;">${s.date.toLocaleDateString('en-US', {weekday: 'long', month: 'short', day: 'numeric'})}</div>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px;">
                     <div style="font-size:0.95rem; font-weight:600; color:#0369a1;">Lab Presentation</div>
+                    <div style="display:flex; gap:5px; flex-shrink:0;" onclick="event.stopPropagation()">
+                        <button onclick="downloadSingleEventICS('${s.presenter.name.replace(/'/g,"\\'")}', '${safeDate}')" title="Add to Calendar" style="display:inline-flex; align-items:center; justify-content:center; width:auto; height:28px; padding:0 10px; border-radius:7px; background:#e0f2fe; color:#0369a1; border:none; cursor:pointer; font-size:0.78rem; font-weight:600; gap:4px; transition:all 0.2s;" onmouseover="this.style.background='#0ea5e9';this.style.color='white'" onmouseout="this.style.background='#e0f2fe';this.style.color='#0369a1'">📅 Add to Calendar</button>
+                    </div>
                 </div>
-            `).join('');
-        }
+            </div>`;
+        }).join('');
     }
 
     function requestSwap(targetName, targetEmail, targetDate) {
         const currentUser = document.getElementById('currentUser').value;
         if (!currentUser) { alert("Please select your name from the 'Who are you?' dropdown first."); return; }
-        const targetFirstName = targetName.split(' ')[0];
-        const today = new Date();
+        const targetFirstName = targetName.split(' ')[0], today = new Date();
         const myNextSlot = schedule.find(s => s.type === 'PRES' && s.presenter && s.presenter.name === currentUser && new Date(s.date) > today);
         const myDateString = myNextSlot ? new Date(myNextSlot.date).toLocaleDateString() : "[No future date found]";
-        const subject = encodeURIComponent(`Lab Meeting Swap Request: ${targetDate}`);
-        const body = encodeURIComponent(`Hi ${targetFirstName},\n\nI was looking at the lab schedule and noticed you are scheduled to present on ${targetDate}.\n\nI am currently scheduled for ${myDateString}. I have a conflict with my slot and was wondering if you would be open to swapping dates with me?\n\nBest,\n${currentUser}`);
-        window.location.href = `mailto:${targetEmail || ''}?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:${targetEmail || ''}?cc=GIHep.Equipment@Cuanschutz.edu&subject=${encodeURIComponent(`Lab Meeting Swap Request: ${targetDate}`)}&body=${encodeURIComponent(`Hi ${targetFirstName},\n\nI was looking at the lab schedule and noticed you are scheduled to present on ${targetDate}.\n\nI am currently scheduled for ${myDateString}. I have a conflict with my slot and was wondering if you would be open to swapping dates with me?\n\nBest,\n${currentUser}`)}`;
     }
 
-    // Shared helper: collects PRES/WHOLE items from index onward, places replacementItem
-    // at index (preserving the original date), then shifts the collected items forward.
     function _collectAndShift(index, replacementItem) {
         const itemsToShift = [];
-        for (let i = index; i < schedule.length; i++) {
-            if (schedule[i].type === 'PRES' || schedule[i].type === 'WHOLE') itemsToShift.push({ ...schedule[i] });
-        }
+        for (let i = index; i < schedule.length; i++) if (schedule[i].type === 'PRES' || schedule[i].type === 'WHOLE') itemsToShift.push({ ...schedule[i] });
         schedule[index] = { ...replacementItem, date: new Date(schedule[index].date) };
         let itemIdx = 0;
         for (let i = index + 1; i < schedule.length && itemIdx < itemsToShift.length; i++) {
-            if (schedule[i].type !== 'HOLIDAY' && schedule[i].type !== 'CUSTOM') {
-                schedule[i] = { ...itemsToShift[itemIdx], date: new Date(schedule[i].date) };
-                itemIdx++;
-            }
+            if (schedule[i].type !== 'HOLIDAY' && schedule[i].type !== 'CUSTOM') { schedule[i] = { ...itemsToShift[itemIdx], date: new Date(schedule[i].date) }; itemIdx++; }
         }
         let lastDate = new Date(schedule[schedule.length - 1].date);
         while (itemIdx < itemsToShift.length) {
-            lastDate.setDate(lastDate.getDate() + 7);
-            const holiday = getHoliday(lastDate);
+            lastDate.setDate(lastDate.getDate() + 7); const holiday = getHoliday(lastDate);
             if (holiday) schedule.push({ date: new Date(lastDate), type: 'HOLIDAY', title: holiday });
             else { schedule.push({ ...itemsToShift[itemIdx], date: new Date(lastDate) }); itemIdx++; }
         }
@@ -1453,19 +1471,59 @@
 
     function cancelAndShift(index, autoReason = null, promptUser = true) {
         let reason = autoReason;
-        if (promptUser && !autoReason) {
-            reason = prompt("Cancel this date and delay future lab meetings?\nEnter reason (optional):");
-            if (reason === null) return;
-        }
-        _collectAndShift(index, { type: 'CANCELED', reason: reason || "" });
+        if (promptUser && !autoReason) { reason = prompt("Cancel this date and delay future lab meetings?\nEnter reason (optional):"); if (reason === null) return; }
+        _collectAndShift(index, { type: 'CANCELED', reason: reason || "" }); saveCurrentToFirebase();
+    }
+
+    function cancelNoShift(index) {
+        const reason = prompt("Cancel this presentation without shifting future meetings?\nEnter reason (optional):");
+        if (reason === null) return;
+        schedule[index] = { ...schedule[index], type: 'CANCELED', reason: reason || "" };
         saveCurrentToFirebase();
     }
 
     function insertSpeakerAt(index) {
-        const speakerName = prompt("Enter the name of the speaker to insert:");
-        if (!speakerName) return;
-        _collectAndShift(index, { type: 'PRES', presenter: { name: speakerName, group: 'Guest Speaker', role: 'Guest', email: '' } });
+        const speakerName = prompt("Enter the name of the speaker to insert:"); if (!speakerName) return;
+        _collectAndShift(index, { type: 'PRES', presenter: { name: speakerName, group: 'Guest Speaker', role: 'Guest', email: '' } }); saveCurrentToFirebase();
+    }
+
+    function executeClearAll() {
+        const input = document.getElementById('clearAllConfirmInput').value;
+        if (input !== 'Delete all') { alert('Please type "Delete all" exactly (case-sensitive) to confirm.'); return; }
+        schedule = [];
         saveCurrentToFirebase();
+        closeModal('clearAllModal');
+        document.getElementById('clearAllConfirmInput').value = '';
+    }
+
+    function downloadSingleEventICS(presenterName, isoDateStr) {
+        const d = new Date(isoDateStr);
+        // Build 9am–10am in local time using a floating (no Z) ICS timestamp
+        const pad = n => String(n).padStart(2, '0');
+        const y = d.getFullYear(), mo = pad(d.getMonth() + 1), day = pad(d.getDate());
+        const dtStart = `${y}${mo}${day}T090000`;
+        const dtEnd   = `${y}${mo}${day}T100000`;
+        const ics = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Colgan Lab//Calendar//EN',
+            'CALSCALE:GREGORIAN',
+            'BEGIN:VEVENT',
+            `DTSTART:${dtStart}`,
+            `DTEND:${dtEnd}`,
+            `SUMMARY:Lab Presentation: ${presenterName}`,
+            'DESCRIPTION:Colgan Lab Presentation',
+            'LOCATION:Lab',
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+        const blob = new Blob([ics], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Lab_Presentation_${presenterName.replace(/\s+/g, '_')}.ics`;
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     function downloadICS() {
@@ -1482,50 +1540,38 @@
             ics.push('BEGIN:VEVENT', `DTSTART:${formatICSDate(start)}`, `DTEND:${formatICSDate(end)}`, `SUMMARY:${summary}`, `DESCRIPTION:${desc}`, `LOCATION:${loc}`, 'END:VEVENT');
         });
         ics.push('END:VCALENDAR');
-        const blob = new Blob([ics.join('\n')], { type: 'text/calendar' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `Colgan_Lab_Schedule.ics`; a.click();
+        const blob = new Blob([ics.join('\n')], { type: 'text/calendar' }), url = URL.createObjectURL(blob);
+        const filename = 'Colgan_Lab_Schedule.ics';
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
     }
 
     function formatICSDate(date) {
-        const d = new Date(date);
-        const y = d.getUTCFullYear(), m = String(d.getUTCMonth() + 1).padStart(2, '0'), day = String(d.getUTCDate()).padStart(2, '0'), hh = String(d.getUTCHours()).padStart(2, '0'), mm = String(d.getUTCMinutes()).padStart(2, '0');
+        const d = new Date(date), y = d.getUTCFullYear(), m = String(d.getUTCMonth() + 1).padStart(2, '0'), day = String(d.getUTCDate()).padStart(2, '0'), hh = String(d.getUTCHours()).padStart(2, '0'), mm = String(d.getUTCMinutes()).padStart(2, '0');
         return `${y}${m}${day}T${hh}${mm}00Z`;
     }
 
     window.addEventListener('load', () => {
         const startInput = document.getElementById('startDate');
-        if(!startInput.value) startInput.value = new Date().toISOString().split('T')[0];
+        const endInput = document.getElementById('endDate');
+        
+        if(!startInput.value) {
+            const today = new Date();
+            startInput.value = today.toISOString().split('T')[0];
+            
+            const fourMonths = new Date(today);
+            fourMonths.setMonth(fourMonths.getMonth() + 4);
+            endInput.value = fourMonths.toISOString().split('T')[0];
+        }
 
-        // --- Initialize Searchable Dropdown Listeners ---
-        const searchInput = document.getElementById('userSearchInput');
-        const dropdownList = document.getElementById('userDropdownList');
-
-        // Show dropdown on focus
-        searchInput.addEventListener('focus', () => {
-            dropdownList.style.display = 'block';
-            filterDropdown(); 
-        });
-
-        // Filter on type
+        const searchInput = document.getElementById('userSearchInput'), dropdownList = document.getElementById('userDropdownList');
+        searchInput.addEventListener('focus', () => { dropdownList.style.display = 'block'; filterDropdown(); });
         searchInput.addEventListener('keyup', filterDropdown);
-
-        // Hide when clicking outside and validate selection
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.searchable-select')) {
                 dropdownList.style.display = 'none';
-                
-                const currentSelected = document.getElementById('currentUser').value;
-                const currentInput = searchInput.value;
-                
-                // If they typed something but didn't click a valid user from the list
-                if (currentSelected !== currentInput && currentSelected !== '') {
-                   // Revert to previously selected valid user
-                   searchInput.value = currentSelected;
-                } else if (!currentSelected) {
-                   // Clear invalid input
-                   searchInput.value = '';
-                }
+                const currentSelected = document.getElementById('currentUser').value, currentInput = searchInput.value;
+                if (currentSelected !== currentInput && currentSelected !== '') searchInput.value = currentSelected;
+                else if (!currentSelected) searchInput.value = '';
             }
         });
     });
