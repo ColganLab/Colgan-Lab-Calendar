@@ -7,7 +7,6 @@ const {
     set
 } = require('firebase/database');
 
-
 /*
 |--------------------------------------------------------------------------
 | Firebase Configuration
@@ -62,9 +61,10 @@ function getHoliday(date) {
 
 /*
 |--------------------------------------------------------------------------
-| Main Automation
+| Pending Email Creation
 |--------------------------------------------------------------------------
 */
+
 async function createPendingEmail(emailData) {
 
     const snapshot = await get(
@@ -102,7 +102,7 @@ async function createPendingEmail(emailData) {
 
     /*
     |--------------------------------------------------------------------------
-    | Create Pending Email
+    | Create New Pending Email
     |--------------------------------------------------------------------------
     */
 
@@ -124,6 +124,13 @@ async function createPendingEmail(emailData) {
         `📬 Created pending email for ${emailData.presenter}`
     );
 }
+
+/*
+|--------------------------------------------------------------------------
+| Main Automation
+|--------------------------------------------------------------------------
+*/
+
 async function runAutomation() {
 
     try {
@@ -404,36 +411,141 @@ async function runAutomation() {
 
                     const newPresentationEvent = {
 
-    id:
-        Date.now().toString() +
-        Math.random().toString(36).substring(2, 8),
+                        id:
+                            Date.now().toString() +
+                            Math.random().toString(36).substring(2, 8),
 
-    date: new Date(iterDate),
+                        date: new Date(iterDate),
 
-    type: 'PRES',
+                        type: 'PRES',
 
-    presenter: chosen,
+                        presenter: chosen,
 
-    assignmentEmailSent: false,
+                        assignmentEmailSent: false,
 
-    reminderEmailSent: false
-};
+                        reminderEmailSent: false
+                    };
 
-schedule.push(
-    newPresentationEvent
-);
+                    schedule.push(
+                        newPresentationEvent
+                    );
 
-lastGroup =
-    chosen.group;
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Create Pending Assignment Email
+                    |--------------------------------------------------------------------------
+                    */
 
-lastPresDateMap[
-    chosen.name
-] = iterDate.getTime();
+                    if (chosen.email) {
+
+                        await createPendingEmail({
+
+                            type: 'ASSIGNED',
+
+                            presenter: chosen.name,
+
+                            email: chosen.email,
+
+                            presentationDate:
+                                newPresentationEvent.date.toISOString(),
+
+                            subject:
+                                '🧪 You Have Been Scheduled to Present',
+
+                            body:
+`Hi ${chosen.name.split(' ')[0]},
+
+You have been scheduled to present at the Colgan Lab meeting on:
+
+${newPresentationEvent.date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+})}
+
+Best regards,
+Colgan Lab Calendar`
+                        });
+                    }
+
+                    lastGroup =
+                        chosen.group;
+
+                    lastPresDateMap[
+                        chosen.name
+                    ] = iterDate.getTime();
                 }
 
                 iterDate.setDate(
                     iterDate.getDate() + 7
                 );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create 2 Week Reminder Emails
+            |--------------------------------------------------------------------------
+            */
+
+            for (const event of schedule) {
+
+                if (
+                    event.type === 'PRES' &&
+                    event.presenter &&
+                    event.presenter.email
+                ) {
+
+                    const diffDays =
+                        Math.round(
+                            (
+                                new Date(event.date) - new Date()
+                            ) /
+                            (1000 * 60 * 60 * 24)
+                        );
+
+                    if (
+                        diffDays >= 13 &&
+                        diffDays <= 14 &&
+                        !event.reminderEmailSent
+                    ) {
+
+                        await createPendingEmail({
+
+                            type: 'REMINDER',
+
+                            presenter:
+                                event.presenter.name,
+
+                            email:
+                                event.presenter.email,
+
+                            presentationDate:
+                                new Date(event.date)
+                                    .toISOString(),
+
+                            subject:
+                                '🔔 Reminder: Presentation in 2 Weeks',
+
+                            body:
+`Hi ${event.presenter.name.split(' ')[0]},
+
+This is your reminder that you are scheduled to present at the Colgan Lab meeting on:
+
+${new Date(event.date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+})}
+
+Best regards,
+Colgan Lab Calendar`
+                        });
+
+                        event.reminderEmailSent = true;
+                    }
+                }
             }
 
             /*
@@ -510,11 +622,9 @@ lastPresDateMap[
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Notify Upcoming Presenter
-        |--------------------------------------------------------------------------
-        */
+        console.log(
+            "🎉 Automation completed successfully."
+        );
 
         process.exit(0);
 
