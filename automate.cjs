@@ -228,7 +228,7 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        if (daysRemaining < 120) {
+        if (true) {
 
             console.log(
                 "⚠️ Schedule needs extending..."
