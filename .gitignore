@@ -11,3 +11,4 @@ window.FIREBASE_CONFIG = {
     messagingSenderId: "671642193278",
     appId: "1:671642193278:web:17fd43b883840c3091772f"
 };
+node_modules
