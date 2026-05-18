@@ -344,18 +344,33 @@ async function runAutomation() {
                     let chosen =
                         candidates[0];
 
-                    schedule.push({
-                        date: new Date(iterDate),
-                        type: 'PRES',
-                        presenter: chosen
-                    });
+                    const newPresentationEvent = {
 
-                    lastGroup =
-                        chosen.group;
+    id:
+        Date.now().toString() +
+        Math.random().toString(36).substring(2, 8),
 
-                    lastPresDateMap[
-                        chosen.name
-                    ] = iterDate.getTime();
+    date: new Date(iterDate),
+
+    type: 'PRES',
+
+    presenter: chosen,
+
+    assignmentEmailSent: false,
+
+    reminderEmailSent: false
+};
+
+schedule.push(
+    newPresentationEvent
+);
+
+lastGroup =
+    chosen.group;
+
+lastPresDateMap[
+    chosen.name
+] = iterDate.getTime();
                 }
 
                 iterDate.setDate(
