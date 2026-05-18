@@ -7,7 +7,6 @@ const {
     set
 } = require('firebase/database');
 
-const nodemailer = require('nodemailer');
 
 /*
 |--------------------------------------------------------------------------
@@ -34,20 +33,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
-
-/*
-|--------------------------------------------------------------------------
-| Email Transporter
-|--------------------------------------------------------------------------
-*/
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -457,98 +442,6 @@ async function runAutomation() {
         | Notify Upcoming Presenter
         |--------------------------------------------------------------------------
         */
-
-        console.log(
-            "🔍 Checking next week's presenters..."
-        );
-
-        const upcomingPresentation =
-            schedule.find(s => {
-
-                if (
-                    s.type !== 'PRES' ||
-                    !s.presenter
-                ) {
-
-                    return false;
-                }
-
-                const diffDays =
-                    (s.date - today) /
-                    (1000 * 60 * 60 * 24);
-
-                return (
-                    diffDays >= 0 &&
-                    diffDays <= 8
-                );
-            });
-
-        if (
-            upcomingPresentation &&
-            upcomingPresentation.presenter.email
-        ) {
-
-            const presenter =
-                upcomingPresentation.presenter;
-
-            const presentationDateStr =
-                upcomingPresentation.date
-                    .toLocaleDateString(
-                        'en-US',
-                        {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        }
-                    );
-
-            console.log(
-                `✉️ Sending reminder to ${presenter.name}`
-            );
-
-            const mailOptions = {
-
-                from: process.env.EMAIL_USER,
-
-                to: presenter.email,
-
-                subject:
-                    `🔔 Upcoming Lab Presentation - ${presentationDateStr}`,
-
-                text:
-`Hi ${presenter.name.split(' ')[0]},
-
-This is an automated reminder from the Colgan Lab Calendar.
-
-You are scheduled to present on:
-
-${presentationDateStr}
-
-If you need to swap presentation dates, please use the calendar website.
-
-Best regards,
-Colgan Lab Management System`
-            };
-
-            await transporter.sendMail(
-                mailOptions
-            );
-
-            console.log(
-                `🚀 Reminder sent to ${presenter.email}`
-            );
-
-        } else {
-
-            console.log(
-                "ℹ️ No presenter reminder needed."
-            );
-        }
-
-        console.log(
-            "🎉 Automation completed successfully."
-        );
 
         process.exit(0);
 
