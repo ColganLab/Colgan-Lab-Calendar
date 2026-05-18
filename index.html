@@ -331,6 +331,9 @@
                 <h2 style="color: var(--molecule-navy); margin-top: 0; margin-bottom: 4px;">📅 Full Lab Calendar Archive</h2>
                 <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Viewing all past and future scheduled events.</p>
             </div>
+        </div>
+        <div style="position:sticky; top:0; z-index:20; display:flex; justify-content:flex-end; gap:12px; padding:12px 0; margin-top:16px; background:white; border-bottom:1px solid var(--lab-blue);">
+            <button onclick="undoLastChange()" id="fullCalendarUndoBtn" style="width:auto; padding: 8px 20px; background: white; color: var(--molecule-navy); border:1px solid var(--lab-blue); border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;" disabled>↩️ Undo Change</button>
             <button onclick="scrollToTodayInFullCal()" style="width:auto; padding: 8px 20px; background: var(--flask-teal); color:white; border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;">📍 Today</button>
         </div>
         <div id="fullCalendarContainer" class="modal-scroll-content"></div>
@@ -523,6 +526,7 @@
             <div style="display:flex; gap:8px;">
                 <button class="btn-io" onclick="openFullCalendar()" style="width:auto; padding: 10px 20px; background: var(--molecule-navy); color: white;">📂 View Full Calendar</button>
                 <button class="btn-io" onclick="document.getElementById('exportCalModal').style.display='flex'" style="width:auto; padding: 10px 20px;">📅 Export Calendar</button>
+                <button class="btn-io" id="undoBtn" onclick="undoLastChange()" disabled style="width:auto; padding: 10px 20px;">↩️ Undo Change</button>
             </div>
             <div id="adminLoginArea" style="display:flex; gap:8px;">
                 <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
@@ -635,6 +639,7 @@
     let participants = [];
     let participantsObj = {}; 
     let schedule = [];
+    let undoStack = [];
     let draggedEventIdx = null;
     let dropdownData = []; 
 
@@ -652,14 +657,31 @@
         } else {
             schedule = [];
         }
+        normalizeMeetingTimes();
         
         updatePersonnelUI();
         updateAdminSwapLists();
         renderCalendar(); 
+        refreshOpenFullCalendar();
         renderUpcoming();
         renderMyPresentations();
         updateStats();
     });
+
+    function refreshOpenFullCalendar() {
+        const modal = document.getElementById('fullCalendarModal');
+        if (!modal || modal.style.display !== 'flex') return;
+
+        const fullContainer = document.getElementById('fullCalendarContainer');
+        const previousScrollTop = fullContainer.scrollTop;
+
+        fullContainer.innerHTML = '';
+        renderCalendarUI(fullContainer, false);
+
+        requestAnimationFrame(() => {
+            fullContainer.scrollTop = previousScrollTop;
+        });
+    }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -928,6 +950,42 @@
 
     function emailEquipmentAdmin() { window.location.href = `mailto:GIHep.Equipment@Cuanschutz.edu?subject=${encodeURIComponent("Equipment Inquiry - Colgan Lab")}`; }
 
+    function requestSwap(name, email, presentationDate) {
+        const currentUser = document.getElementById('currentUser').value;
+
+        if (!currentUser) {
+            alert("Please select yourself from the user dropdown before drafting a swap email.");
+            return;
+        }
+
+        if (currentUser === name) {
+            alert("You cannot draft a swap request to yourself.");
+            return;
+        }
+
+        const requester = participants.find(p => p.name === currentUser);
+
+        if (!requester || !requester.email) {
+            alert("Your profile is missing an email address. Please contact an admin to update your information.");
+            return;
+        }
+
+        const requesterPresentation = schedule
+            .filter(s => s.type === 'PRES' && s.presenter && s.presenter.name === requester.name && new Date(s.date) >= new Date())
+            .sort((a, b) => a.date - b.date)[0];
+
+        const requesterPresentationDate = requesterPresentation
+            ? new Date(requesterPresentation.date).toDateString()
+            : 'an upcoming presentation date';
+
+        const subject = `Presentation Swap Request - ${requesterPresentationDate} and ${presentationDate}`;
+
+        const body = `Hi ${name},%0D%0A%0D%0AI wanted to see if you would be willing to swap presentation dates with me.%0D%0A%0D%0AMy presentation date: ${requesterPresentationDate}%0D%0AYour presentation date: ${presentationDate}%0D%0A%0D%0APlease let me know what works best for you.%0D%0A%0D%0AThanks,%0D%0A${requester.name}`;
+
+        window.location.href = `mailto:${encodeURIComponent(email)}?cc=${encodeURIComponent('GIHep.Equipment@cuanschutz.edu')}&subject=${encodeURIComponent(subject)}&body=${body}`;
+    }
+
+
     // --- ICS Parsing & Importing ---
     function processICSUpload() {
         const fileInput = document.getElementById('icsUpload');
@@ -1123,7 +1181,54 @@
         return null;
     }
 
+
+    function normalizeMeetingTimes() {
+        schedule.forEach(event => {
+            if ((event.type === 'PRES' || event.type === 'WHOLE') && event.date instanceof Date) {
+                event.date.setHours(9, 0, 0, 0);
+                if (!event.endDate || !(event.endDate instanceof Date)) {
+                    event.endDate = new Date(event.date.getTime() + 60 * 60 * 1000);
+                } else {
+                    event.endDate = new Date(event.date);
+                    event.endDate.setHours(10, 0, 0, 0);
+                }
+            }
+        });
+    }
+
+    function saveUndoState() {
+        const snapshot = schedule.map(item => ({
+            ...item,
+            date: item.date instanceof Date ? new Date(item.date) : new Date(item.date),
+            endDate: item.endDate ? new Date(item.endDate) : null
+        }));
+        undoStack.push(snapshot);
+        if (undoStack.length > 20) undoStack.shift();
+        syncUndoButtons();
+    }
+
+    function syncUndoButtons() {
+        const disabled = !undoStack.length;
+        const undoBtn = document.getElementById('undoBtn');
+        const fullCalendarUndoBtn = document.getElementById('fullCalendarUndoBtn');
+
+        if (undoBtn) undoBtn.disabled = disabled;
+        if (fullCalendarUndoBtn) fullCalendarUndoBtn.disabled = disabled;
+    }
+
+    function undoLastChange() {
+        if (!undoStack.length) {
+            alert("No changes available to undo.");
+            return;
+        }
+        schedule = undoStack.pop();
+        normalizeMeetingTimes();
+        saveCurrentToFirebase();
+        syncUndoButtons();
+    }
+
     function saveCurrentToFirebase() {
+        normalizeMeetingTimes();
         const uploadable = schedule.map(s => ({
             ...s, date: s.date instanceof Date ? s.date.toISOString() : s.date,
             endDate: (s.endDate instanceof Date) ? s.endDate.toISOString() : (s.endDate || null)
@@ -1210,6 +1315,7 @@
     }
 
     function saveQuickEvent() {
+        saveUndoState();
         const idx = document.getElementById('qeIdx').value;
         const type = document.getElementById('qeEventType').value;
         const isAdmin = document.body.classList.contains('is-admin');
@@ -1227,6 +1333,10 @@
 
         if (idx !== "") {
             const i = parseInt(idx); 
+            if (type === 'PRES' || type === 'WHOLE') {
+                start.setHours(9,0,0,0);
+                end.setHours(10,0,0,0);
+            }
             schedule[i].date = start; 
             schedule[i].endDate = end;
             if (type === 'CUSTOM') {
@@ -1234,6 +1344,8 @@
                 schedule[i].location = document.getElementById('qeLoc').value.trim(); 
                 schedule[i].notes = document.getElementById('qeNotes').value.trim();
             } else if (type === 'PRES') {
+                start.setHours(9,0,0,0);
+                end.setHours(10,0,0,0);
                 const pName = document.getElementById('qePresenterSelect').value;
                 const presenter = participants.find(p => p.name === pName);
                 if(presenter) schedule[i].presenter = presenter;
@@ -1272,6 +1384,8 @@
                 if(!presenter) return alert("Please select a valid presenter.");
                 schedule.push({ type: 'PRES', presenter: presenter, date: start, endDate: end, manual: true });
             } else if (type === 'WHOLE') {
+                start.setHours(9,0,0,0);
+                end.setHours(10,0,0,0);
                 schedule.push({ type: 'WHOLE', title: 'Whole Lab Update', date: start, endDate: end, manual: true });
             }
         }
@@ -1281,6 +1395,7 @@
     }
 
     function deleteAnyEvent(index) {
+        saveUndoState();
         const event = schedule[index];
         if (event.seriesId) {
             const choice = confirm("This is a recurring event.\n\nClick OK to delete the ENTIRE SERIES.\nClick CANCEL to delete ONLY THIS INSTANCE.");
@@ -1303,6 +1418,7 @@
     }
 
     function adminExecuteSwap() {
+        saveUndoState();
         const idx1 = document.getElementById('swapSlot1').value, idx2 = document.getElementById('swapSlot2').value;
         if (!idx1 || !idx2 || idx1 === idx2) return alert("Please select two different slots to swap.");
         const s1 = schedule[idx1], s2 = schedule[idx2];
@@ -1312,18 +1428,241 @@
         saveCurrentToFirebase(); alert("Slots swapped successfully.");
     }
 
-    function handleDragStart(e, index) { draggedEventIdx = index; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', index); setTimeout(() => e.target.classList.add('is-dragging'), 0); }
-    function handleDragEnd(e) { e.target.classList.remove('is-dragging'); document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over')); }
-    function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const day = e.currentTarget; if (!day.classList.contains('other-month')) day.classList.add('drag-over'); }
+    function handleDragStart(e, index) {
+        draggedEventIdx = Number(index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(index));
+        setTimeout(() => e.target.classList.add('is-dragging'), 0);
+    }
+    function handleDragEnd(e) {
+        e.target.classList.remove('is-dragging');
+        document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('drag-over'));
+    }
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const day = e.currentTarget;
+        if (!day.classList.contains('other-month')) day.classList.add('drag-over');
+    }
     function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
     function handleDrop(e, targetDateStr) {
-        e.preventDefault(); const day = e.currentTarget; day.classList.remove('drag-over');
-        if (draggedEventIdx === null || day.classList.contains('other-month')) return;
-        const event = schedule[draggedEventIdx], newDateBase = new Date(targetDateStr + "T00:00:00");
-        const newDate = new Date(newDateBase.getFullYear(), newDateBase.getMonth(), newDateBase.getDate(), event.date.getHours(), event.date.getMinutes());
-        if (event.endDate) event.endDate = new Date(newDate.getTime() + (event.endDate.getTime() - event.date.getTime()));
-        event.date = newDate; schedule.sort((a, b) => a.date - b.date); saveCurrentToFirebase(); draggedEventIdx = null;
+        e.preventDefault();
+        e.stopPropagation();
+        const day = e.currentTarget;
+        day.classList.remove('drag-over');
+
+        const droppedIndex = Number(e.dataTransfer.getData('text/plain'));
+        const eventIndex = Number.isInteger(droppedIndex) ? droppedIndex : draggedEventIdx;
+
+        if (eventIndex === null || Number.isNaN(eventIndex) || day.classList.contains('other-month')) return;
+
+        const event = schedule[eventIndex];
+        if (!event || event.type !== 'CUSTOM') return;
+
+        saveUndoState();
+
+        const originalStart = new Date(event.date);
+        const newDateBase = new Date(targetDateStr + "T00:00:00");
+        const newDate = new Date(
+            newDateBase.getFullYear(),
+            newDateBase.getMonth(),
+            newDateBase.getDate(),
+            originalStart.getHours(),
+            originalStart.getMinutes(),
+            originalStart.getSeconds()
+        );
+
+        if (event.endDate instanceof Date) {
+            const duration = event.endDate.getTime() - originalStart.getTime();
+            event.endDate = new Date(newDate.getTime() + duration);
+        }
+
+        event.date = newDate;
+        schedule.sort((a, b) => a.date - b.date);
+        draggedEventIdx = null;
+        saveCurrentToFirebase();
     }
+
+    
+    function cancelNoShift(index) {
+        if (!document.body.classList.contains('is-admin')) return;
+        const slot = schedule[index];
+        if (!slot || (slot.type !== 'PRES' && slot.type !== 'WHOLE')) {
+            return alert("Only presentation and whole lab slots can be canceled.");
+        }
+
+        const confirmed = confirm("Cancel only this presentation slot without shifting future presentations?");
+        if (!confirmed) return;
+
+        saveUndoState();
+
+        const reason = prompt("Optional: Add a reason for canceling this lab meeting.", "") || "";
+
+        schedule[index] = {
+            type: 'CANCELED',
+            reason: reason.trim(),
+            date: new Date(slot.date),
+            endDate: slot.endDate ? new Date(slot.endDate) : null,
+            manual: true
+        };
+
+        schedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+    }
+
+    function cancelAndShift(index) {
+        if (!document.body.classList.contains('is-admin')) return;
+
+        const slot = schedule[index];
+
+        if (!slot || (slot.type !== 'PRES' && slot.type !== 'WHOLE')) {
+            return alert("Only presentation and whole lab slots can be shifted.");
+        }
+
+        const reason = prompt(
+            "Optional: Add a reason for canceling this lab meeting.",
+            ""
+        ) || "";
+
+        const confirmed = confirm(
+            "Cancel this slot and shift all future presentations and whole lab updates forward one slot?"
+        );
+
+        if (!confirmed) return;
+
+        saveUndoState();
+
+        // Get all future rotation slots beginning with the canceled slot
+        const rotationSlots = schedule
+            .map((item, idx) => ({ item, idx }))
+            .filter(entry =>
+                entry.idx >= index &&
+                (entry.item.type === 'PRES' || entry.item.type === 'WHOLE')
+            )
+            .sort((a, b) => a.item.date - b.item.date);
+
+        if (rotationSlots.length === 0) return;
+
+        // Deep copy the original rotation sequence
+        const originalItems = rotationSlots.map(entry => ({
+            ...JSON.parse(JSON.stringify(entry.item)),
+            date: new Date(entry.item.date),
+            endDate: entry.item.endDate
+                ? new Date(entry.item.endDate)
+                : null
+        }));
+
+        // Place canceled marker on ORIGINAL date
+        const canceledSlot = schedule[index];
+
+        schedule[index] = {
+            type: 'CANCELED',
+            reason: reason.trim(),
+            date: new Date(canceledSlot.date),
+            endDate: canceledSlot.endDate
+                ? new Date(canceledSlot.endDate)
+                : null,
+            manual: true
+        };
+
+        // Shift every original presentation/update FORWARD one slot
+        for (let i = 1; i < rotationSlots.length; i++) {
+            const targetIdx = rotationSlots[i].idx;
+            const sourceItem = originalItems[i - 1];
+
+            schedule[targetIdx] = {
+                ...JSON.parse(JSON.stringify(sourceItem)),
+                date: new Date(schedule[targetIdx].date),
+                endDate: schedule[targetIdx].endDate
+                    ? new Date(schedule[targetIdx].endDate)
+                    : null
+            };
+        }
+
+        // Preserve the final rotation item by extending the schedule one week
+        const lastOriginal = originalItems[originalItems.length - 1];
+        const lastRotation = rotationSlots[rotationSlots.length - 1].item;
+
+        const newDate = new Date(lastRotation.date);
+        newDate.setDate(newDate.getDate() + 7);
+
+        const newEndDate = lastRotation.endDate
+            ? new Date(lastRotation.endDate)
+            : null;
+
+        if (newEndDate) {
+            newEndDate.setDate(newEndDate.getDate() + 7);
+        }
+
+        schedule.push({
+            ...JSON.parse(JSON.stringify(lastOriginal)),
+            date: newDate,
+            endDate: newEndDate,
+            manual: true
+        });
+
+        schedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+    }
+
+    function insertSpeakerAt(index) {
+        if (!document.body.classList.contains('is-admin')) return;
+
+        const guestName = prompt("Enter the guest speaker's name:");
+        if (!guestName || !guestName.trim()) {
+            return alert("Guest speaker name is required.");
+        }
+
+        const confirmed = confirm(
+            `Insert ${guestName.trim()} into this slot and shift all future presentations and whole lab updates down one slot?`
+        );
+
+        if (!confirmed) return;
+
+        saveUndoState();
+
+        const rotationSlots = schedule
+            .map((item, idx) => ({ item, idx }))
+            .filter(entry =>
+                entry.idx >= index &&
+                (entry.item.type === 'PRES' || entry.item.type === 'WHOLE')
+            )
+            .sort((a, b) => a.item.date - b.item.date);
+
+        if (rotationSlots.length === 0) return;
+
+        for (let i = rotationSlots.length - 1; i > 0; i--) {
+            const currentIdx = rotationSlots[i].idx;
+            const prevItem = rotationSlots[i - 1].item;
+
+            schedule[currentIdx] = {
+                ...JSON.parse(JSON.stringify(prevItem)),
+                date: new Date(schedule[currentIdx].date),
+                endDate: schedule[currentIdx].endDate
+                    ? new Date(schedule[currentIdx].endDate)
+                    : null
+            };
+        }
+
+        const targetSlot = schedule[index];
+
+        schedule[index] = {
+            type: 'PRES',
+            presenter: {
+                name: guestName.trim(),
+                group: 'Guest Speaker',
+                role: 'Guest Speaker',
+                email: ''
+            },
+            date: new Date(targetSlot.date),
+            endDate: targetSlot.endDate ? new Date(targetSlot.endDate) : null,
+            manual: true
+        };
+
+        schedule.sort((a, b) => a.date - b.date);
+        saveCurrentToFirebase();
+    }
+
 
     function showEventDetails(index) {
         if (index === null || typeof index === 'string') return;
@@ -1488,8 +1827,8 @@
                 <div class="my-pres-card-header">
                     <div style="font-size:0.95rem; font-weight:600; color:#0369a1;">Lab Presentation</div>
                     <div class="my-pres-actions" onclick="event.stopPropagation()">
-                        <button onclick="
-                        <button onclick="openOutlookCalendar('${presenterName}', '${safeDate}')" title="Add to Outlook Calendar" class="btn-calendar-action btn-outlook-calendar">📆 Outlook</button>
+                        <button onclick="openGoogleCalendar(${schedule.indexOf(s)})" title="Add to Google Calendar" class="btn-calendar-action btn-google-calendar">📅 Google</button>
+                        <button onclick="openOutlookCalendar(${schedule.indexOf(s)})" title="Add to Outlook Calendar" class="btn-calendar-action btn-outlook-calendar">📆 Outlook</button>
                     </div>
                 </div>
             </div>`;
@@ -1616,6 +1955,7 @@
     }
 
     function executeClearAll() {
+        saveUndoState();
         const input = document.getElementById('clearAllConfirmInput').value;
         if (input !== 'Delete all') { alert('Please type "Delete all" exactly (case-sensitive) to confirm.'); return; }
         schedule = [];
@@ -1706,3 +2046,16 @@
 </script>
 </body>
 </html>
+
+
+<!-- 
+GitHub Commit Summary
+
+Fix Cancel & Shift rotation logic
+
+- Fixed Cancel & Shift placing CANCELED marker on wrong date
+- Preserved canceled presenter by shifting future rotation slots forward
+- Added automatic extension slot to avoid dropping final presenter
+- Kept PRES/WHOLE sequencing intact
+- Left all other calendar behaviors unchanged
+-->
