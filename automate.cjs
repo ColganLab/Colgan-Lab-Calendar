@@ -1,5 +1,12 @@
-const firebase = require('firebase/app');
-require('firebase/database');
+const { initializeApp } = require('firebase/app');
+
+const {
+    getDatabase,
+    ref,
+    get,
+    set
+} = require('firebase/database');
+
 const nodemailer = require('nodemailer');
 
 /*
@@ -18,9 +25,15 @@ const firebaseConfig = {
     appId: process.env.FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+/*
+|--------------------------------------------------------------------------
+| Initialize Firebase
+|--------------------------------------------------------------------------
+*/
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +93,7 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        const snapshot = await db.ref().get();
+        const snapshot = await get(ref(db));
 
         const data = snapshot.val() || {};
 
@@ -89,9 +102,15 @@ async function runAutomation() {
                 ? Object.values(data.participants)
                 : [];
 
-        // IMPORTANT:
-        // Frontend calendar uses scheduleState
-        let rawSchedule = data.scheduleState || [];
+        /*
+        |--------------------------------------------------------------------------
+        | IMPORTANT:
+        | Frontend uses scheduleState
+        |--------------------------------------------------------------------------
+        */
+
+        let rawSchedule =
+            data.scheduleState || [];
 
         /*
         |--------------------------------------------------------------------------
@@ -115,9 +134,10 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        const activeParticipants = rawParticipants.filter(
-            p => !p.hold && !p.retired
-        );
+        const activeParticipants =
+            rawParticipants.filter(
+                p => !p.hold && !p.retired
+            );
 
         if (activeParticipants.length === 0) {
 
@@ -154,7 +174,7 @@ async function runAutomation() {
 
         /*
         |--------------------------------------------------------------------------
-        | Auto Generate Additional 4 Months
+        | Generate More Schedule If Needed
         |--------------------------------------------------------------------------
         */
 
@@ -170,7 +190,8 @@ async function runAutomation() {
             |--------------------------------------------------------------------------
             */
 
-            let iterDate = new Date(lastScheduledDate);
+            let iterDate =
+                new Date(lastScheduledDate);
 
             iterDate.setDate(
                 iterDate.getDate() + 7
@@ -189,7 +210,8 @@ async function runAutomation() {
             |--------------------------------------------------------------------------
             */
 
-            let endLimit = new Date(iterDate);
+            let endLimit =
+                new Date(iterDate);
 
             endLimit.setMonth(
                 endLimit.getMonth() + 4
@@ -197,7 +219,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Track Presentation History
+            | Presentation History
             |--------------------------------------------------------------------------
             */
 
@@ -229,7 +251,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Track Last Group
+            | Last Group Tracking
             |--------------------------------------------------------------------------
             */
 
@@ -252,7 +274,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Generate Rotation
+            | Rotation Generation
             |--------------------------------------------------------------------------
             */
 
@@ -303,7 +325,7 @@ async function runAutomation() {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Presentation Rotation
+                | Presenter Rotation
                 |--------------------------------------------------------------------------
                 */
 
@@ -391,7 +413,7 @@ async function runAutomation() {
 
             /*
             |--------------------------------------------------------------------------
-            | Debug Logs
+            | Debug Logging
             |--------------------------------------------------------------------------
             */
 
@@ -414,9 +436,10 @@ async function runAutomation() {
             |--------------------------------------------------------------------------
             */
 
-            await db
-                .ref('scheduleState')
-                .set(serializedSchedule);
+            await set(
+                ref(db, 'scheduleState'),
+                serializedSchedule
+            );
 
             console.log(
                 "✅ Firebase updated successfully."
