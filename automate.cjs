@@ -65,7 +65,65 @@ function getHoliday(date) {
 | Main Automation
 |--------------------------------------------------------------------------
 */
+async function createPendingEmail(emailData) {
 
+    const snapshot = await get(
+        ref(db, 'pendingEmails')
+    );
+
+    const existing =
+        snapshot.val() || {};
+
+    /*
+    |--------------------------------------------------------------------------
+    | Prevent Duplicate Pending Emails
+    |--------------------------------------------------------------------------
+    */
+
+    const alreadyExists =
+        Object.values(existing).some(e => {
+
+            return (
+                e.type === emailData.type &&
+                e.presenter === emailData.presenter &&
+                e.presentationDate === emailData.presentationDate &&
+                e.sent !== true
+            );
+        });
+
+    if (alreadyExists) {
+
+        console.log(
+            `⏭️ Pending email already exists for ${emailData.presenter}`
+        );
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Pending Email
+    |--------------------------------------------------------------------------
+    */
+
+    const emailId =
+        Date.now().toString() +
+        Math.random().toString(36).substring(2, 8);
+
+    await set(
+        ref(db, `pendingEmails/${emailId}`),
+        {
+            ...emailData,
+            approved: false,
+            sent: false,
+            createdAt: new Date().toISOString()
+        }
+    );
+
+    console.log(
+        `📬 Created pending email for ${emailData.presenter}`
+    );
+}
 async function runAutomation() {
 
     try {
