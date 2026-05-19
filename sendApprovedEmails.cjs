@@ -97,6 +97,8 @@ async function sendApprovedEmails() {
                     `📨 Sending email to ${email.email}`
                 );
 
+                console.log('Recipient field:', email.presenterEmail);
+                
                 await transporter.sendMail({
 
                     from:
