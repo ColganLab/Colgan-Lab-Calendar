@@ -385,6 +385,14 @@
                 <button id="deleteEventBtn" class="btn-delete-event" style="display:none;">Delete Event</button>
                 <button id="reschedEventBtn" class="btn-resched-event" style="display:none;">Edit Event</button>
                 <button id="modalCancelPresBtn" class="btn-cancel-only admin-only" style="display:none; flex:1; min-width:120px;">🚫 Cancel Only</button>
+                <button
+    id="sendEventEmailBtn"
+    class="btn-resched-event admin-only"
+    style="display:none; background:#0ea5e9;">
+    
+    ✉️ Send Email
+
+</button>
                 <button id="modalCancelShiftBtn" style="display:none; flex:1; min-width:120px; background:#fff1f2; color:var(--danger-red); border:1px solid #fecdd3; padding:10px 16px; border-radius:10px; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:inherit; align-items:center; justify-content:center; gap:8px;" class="admin-only">↕️ Cancel & Shift</button>
             </div>
         </div>
@@ -519,6 +527,50 @@
     </div>
 </div>
 
+<div id="eventEmailModal" class="modal-overlay">
+    <div class="modal-card">
+
+        <span class="close-modal"
+              onclick="closeModal('eventEmailModal')">×</span>
+
+        <h3 style="margin-top:0;">
+            Queue Presentation Email
+        </h3>
+
+        <p style="
+            color:#64748b;
+            font-size:0.9rem;
+            margin-bottom:20px;
+        ">
+            Choose the email type:
+        </p>
+
+        <div style="
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        ">
+
+            <button
+                class="btn-add"
+                onclick="queuePresentationEmail('assignment')">
+
+                📋 Assignment Email
+
+            </button>
+
+            <button
+                class="btn-io"
+                onclick="queuePresentationEmail('reminder')">
+
+                ⏰ Reminder Email
+
+            </button>
+
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <header>
         <h1>🧪 Colgan Lab Calendar</h1>
@@ -573,6 +625,8 @@
                 <button id="adminSaveBtn" class="btn-admin-save" onclick="saveCurrentToFirebase()">Force Sync Database</button>
                 <button class="btn-admin-save" onclick="document.getElementById('clearAllModal').style.display='flex'" style="display:none; background:#fff1f2; color:var(--danger-red); border:1px solid #fecdd3; margin-top:6px;">🗑️ Clear All Events</button>
                 
+                
+
                 <div style="margin-top: 24px; border-top: 1px solid var(--lab-blue); padding-top: 16px;">
                     <h4 style="color: var(--molecule-navy); margin: 0 0 12px 0; font-size: 0.95rem;">Import Past/External Calendar</h4>
                     <input type="file" id="icsUpload" accept=".ics" style="font-size: 0.8rem; margin-bottom: 8px; width: 100%;">
@@ -642,6 +696,8 @@
     let undoStack = [];
     let draggedEventIdx = null;
     let dropdownData = []; 
+
+    let selectedEventIdx = null;
 
     db.ref().on('value', (snapshot) => {
         const data = snapshot.val() || {};
@@ -741,7 +797,9 @@ function loadPendingEmails() {
                                     padding:4px 8px;
                                     border-radius:999px;
                                 ">
-                                    ${email.type}
+                                    ${(email.type || '').toLowerCase().trim() === 'assigned'
+    ? 'assignment'
+    : email.type}
                                 </span>
 
                             </div>
@@ -766,13 +824,37 @@ function loadPendingEmails() {
 ${email.body}
                             </div>
 
-                            <button
-                                onclick="approveSingleEmail('${id}')"
-                                class="btn-add">
+                            <div style="
+    display:flex;
+    gap:8px;
+">
 
-                                ✅ Approve
+    <button
+        onclick="approveSingleEmail('${id}')"
+        class="btn-add"
+        style="flex:1;">
 
-                            </button>
+        ✅ Approve
+
+    </button>
+
+    <button
+        onclick="denySingleEmail('${id}')"
+        style="
+            flex:1;
+            background:#fee2e2;
+            color:#b91c1c;
+            border:1px solid #fecaca;
+            border-radius:10px;
+            font-weight:600;
+            cursor:pointer;
+        ">
+
+        ❌ Deny
+
+    </button>
+
+</div>
 
                         </div>
                     `;
@@ -797,6 +879,24 @@ function approveSingleEmail(id) {
         });
 
     loadPendingEmails();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Deny Single Email
+|--------------------------------------------------------------------------
+*/
+function denySingleEmail(id) {
+
+    if (!confirm("Deny and permanently remove this email request?")) {
+        return;
+    }
+
+    db.ref(`pendingEmails/${id}`)
+        .remove()
+        .then(() => {
+            loadPendingEmails();
+        });
 }
 
 /*
@@ -836,6 +936,331 @@ function approveAllPendingEmails() {
             closeModal(
                 'pendingEmailsModal'
             );
+        });
+}
+
+function queuePresentationEmail(type) {
+
+    if (selectedEventIdx === null) {
+        return;
+    }
+
+    const ev = schedule[selectedEventIdx];
+
+    if (
+        !ev ||
+        ev.type !== 'PRES'
+    ) {
+        return;
+    }
+
+    const presenter =
+        ev.presenter?.name || 'Unknown';
+
+    const presenterEmail =
+        ev.presenter?.email || '';
+
+    const presentationDate =
+        new Date(ev.date)
+            .toLocaleDateString();
+
+    let subject = '';
+    let body = '';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Assignment Email
+    |--------------------------------------------------------------------------
+    */
+
+    if (type === 'assignment') {
+
+        subject =
+            `Presentation Assignment - ${presentationDate}`;
+
+        body =
+`Hello ${presenter},
+
+You have been assigned to present at lab meeting on:
+
+${presentationDate}
+
+Please prepare your presentation materials accordingly.
+
+Thank you,
+Colgan Lab`;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reminder Email
+    |--------------------------------------------------------------------------
+    */
+
+    else if (type === 'reminder') {
+
+        subject =
+            `Presentation Reminder - ${presentationDate}`;
+
+        body =
+`Hello ${presenter},
+
+This is a reminder that you are scheduled to present at lab meeting on:
+
+${presentationDate}
+
+Please let us know if any scheduling conflicts arise.
+
+Thank you,
+Colgan Lab`;
+    }
+
+    db.ref('pendingEmails')
+        .push({
+
+            presenter,
+            presenterEmail,
+
+            presentationDate:
+                ev.date.toISOString(),
+
+            type,
+
+            subject,
+            body,
+
+            approved: false,
+            sent: false,
+
+            createdAt: Date.now()
+        })
+
+        .then(() => {
+
+            closeModal('eventEmailModal');
+
+            alert(
+                `${type} email queued for approval.`
+            );
+
+            loadPendingEmails();
+        });
+}
+
+function syncAssignmentEmails() {
+
+    db.ref('pendingEmails')
+        .once('value')
+
+        .then(snapshot => {
+
+            const emails =
+                snapshot.val() || {};
+
+            /*
+            |--------------------------------------------------------------------------
+            | Build Existing Assignment Lookup
+            |--------------------------------------------------------------------------
+            */
+
+            const existingAssignments =
+                new Set();
+
+const validScheduleKeys =
+    new Set();
+
+schedule.forEach(event => {
+
+    if (event.type !== 'PRES') {
+        return;
+    }
+
+    const presenter =
+        event.presenter?.name;
+
+    if (!presenter) {
+        return;
+    }
+
+    const isoDate =
+        new Date(event.date)
+            .toISOString();
+
+    validScheduleKeys.add(
+        `${presenter}|${isoDate}`
+    );
+});
+           Object.entries(emails)
+    .forEach(([id, email]) => {
+
+        /*
+        |----------------------------------------------------------
+        | Normalize old email types
+        |----------------------------------------------------------
+        */
+
+        const normalizedType =
+    (email.type || '')
+        .toLowerCase()
+        .trim();
+
+/*
+|----------------------------------------------------------
+| Normalize old email types
+|----------------------------------------------------------
+*/
+
+if (
+    normalizedType === 'assigned'
+) {
+
+    db.ref(`pendingEmails/${id}`)
+        .update({
+            type: 'assignment'
+        });
+}
+
+/*
+|----------------------------------------------------------
+| Ignore non-assignment emails
+|----------------------------------------------------------
+*/
+
+if (
+    normalizedType !== 'assigned' &&
+    normalizedType !== 'assignment'
+) {
+    return;
+}
+
+        const key =
+            `${email.presenter}|${email.presentationDate}`;
+if (existingAssignments.has(key)) {
+
+    db.ref(`pendingEmails/${id}`)
+        .remove();
+
+    console.log(
+        'Removed duplicate assignment email:',
+        key
+    );
+
+    return;
+}
+        /*
+        |----------------------------------------------------------
+        | Remove stale assignment emails
+        |----------------------------------------------------------
+        */
+
+        if (!validScheduleKeys.has(key)) {
+
+            db.ref(`pendingEmails/${id}`)
+                .remove();
+
+            console.log(
+                'Removed stale assignment email:',
+                key
+            );
+
+            return;
+        }
+
+        existingAssignments.add(key);
+    });
+
+/*
+|------------------------------------------------------------------
+| Remove Stale Assignment Emails
+|------------------------------------------------------------------
+*/
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Scan Schedule
+            |--------------------------------------------------------------------------
+            */
+
+            schedule.forEach(event => {
+
+                if (
+                    event.type !== 'PRES'
+                ) {
+                    return;
+                }
+
+                const presenter =
+                    event.presenter?.name;
+
+                if (!presenter) {
+                    return;
+                }
+
+                const isoDate =
+                    new Date(event.date)
+                        .toISOString();
+
+                const key =
+                    `${presenter}|${isoDate}`;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Missing Assignment Email
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !existingAssignments.has(key)
+                ) {
+
+                    const presentationDate =
+                        new Date(event.date)
+                            .toLocaleDateString();
+
+                    db.ref('pendingEmails')
+                        .push({
+
+                            presenter,
+
+                            presenterEmail:
+                                event.presenter?.email || '',
+
+                            presentationDate:
+                                isoDate,
+
+                            type: 'assignment',
+
+                            subject:
+                                `Presentation Assignment - ${presentationDate}`,
+
+                            body:
+`Hello ${presenter},
+
+You have been assigned to present at lab meeting on:
+
+${presentationDate}
+
+Please prepare your presentation materials accordingly.
+
+Thank you,
+Colgan Lab`,
+
+                            approved: false,
+                            sent: false,
+
+                            autoGenerated: true,
+
+                            createdAt: Date.now()
+                        });
+
+                    console.log(
+                        'Queued new assignment email:',
+                        presenter,
+                        presentationDate
+                    );
+                }
+            });
         });
 }
 
@@ -1406,7 +1831,19 @@ function approveAllPendingEmails() {
             ...s, date: s.date instanceof Date ? s.date.toISOString() : s.date,
             endDate: (s.endDate instanceof Date) ? s.endDate.toISOString() : (s.endDate || null)
         }));
-        db.ref('scheduleState').set(uploadable).then(() => console.log("Schedule synced.")).catch(err => alert("Sync error: " + err.message));
+        db.ref('scheduleState')
+    .set(uploadable)
+
+    .then(() => {
+
+        console.log("Schedule synced.");
+
+        syncAssignmentEmails();
+    })
+
+    .catch(err =>
+        alert("Sync error: " + err.message)
+    );
     }
 
     function handleDayDblClick(dateStr) { openEditModal(null, dateStr); }
@@ -1839,17 +2276,26 @@ function approveAllPendingEmails() {
 
     function showEventDetails(index) {
         if (index === null || typeof index === 'string') return;
+
+            selectedEventIdx = index;
+
         const slot = schedule[index];
         document.getElementById('eventEditMode').style.display = 'none'; document.getElementById('eventViewMode').style.display = 'block';
         const titleEl = document.getElementById('viewTitle'), subEl = document.getElementById('viewSubtitle'), detEl = document.getElementById('viewDetails');
         const presArea = document.getElementById('presenterSpecifics'), delBtn = document.getElementById('deleteEventBtn'), resBtn = document.getElementById('reschedEventBtn');
         const cancelPresBtn = document.getElementById('modalCancelPresBtn');
-        const cancelShiftBtn = document.getElementById('modalCancelShiftBtn');
-        const isAdmin = document.body.classList.contains('is-admin');
+const cancelShiftBtn = document.getElementById('modalCancelShiftBtn');
+
+const sendEmailBtn =
+    document.getElementById('sendEventEmailBtn');
+
+const isAdmin =
+    document.body.classList.contains('is-admin');
 
         presArea.style.display = 'none'; delBtn.style.display = 'none'; resBtn.style.display = 'none';
         cancelPresBtn.style.display = 'none'; cancelShiftBtn.style.display = 'none';
-        
+        sendEmailBtn.style.display = 'none';
+
         delBtn.onclick = () => deleteAnyEvent(index);
         resBtn.onclick = () => openEditModal(index);
 
@@ -1865,6 +2311,19 @@ function approveAllPendingEmails() {
                 delBtn.style.display = 'block'; resBtn.style.display = 'block';
                 cancelPresBtn.style.display = 'flex'; cancelPresBtn.onclick = () => { closeModal('eventModal'); cancelNoShift(index); };
                 cancelShiftBtn.style.display = 'flex'; cancelShiftBtn.onclick = () => { closeModal('eventModal'); cancelAndShift(index); };
+                ;
+sendEmailBtn.style.display = 'flex';
+
+sendEmailBtn.onclick = () => {
+
+    document.getElementById(
+        'eventEmailModal'
+    ).style.display = 'flex';
+};
+        cancelShiftBtn.onclick = () => {
+            closeModal('eventModal');
+            cancelAndShift(index);
+        };
             }
         } else if (slot.type === 'CUSTOM') {
             const timeFormat = { hour: '2-digit', minute: '2-digit' };
@@ -2109,7 +2568,8 @@ function approveAllPendingEmails() {
         // Auto-download + trigger Outlook desktop import
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${event.title.replace(/[^a-z0-9]+/gi, '_')}.ics`;
+        a.download =
+    `${event.title.replace(/[^a-z0-9]+/gi, '_')}.ics`;
 
         document.body.appendChild(a);
         a.click();
@@ -2128,14 +2588,32 @@ function approveAllPendingEmails() {
     }
 
     function executeClearAll() {
-        saveUndoState();
-        const input = document.getElementById('clearAllConfirmInput').value;
-        if (input !== 'Delete all') { alert('Please type "Delete all" exactly (case-sensitive) to confirm.'); return; }
-        schedule = [];
-        saveCurrentToFirebase();
-        closeModal('clearAllModal');
-        document.getElementById('clearAllConfirmInput').value = '';
+
+    const val =
+        document.getElementById(
+            'clearAllConfirmInput'
+        ).value.trim();
+
+    if (val !== "Delete all") {
+        return alert('Type "Delete all" exactly.');
     }
+
+    saveUndoState();
+
+    schedule = schedule.filter(
+        s => s.type === 'HOLIDAY'
+    );
+
+    saveCurrentToFirebase();
+
+    closeModal('clearAllModal');
+
+    document.getElementById(
+        'clearAllConfirmInput'
+    ).value = '';
+
+    alert("All non-holiday events cleared.");
+}
 
     function downloadSingleEventICS(presenterName, isoDateStr) {
         const d = new Date(isoDateStr);
@@ -2162,7 +2640,8 @@ function approveAllPendingEmails() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${event.title.replace(/[^a-z0-9]+/gi, '_')}.ics`;
+        a.download =
+    `${presenterName.replace(/[^a-z0-9]+/gi, '_')}.ics`;
         a.click();
         URL.revokeObjectURL(url);
     }
@@ -2262,15 +2741,3 @@ function approveAllPendingEmails() {
 </body>
 </html>
 
-
-<!-- 
-GitHub Commit Summary
-
-Fix Cancel & Shift rotation logic
-
-- Fixed Cancel & Shift placing CANCELED marker on wrong date
-- Preserved canceled presenter by shifting future rotation slots forward
-- Added automatic extension slot to avoid dropping final presenter
-- Kept PRES/WHOLE sequencing intact
-- Left all other calendar behaviors unchanged
--->
