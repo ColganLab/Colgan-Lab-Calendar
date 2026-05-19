@@ -103,7 +103,7 @@ async function sendApprovedEmails() {
                         process.env.GMAIL_USER,
 
                     to:
-                        email.email,
+                        email.presenterEmail,
 
                     subject:
                         email.subject,
