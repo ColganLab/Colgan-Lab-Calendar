@@ -666,7 +666,178 @@
         renderUpcoming();
         renderMyPresentations();
         updateStats();
+
+        loadPendingEmails();
     });
+/*
+|--------------------------------------------------------------------------
+| Pending Email Popup
+|--------------------------------------------------------------------------
+*/
+
+function loadPendingEmails() {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Only Admin Can See Email Approvals
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !document.body.classList.contains('is-admin')
+    ) {
+        return;
+    }
+
+    db.ref('pendingEmails')
+        .once('value')
+        .then(snapshot => {
+
+            const data =
+                snapshot.val() || {};
+
+            const pending =
+                Object.entries(data)
+                    .filter(([id, email]) =>
+                        !email.approved &&
+                        !email.sent
+                    );
+
+            if (pending.length === 0) {
+                return;
+            }
+
+            const container =
+                document.getElementById(
+                    'pendingEmailsList'
+                );
+
+            container.innerHTML =
+                pending.map(([id, email]) => {
+
+                    return `
+                        <div style="
+                            border:1px solid #e2e8f0;
+                            border-radius:12px;
+                            padding:16px;
+                            background:white;
+                        ">
+
+                            <div style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                                margin-bottom:8px;
+                            ">
+
+                                <strong>
+                                    ${email.presenter}
+                                </strong>
+
+                                <span style="
+                                    font-size:0.8rem;
+                                    background:#eff6ff;
+                                    color:#1d4ed8;
+                                    padding:4px 8px;
+                                    border-radius:999px;
+                                ">
+                                    ${email.type}
+                                </span>
+
+                            </div>
+
+                            <div style="
+                                font-size:0.85rem;
+                                color:#475569;
+                                margin-bottom:10px;
+                            ">
+                                ${new Date(email.presentationDate)
+                                    .toLocaleDateString()}
+                            </div>
+
+                            <div style="
+                                background:#f8fafc;
+                                border-radius:8px;
+                                padding:12px;
+                                font-size:0.85rem;
+                                white-space:pre-wrap;
+                                margin-bottom:12px;
+                            ">
+${email.body}
+                            </div>
+
+                            <button
+                                onclick="approveSingleEmail('${id}')"
+                                class="btn-add">
+
+                                ✅ Approve
+
+                            </button>
+
+                        </div>
+                    `;
+                }).join('');
+
+            document.getElementById(
+                'pendingEmailsModal'
+            ).style.display = 'flex';
+        });
+}
+/*
+|--------------------------------------------------------------------------
+| Approve Single Email
+|--------------------------------------------------------------------------
+*/
+
+function approveSingleEmail(id) {
+
+    db.ref(`pendingEmails/${id}`)
+        .update({
+            approved: true
+        });
+
+    loadPendingEmails();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Approve All Emails
+|--------------------------------------------------------------------------
+*/
+
+function approveAllPendingEmails() {
+
+    db.ref('pendingEmails')
+        .once('value')
+        .then(snapshot => {
+
+            const data =
+                snapshot.val() || {};
+
+            const updates = {};
+
+            Object.entries(data)
+                .forEach(([id, email]) => {
+
+                    if (
+                        !email.approved &&
+                        !email.sent
+                    ) {
+
+                        updates[
+                            `${id}/approved`
+                        ] = true;
+                    }
+                });
+
+            db.ref('pendingEmails')
+                .update(updates);
+
+            closeModal(
+                'pendingEmailsModal'
+            );
+        });
+}
 
     function refreshOpenFullCalendar() {
         const modal = document.getElementById('fullCalendarModal');
@@ -696,6 +867,8 @@
                 </span>`;
             renderCalendar();
             updatePersonnelUI();
+
+            loadPendingEmails();
         } else {
             alert("Incorrect password.");
         }
@@ -2044,6 +2217,48 @@
         });
     });
 </script>
+<div id="pendingEmailsModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:700px;">
+
+        <span
+            class="close-modal"
+            onclick="closeModal('pendingEmailsModal')">
+            ×
+        </span>
+
+        <h2 style="margin-top:0;">
+            📬 Pending Email Approvals
+        </h2>
+
+        <p style="color:#64748b; margin-bottom:20px;">
+            Review and approve pending presenter emails.
+        </p>
+
+        <div
+            id="pendingEmailsList"
+            style="
+                max-height:500px;
+                overflow-y:auto;
+                display:flex;
+                flex-direction:column;
+                gap:12px;
+            ">
+        </div>
+
+        <div style="margin-top:20px;">
+
+            <button
+                onclick="approveAllPendingEmails()"
+                class="btn-add">
+
+                ✅ Approve All Emails
+
+            </button>
+
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
 
