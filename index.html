@@ -332,9 +332,32 @@
                 <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Viewing all past and future scheduled events.</p>
             </div>
         </div>
-        <div style="position:sticky; top:0; z-index:20; display:flex; justify-content:flex-end; gap:12px; padding:12px 0; margin-top:16px; background:white; border-bottom:1px solid var(--lab-blue);">
-            <button onclick="undoLastChange()" id="fullCalendarUndoBtn" style="width:auto; padding: 8px 20px; background: white; color: var(--molecule-navy); border:1px solid var(--lab-blue); border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;" disabled>↩️ Undo Change</button>
-            <button onclick="scrollToTodayInFullCal()" style="width:auto; padding: 8px 20px; background: var(--flask-teal); color:white; border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;">📍 Today</button>
+        <div style="position:sticky; top:0; z-index:20; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:12px 0; margin-top:16px; background:white; border-bottom:1px solid var(--lab-blue);">
+            <div style="display:flex; align-items:end; gap:12px; flex-wrap:wrap;">
+                <div style="display:flex; flex-direction:column; gap:4px; min-width:160px;">
+                    <label style="font-size:0.78rem; font-weight:600; color:#475569;">Start Date</label>
+                    <input type="date" id="fullCalendarStartDate" onchange="applyFullCalendarRange()" style="padding:8px 12px;">
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:4px; min-width:160px;">
+                    <label style="font-size:0.78rem; font-weight:600; color:#475569;">End Date</label>
+                    <input type="date" id="fullCalendarEndDate" onchange="applyFullCalendarRange()" style="padding:8px 12px;">
+                </div>
+
+                <button onclick="resetFullCalendarRange()" style="width:auto; padding:8px 16px; background:white; color:var(--molecule-navy); border:1px solid var(--lab-blue); border-radius:10px; font-size:0.85rem; font-weight:600;">
+                    Reset Range
+                </button>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap;">
+                <button onclick="undoLastChange()" id="fullCalendarUndoBtn" style="width:auto; padding: 8px 20px; background: white; color: var(--molecule-navy); border:1px solid var(--lab-blue); border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;" disabled>
+                    ↩️ Undo Change
+                </button>
+
+                <button onclick="scrollToTodayInFullCal()" style="width:auto; padding: 8px 20px; background: var(--flask-teal); color:white; border-radius:10px; font-size:0.9rem; font-weight:600; flex-shrink:0;">
+                    📍 Today
+                </button>
+            </div>
         </div>
         <div id="fullCalendarContainer" class="modal-scroll-content"></div>
     </div>
@@ -698,6 +721,11 @@
     let dropdownData = []; 
 
     let selectedEventIdx = null;
+
+    let fullCalendarRange = {
+        start: null,
+        end: null
+    };
 
     db.ref().on('value', (snapshot) => {
         const data = snapshot.val() || {};
@@ -1272,7 +1300,8 @@ Colgan Lab`,
         const previousScrollTop = fullContainer.scrollTop;
 
         fullContainer.innerHTML = '';
-        renderCalendarUI(fullContainer, false);
+
+        renderCalendarUI(fullContainer, false, fullCalendarRange);
 
         requestAnimationFrame(() => {
             fullContainer.scrollTop = previousScrollTop;
@@ -2352,8 +2381,15 @@ sendEmailBtn.onclick = () => {
     }
 
     function openFullCalendar() {
-        const fullContainer = document.getElementById('fullCalendarContainer'); fullContainer.innerHTML = '';
-        renderCalendarUI(fullContainer, false); document.getElementById('fullCalendarModal').style.display = 'flex';
+        initializeFullCalendarRange();
+
+        const fullContainer = document.getElementById('fullCalendarContainer');
+        fullContainer.innerHTML = '';
+
+        renderCalendarUI(fullContainer, false, fullCalendarRange);
+
+        document.getElementById('fullCalendarModal').style.display = 'flex';
+
         setTimeout(() => scrollToTodayInFullCal(false), 80);
     }
 
@@ -2371,17 +2407,123 @@ sendEmailBtn.onclick = () => {
         }
     }
 
-    function renderCalendar() { const mainContainer = document.getElementById('calendarContainer'); mainContainer.innerHTML = ''; renderCalendarUI(mainContainer, true); }
+    function initializeFullCalendarRange() {
+        if (schedule.length === 0) {
+            const today = new Date();
 
-    function renderCalendarUI(targetContainer, limitView) {
+            const start = new Date(today.getFullYear(), today.getMonth(), 1);
+            const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            fullCalendarRange.start = start;
+            fullCalendarRange.end = end;
+        }
+        else if (!fullCalendarRange.start || !fullCalendarRange.end) {
+            const sortedDates = schedule
+                .map(s => new Date(s.date))
+                .sort((a, b) => a - b);
+
+            fullCalendarRange.start = sortedDates[0];
+            fullCalendarRange.end = sortedDates[sortedDates.length - 1];
+        }
+
+        syncFullCalendarInputs();
+    }
+
+    function syncFullCalendarInputs() {
+        const startInput = document.getElementById('fullCalendarStartDate');
+        const endInput = document.getElementById('fullCalendarEndDate');
+
+        if (startInput && fullCalendarRange.start) {
+            startInput.value = fullCalendarRange.start.toISOString().split('T')[0];
+        }
+
+        if (endInput && fullCalendarRange.end) {
+            endInput.value = fullCalendarRange.end.toISOString().split('T')[0];
+        }
+    }
+
+    function applyFullCalendarRange() {
+        const startInput = document.getElementById('fullCalendarStartDate');
+        const endInput = document.getElementById('fullCalendarEndDate');
+
+        if (!startInput.value || !endInput.value) {
+            return;
+        }
+
+        const start = new Date(startInput.value + 'T00:00:00');
+        const end = new Date(endInput.value + 'T23:59:59');
+
+        if (start > end) {
+            alert('Start date must be before end date.');
+            return;
+        }
+
+        fullCalendarRange.start = start;
+        fullCalendarRange.end = end;
+
+        refreshOpenFullCalendar();
+    }
+
+    function resetFullCalendarRange() {
+        fullCalendarRange.start = null;
+        fullCalendarRange.end = null;
+
+        initializeFullCalendarRange();
+
+        refreshOpenFullCalendar();
+    }
+
+    function renderCalendar() {
+        const mainContainer = document.getElementById('calendarContainer');
+        mainContainer.innerHTML = '';
+        renderCalendarUI(mainContainer, true, null);
+    }
+
+    function renderCalendarUI(targetContainer, limitView, dateRange = null) {
         const now = new Date();
         const currentMonthKey = now.toLocaleString('default', { month: 'long', year: 'numeric' });
         const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         const nextMonthKey = nextMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-        let monthKeys = schedule.length > 0
-            ? [...new Set(schedule.map(s => s.date.toLocaleString('default', { month: 'long', year: 'numeric' })))]
+        let filteredSchedule = [...schedule];
+
+        if (dateRange && dateRange.start && dateRange.end) {
+            filteredSchedule = filteredSchedule.filter(s => {
+                const eventDate = new Date(s.date);
+                return eventDate >= dateRange.start && eventDate <= dateRange.end;
+            });
+        }
+
+        let monthKeys = filteredSchedule.length > 0
+            ? [...new Set(filteredSchedule.map(s => s.date.toLocaleString('default', { month: 'long', year: 'numeric' })))]
             : [];
+
+        if (!limitView && dateRange && dateRange.start && dateRange.end) {
+            monthKeys = [];
+
+            const iterMonth = new Date(
+                dateRange.start.getFullYear(),
+                dateRange.start.getMonth(),
+                1
+            );
+
+            const finalMonth = new Date(
+                dateRange.end.getFullYear(),
+                dateRange.end.getMonth(),
+                1
+            );
+
+            while (iterMonth <= finalMonth) {
+                monthKeys.push(
+                    iterMonth.toLocaleString('default', {
+                        month: 'long',
+                        year: 'numeric'
+                    })
+                );
+
+                iterMonth.setMonth(iterMonth.getMonth() + 1);
+            }
+        }
 
         if (limitView) {
             // Always show current and next month; include schedule months that match
@@ -2405,7 +2547,13 @@ sendEmailBtn.onclick = () => {
                 const currentDate = new Date(year, monthIdx, d), isoDate = currentDate.toISOString().split('T')[0];
                 const todayRef = new Date(); todayRef.setHours(0,0,0,0);
                 const isToday = currentDate.getTime() === todayRef.getTime();
-                const slots = schedule.map((s, idx) => ({...s, originalIdx: idx})).filter(s => s.date.getDate() === d && s.date.getMonth() === monthIdx && s.date.getFullYear() === year);
+                const slots = filteredSchedule
+                    .map((s, idx) => ({...s, originalIdx: schedule.indexOf(s)}))
+                    .filter(s =>
+                        s.date.getDate() === d &&
+                        s.date.getMonth() === monthIdx &&
+                        s.date.getFullYear() === year
+                    );
                 const birthdaysFound = participants.filter(p => !p.retired && p.birthday === `${String(monthIdx + 1).padStart(2, '0')}/${String(d).padStart(2, '0')}`);
                 let eventHtml = '', adminBtns = '';
 
