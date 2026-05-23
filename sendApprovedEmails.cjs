@@ -82,14 +82,45 @@ async function sendApprovedEmails() {
 
             console.log(email);
 
+            /*
+            |--------------------------------------------------------------------------
+            | Only Send Approved + Unsent + Non-Denied Emails
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 email.approved === true &&
+                email.denied !== true &&
                 email.sent !== true
             ) {
 
+                /*
+                |--------------------------------------------------------------------------
+                | Handle Different Email Schemas
+                |--------------------------------------------------------------------------
+                */
+
+                const recipient =
+                    email.presenterEmail || email.email;
+
+                if (!recipient) {
+
+                    console.log(
+                        `⚠️ Skipping email ${id} — no recipient`
+                    );
+
+                    continue;
+                }
+
                 console.log(
-                    `📨 Sending email to ${email.presenterEmail}`
+                    `📨 Sending email to ${recipient}`
                 );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Send Email
+                |--------------------------------------------------------------------------
+                */
 
                 await transporter.sendMail({
 
@@ -97,7 +128,7 @@ async function sendApprovedEmails() {
                         process.env.GMAIL_USER,
 
                     to:
-                        email.presenterEmail,
+                        recipient,
 
                     subject:
                         email.subject,
@@ -105,6 +136,12 @@ async function sendApprovedEmails() {
                     text:
                         email.body
                 });
+
+                /*
+                |--------------------------------------------------------------------------
+                | Mark Email As Sent
+                |--------------------------------------------------------------------------
+                */
 
                 await db.ref(`pendingEmails/${id}`).update({
 
@@ -115,7 +152,7 @@ async function sendApprovedEmails() {
                 });
 
                 console.log(
-                    `✅ Sent email to ${email.presenterEmail}`
+                    `✅ Sent email to ${recipient}`
                 );
             }
         }
