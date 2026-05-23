@@ -1,3 +1,4 @@
+<!-- VERSION: CUSTOM_EVENTS_V2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2376,10 +2377,14 @@ function logoutAdmin() {
 
     function saveCurrentToFirebase() {
 
-    if (!isAdminUser()) {
-        alert("Unauthorized.");
-        return;
-    }
+        /*
+        |--------------------------------------------------------------
+        | Allow non-admin users to save calendar changes
+        | ONLY custom events can be created/edited by non-admins
+        | Enforcement already happens earlier in the UI logic
+        |--------------------------------------------------------------
+        */
+
         normalizeMeetingTimes();
 
         /*
