@@ -1595,7 +1595,10 @@ Colgan Lab`,
 
         const data = snapshot.val() || {};
 
-        adminEmails = Object.values(data);
+        adminEmails = Object.values(data)
+            .map(email => String(email).trim().toLowerCase());
+
+        console.log("Loaded admin emails:", adminEmails);
 
         renderAdminEmails();
     });
@@ -1604,11 +1607,17 @@ Colgan Lab`,
 
         const user = firebase.auth().currentUser;
 
-        if (!user) return false;
+        if (!user || !user.email) {
+            return false;
+        }
 
-        return adminEmails.includes(
-            user.email.toLowerCase()
-        );
+        const currentEmail =
+            user.email.trim().toLowerCase();
+
+        console.log("Checking admin:", currentEmail);
+        console.log("Against:", adminEmails);
+
+        return adminEmails.includes(currentEmail);
     }
 
     function openAdminEmailsModal() {
@@ -1761,6 +1770,11 @@ Colgan Lab`,
 
         if (!user) {
             alert("You must be logged in first.");
+            return;
+        }
+
+        if (adminEmails.length === 0) {
+            alert("Admin list is still loading. Try again in a second.");
             return;
         }
 
