@@ -2,7 +2,7 @@ name: Send Approved Emails
 
 on:
   schedule:
-    - cron: '*/60 * * * *'
+    - cron: '*/15 * * * *'
 
   workflow_dispatch:
 
