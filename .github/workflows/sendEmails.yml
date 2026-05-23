@@ -2,17 +2,15 @@ name: Send Approved Emails
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '7,22,37,52 * * * *'
 
   workflow_dispatch:
 
 jobs:
   send-emails:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repo
         uses: actions/checkout@v4
 
@@ -23,6 +21,11 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Log Trigger
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          date
 
       - name: Send Emails
         run: node sendApprovedEmails.cjs
