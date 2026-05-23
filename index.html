@@ -323,6 +323,33 @@
 </head>
 <body>
 
+<div id="authOverlay" style="position:fixed; inset:0; background:rgba(15,23,42,0.92); z-index:5000; display:flex; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:white; width:100%; max-width:420px; border-radius:24px; padding:32px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <h2 style="margin-top:0; color:var(--molecule-navy);">🔐 Firebase Login</h2>
+        <p style="color:#64748b; font-size:0.9rem; margin-bottom:20px;">
+            Sign in with your Email/Password account.
+        </p>
+
+        <div class="input-group">
+            <input type="email" id="authEmail" placeholder="Email Address">
+            <input type="password" id="authPassword" placeholder="Password">
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:18px;">
+            <button class="btn-add" onclick="signInUser()">Login</button>
+            <button class="btn-io" onclick="registerUser()">Register</button>
+        </div>
+
+        <button class="btn-logout" onclick="signOutUser()" id="signOutBtn" style="margin-top:14px; display:none; width:100%;">
+            Logout
+        </button>
+
+        <div id="authStatus" style="margin-top:16px; font-size:0.85rem; color:#64748b;"></div>
+    </div>
+</div>
+
+
+
 <div id="fullCalendarModal" class="modal-overlay">
     <div class="modal-card modal-card-large">
         <span class="close-modal" onclick="closeModal('fullCalendarModal')">×</span>
@@ -596,16 +623,68 @@
 
 <div class="container">
     <header>
+<div style="
+    margin-bottom:20px;
+    background:#f8fafc;
+    border:1px solid #cbd5e1;
+    border-radius:14px;
+    padding:14px 18px;
+">
+    <details>
+        <summary style="
+            cursor:pointer;
+            font-weight:700;
+            color:var(--flask-teal);
+            font-size:1rem;
+            outline:none;
+        ">
+            📧 How to request a swap email
+        </summary>
+
+        <div style="
+            margin-top:14px;
+            color:#475569;
+            line-height:1.7;
+            font-size:0.92rem;
+        ">
+            <ol style="padding-left:20px; margin:0;">
+                <li>Select your name using the <strong>"Who are you?"</strong> search bar at the top of the page.</li>
+
+                <li>Open a presentation you would like to swap with directly from the calendar (not your own presentation).</li>
+
+                <li>Inside the presentation window, click <strong>"Draft Swap Email"</strong>.</li>
+
+                <li>Your default email app will open with a pre-written swap request email addressed to the presenter.</li>
+
+                <li>Review the message and send the email.</li>
+            </ol>
+
+            <div style="
+                margin-top:12px;
+                padding:10px 12px;
+                background:#eff6ff;
+                border-radius:10px;
+                color:#1d4ed8;
+                font-size:0.88rem;
+            ">
+                Tip: If you do not see the "Draft Swap Email" button, make sure you selected your name first.
+            </div>
+        </div>
+    </details>
+</div>
+
         <h1>🧪 Colgan Lab Calendar</h1>
         <div class="header-controls">
+            <button id="firebaseSignOutBtn" onclick="firebase.auth().signOut()" style="width:auto; padding:10px 18px; background:#ef4444; color:white; border:none; border-radius:10px; font-weight:600; cursor:pointer;">
+                Sign Out
+            </button>
             <div style="display:flex; gap:8px;">
                 <button class="btn-io" onclick="openFullCalendar()" style="width:auto; padding: 10px 20px; background: var(--molecule-navy); color: white;">📂 View Full Calendar</button>
                 <button class="btn-io" onclick="document.getElementById('exportCalModal').style.display='flex'" style="width:auto; padding: 10px 20px;">📅 Export Calendar</button>
                 <button class="btn-io" id="undoBtn" onclick="undoLastChange()" disabled style="width:auto; padding: 10px 20px;">↩️ Undo Change</button>
             </div>
             <div id="adminLoginArea" style="display:flex; gap:8px;">
-                <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
-                <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">Login</button>
+                <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">🛡️ Enter Admin View</button>
             </div>
             <div class="user-select-container">
                 <div class="searchable-select">
@@ -646,6 +725,15 @@
                 </div>
                 <button class="btn-gen" onclick="handleGenerateClick()" style="margin-top: 16px;">Generate Chunk Rotation</button>
                 <button id="adminSaveBtn" class="btn-admin-save" onclick="saveCurrentToFirebase()">Force Sync Database</button>
+
+                <button
+                    class="btn-admin-save"
+                    onclick="openAdminEmailsModal()"
+                    style="display:none; background:#0f172a; color:white; margin-top:6px;">
+
+                    🛡️ Manage Admin Access
+
+                </button>
                 <button class="btn-admin-save" onclick="document.getElementById('clearAllModal').style.display='flex'" style="display:none; background:#fff1f2; color:var(--danger-red); border:1px solid #fecdd3; margin-top:6px;">🗑️ Clear All Events</button>
                 
                 
@@ -658,12 +746,7 @@
 
                 <div style="margin-top: 20px; text-align: center;">
                     <a href="https://console.firebase.google.com/u/3/" target="_blank" style="font-size: 0.85rem; color: var(--flask-teal); text-decoration: none; font-weight: 500;">🔥 Open Firebase Console</a>
-                    <div class="fb-login-info">
-                        <strong>Firebase Login Details:</strong><br>
-                        User: ColganLabGeneral@gmail.com<br>
-                        Pass: ColganLab123!@#
                     </div>
-                </div>
             </section>
         </aside>
 
@@ -698,6 +781,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -713,6 +797,61 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged((user) => {
+        const overlay = document.getElementById('authOverlay');
+        const status = document.getElementById('authStatus');
+        const signOutBtn = document.getElementById('signOutBtn');
+
+        if (user) {
+            overlay.style.display = 'none';
+            signOutBtn.style.display = 'block';
+
+            if (status) {
+                status.innerHTML = `Logged in as <strong>${user.email}</strong>`;
+            }
+        } else {
+            overlay.style.display = 'flex';
+
+            if (status) {
+                status.innerHTML = 'Please log in to access the calendar.';
+            }
+        }
+    });
+
+    function signInUser() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                document.getElementById('authPassword').value = '';
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    }
+
+    function registerUser() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                alert('Account created successfully.');
+                document.getElementById('authPassword').value = '';
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    }
+
+    function signOutUser() {
+        auth.signOut();
+    }
+
+
     let participants = [];
     let participantsObj = {}; 
     let schedule = [];
@@ -727,31 +866,58 @@
         end: null
     };
 
-    db.ref().on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        participantsObj = data.participants || {};
-        participants = Object.values(participantsObj);
-        
-        if (data.scheduleState) {
-            schedule = data.scheduleState.map(item => ({
-                ...item,
-                date: new Date(item.date),
-                endDate: item.endDate ? new Date(item.endDate) : null
-            }));
-        } else {
-            schedule = [];
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Optimized Firebase Sync
+    |--------------------------------------------------------------------------
+    | Split listeners by collection so Firebase auth/rules do not trigger
+    | a full calendar reload every time a single node changes.
+    | Also prevents unnecessary UI redraws and makes updates feel instant.
+    */
+
+    let isInitialScheduleLoad = true;
+
+    function refreshCalendarUI() {
         normalizeMeetingTimes();
-        
+
         updatePersonnelUI();
         updateAdminSwapLists();
-        renderCalendar(); 
+        renderCalendar();
         refreshOpenFullCalendar();
         renderUpcoming();
         renderMyPresentations();
         updateStats();
+    }
 
-        loadPendingEmails();
+    db.ref('participants').on('value', (snapshot) => {
+        participantsObj = snapshot.val() || {};
+        participants = Object.values(participantsObj);
+
+        updatePersonnelUI();
+        updateStats();
+    });
+
+    db.ref('scheduleState').on('value', (snapshot) => {
+        const data = snapshot.val() || [];
+
+        schedule = data.map(item => ({
+            ...item,
+            date: new Date(item.date),
+            endDate: item.endDate ? new Date(item.endDate) : null
+        }));
+
+        refreshCalendarUI();
+
+        /*
+        |--------------------------------------------------------------
+        | Only load pending emails after initial schedule sync
+        |--------------------------------------------------------------
+        */
+
+        if (isInitialScheduleLoad) {
+            loadPendingEmails();
+            isInitialScheduleLoad = false;
+        }
     });
 /*
 |--------------------------------------------------------------------------
@@ -773,6 +939,20 @@ function loadPendingEmails() {
         return;
     }
 
+    const modal =
+        document.getElementById(
+            'pendingEmailsModal'
+        );
+
+    const container =
+        document.getElementById(
+            'pendingEmailsList'
+        );
+
+    if (!modal || !container) {
+        return;
+    }
+
     db.ref('pendingEmails')
         .once('value')
         .then(snapshot => {
@@ -782,10 +962,17 @@ function loadPendingEmails() {
 
             const pending =
                 Object.entries(data)
-                    .filter(([id, email]) =>
-                        !email.approved &&
-                        !email.sent
-                    );
+                    .filter(([id, email]) => {
+                        const presentationTime =
+                            new Date(email.presentationDate).getTime();
+
+                        return (
+                            !email.approved &&
+                            !email.sent &&
+                            !email.denied &&
+                            presentationTime > Date.now()
+                        );
+                    });
 
             if (pending.length === 0) {
                 return;
@@ -800,7 +987,7 @@ function loadPendingEmails() {
                 pending.map(([id, email]) => {
 
                     return `
-                        <div style="
+                        <div data-email-id="${id}" style="
                             border:1px solid #e2e8f0;
                             border-radius:12px;
                             padding:16px;
@@ -901,12 +1088,38 @@ ${email.body}
 
 function approveSingleEmail(id) {
 
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
+
     db.ref(`pendingEmails/${id}`)
         .update({
-            approved: true
-        });
+            approved: true,
+            denied: false
+        })
+        .then(() => {
 
-    loadPendingEmails();
+            const card =
+                document.querySelector(
+                    `[data-email-id="${id}"]`
+                );
+
+            if (card) {
+                card.remove();
+            }
+
+            const remaining =
+                document.querySelectorAll(
+                    '[data-email-id]'
+                );
+
+            if (remaining.length === 0) {
+                closeModal('pendingEmailsModal');
+            } else {
+                loadPendingEmails();
+            }
+        });
 }
 
 /*
@@ -916,14 +1129,60 @@ function approveSingleEmail(id) {
 */
 function denySingleEmail(id) {
 
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
+
     if (!confirm("Deny and permanently remove this email request?")) {
         return;
     }
 
     db.ref(`pendingEmails/${id}`)
-        .remove()
+        .update({
+            denied: true
+        })
         .then(() => {
-            loadPendingEmails();
+
+            const card =
+                document.querySelector(
+                    `[data-email-id="${id}"]`
+                );
+
+            if (card) {
+                card.remove();
+            }
+
+            db.ref('pendingEmails')
+                .once('value')
+                .then(snapshot => {
+
+                    const data =
+                        snapshot.val() || {};
+
+                    const remainingPending =
+                        Object.values(data).filter(email =>
+                            !email.approved &&
+                            !email.sent &&
+                            !email.denied
+                        );
+
+                    if (remainingPending.length === 0) {
+
+                        const modal =
+                            document.getElementById(
+                                'pendingEmailsModal'
+                            );
+
+                        if (modal) {
+                            modal.style.display = 'none';
+                        }
+
+                    } else {
+
+                        loadPendingEmails();
+                    }
+                });
         });
 }
 
@@ -934,6 +1193,11 @@ function denySingleEmail(id) {
 */
 
 function approveAllPendingEmails() {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
 
     db.ref('pendingEmails')
         .once('value')
@@ -949,7 +1213,8 @@ function approveAllPendingEmails() {
 
                     if (
                         !email.approved &&
-                        !email.sent
+                        !email.sent &&
+                        !email.denied
                     ) {
 
                         updates[
@@ -1013,7 +1278,7 @@ You have been assigned to present at lab meeting on:
 
 ${presentationDate}
 
-Please prepare your presentation materials accordingly. If you need to request a swap, please do so at https://colganlab.github.io/Colgan-Lab-Calendar/
+Please prepare your presentation materials accordingly.
 
 Thank you,
 Colgan Lab`;
@@ -1103,6 +1368,13 @@ schedule.forEach(event => {
         return;
     }
 
+    const eventDate =
+        new Date(event.date);
+
+    if (eventDate.getTime() <= Date.now()) {
+        return;
+    }
+
     const presenter =
         event.presenter?.name;
 
@@ -1111,8 +1383,7 @@ schedule.forEach(event => {
     }
 
     const isoDate =
-        new Date(event.date)
-            .toISOString();
+        eventDate.toISOString();
 
     validScheduleKeys.add(
         `${presenter}|${isoDate}`
@@ -1218,6 +1489,13 @@ if (existingAssignments.has(key)) {
                     return;
                 }
 
+                const eventDate =
+                    new Date(event.date);
+
+                if (eventDate.getTime() <= Date.now()) {
+                    return;
+                }
+
                 const presenter =
                     event.presenter?.name;
 
@@ -1226,8 +1504,7 @@ if (existingAssignments.has(key)) {
                 }
 
                 const isoDate =
-                    new Date(event.date)
-                        .toISOString();
+                    eventDate.toISOString();
 
                 const key =
                     `${presenter}|${isoDate}`;
@@ -1310,34 +1587,219 @@ Colgan Lab`,
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+
+
+    let adminEmails = [];
+
+    db.ref('adminEmails').on('value', (snapshot) => {
+
+        const data = snapshot.val() || {};
+
+        adminEmails = Object.values(data);
+
+        renderAdminEmails();
+    });
+
+    function isAdminUser() {
+
+        const user = firebase.auth().currentUser;
+
+        if (!user) return false;
+
+        return adminEmails.includes(
+            user.email.toLowerCase()
+        );
+    }
+
+    function openAdminEmailsModal() {
+
+        if (!isAdminUser()) {
+            alert("Unauthorized.");
+            return;
+        }
+
+        renderAdminEmails();
+
+        document.getElementById(
+            'adminEmailsModal'
+        ).style.display = 'flex';
+    }
+
+    function renderAdminEmails() {
+
+        const container =
+            document.getElementById(
+                'adminEmailsList'
+            );
+
+        if (!container) return;
+
+        if (adminEmails.length === 0) {
+
+            container.innerHTML = `
+                <div style="
+                    color:#64748b;
+                    font-size:0.9rem;
+                    padding:12px;
+                    background:#f8fafc;
+                    border-radius:10px;
+                ">
+                    No admin emails configured.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            adminEmails.map(email => `
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    padding:12px;
+                    background:#f8fafc;
+                    border-radius:10px;
+                    border:1px solid #e2e8f0;
+                ">
+
+                    <span style="font-size:0.9rem;">
+                        ${email}
+                    </span>
+
+                    <button
+                        onclick="removeAdminEmail('${email}')"
+                        style="
+                            background:#fee2e2;
+                            color:#b91c1c;
+                            border:none;
+                            border-radius:8px;
+                            padding:6px 12px;
+                            cursor:pointer;
+                            font-weight:600;
+                        ">
+
+                        Remove
+
+                    </button>
+                </div>
+            `).join('');
+    }
+
+    function addAdminEmail() {
+
+        if (!isAdminUser()) {
+            alert("Unauthorized.");
+            return;
+        }
+
+        const input =
+            document.getElementById(
+                'newAdminEmail'
+            );
+
+        const email =
+            input.value
+                .trim()
+                .toLowerCase();
+
+        if (!email) {
+            alert("Enter an email.");
+            return;
+        }
+
+        if (adminEmails.includes(email)) {
+            alert("Email already exists.");
+            return;
+        }
+
+        db.ref('adminEmails')
+            .push(email)
+            .then(() => {
+
+                input.value = '';
+            });
+    }
+
+    function removeAdminEmail(email) {
+
+        if (!isAdminUser()) {
+            alert("Unauthorized.");
+            return;
+        }
+
+        if (!confirm(
+            `Remove admin access for ${email}?`
+        )) {
+            return;
+        }
+
+        db.ref('adminEmails')
+            .once('value')
+            .then(snapshot => {
+
+                const data =
+                    snapshot.val() || {};
+
+                Object.entries(data)
+                    .forEach(([key, value]) => {
+
+                        if (value === email) {
+
+                            db.ref(
+                                `adminEmails/${key}`
+                            ).remove();
+                        }
+                    });
+            });
+    }
+
     function loginAdmin() {
-        const pass = document.getElementById('adminPass').value;
-        if (pass === "Password") {
+
+        const user = firebase.auth().currentUser;
+
+        if (!user) {
+            alert("You must be logged in first.");
+            return;
+        }
+
+        if (isAdminUser()) {
+
             document.body.classList.add('is-admin');
+
             document.getElementById('adminLoginArea').innerHTML = `
                 <span style='color:var(--flask-teal); font-weight:600; display:flex; align-items:center; gap:12px;'>
                     🛡️ Admin
-                    <button onclick="logoutAdmin()" class="btn-logout">Logout</button>
+                    <button onclick="logoutAdmin()" class="btn-logout">
+                        Logout
+                    </button>
                 </span>`;
+
             renderCalendar();
             updatePersonnelUI();
-
             loadPendingEmails();
+
         } else {
-            alert("Incorrect password.");
+
+            alert("You are not authorized as admin.");
         }
     }
 
     function logoutAdmin() {
         document.body.classList.remove('is-admin');
         document.getElementById('adminLoginArea').innerHTML = `
-            <input type="password" id="adminPass" placeholder="Admin Password" style="width:160px; padding: 8px 12px;">
-            <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">Login</button>`;
+            <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">🛡️ Enter Admin View</button>`;
         renderCalendar();
         updatePersonnelUI();
     }
 
     function addPerson() {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
         const name = document.getElementById('pName').value.trim();
         const group = document.getElementById('pGroup').value.trim() || "Unassigned";
         const email = document.getElementById('pEmail').value.trim();
@@ -1381,6 +1843,11 @@ Colgan Lab`,
     }
 
     function saveEditedPerson() {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
         const key = document.getElementById('editKey').value;
         const oldData = participantsObj[key];
         const isNowRetired = document.getElementById('editRetired').checked;
@@ -1428,6 +1895,11 @@ Colgan Lab`,
     }
 
     function deletePerson(key) {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
         if (confirm("Permanently remove this scientist?")) db.ref('participants/' + key).remove();
     }
 
@@ -1855,24 +2327,51 @@ Colgan Lab`,
     }
 
     function saveCurrentToFirebase() {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
         normalizeMeetingTimes();
+
+        /*
+        |--------------------------------------------------------------
+        | Instant Local UI Refresh
+        |--------------------------------------------------------------
+        | Prevents waiting for Firebase round-trip before calendar updates.
+        */
+
+        refreshCalendarUI();
+
         const uploadable = schedule.map(s => ({
-            ...s, date: s.date instanceof Date ? s.date.toISOString() : s.date,
-            endDate: (s.endDate instanceof Date) ? s.endDate.toISOString() : (s.endDate || null)
+            ...s,
+            date: s.date instanceof Date
+                ? s.date.toISOString()
+                : s.date,
+
+            endDate: (s.endDate instanceof Date)
+                ? s.endDate.toISOString()
+                : (s.endDate || null)
         }));
+
+        /*
+        |--------------------------------------------------------------
+        | Use direct scheduleState sync only
+        |--------------------------------------------------------------
+        */
+
         db.ref('scheduleState')
-    .set(uploadable)
+            .set(uploadable)
+            .then(() => {
 
-    .then(() => {
+                console.log("Schedule synced instantly.");
 
-        console.log("Schedule synced.");
-
-        syncAssignmentEmails();
-    })
-
-    .catch(err =>
-        alert("Sync error: " + err.message)
-    );
+                syncAssignmentEmails();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Sync error: " + err.message);
+            });
     }
 
     function handleDayDblClick(dateStr) { openEditModal(null, dateStr); }
@@ -2057,6 +2556,11 @@ Colgan Lab`,
     }
 
     function adminExecuteSwap() {
+
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
         saveUndoState();
         const idx1 = document.getElementById('swapSlot1').value, idx2 = document.getElementById('swapSlot2').value;
         if (!idx1 || !idx2 || idx1 === idx2) return alert("Please select two different slots to swap.");
@@ -2737,6 +3241,11 @@ sendEmailBtn.onclick = () => {
 
     function executeClearAll() {
 
+    if (!isAdminUser()) {
+        alert("Unauthorized.");
+        return;
+    }
+
     const val =
         document.getElementById(
             'clearAllConfirmInput'
@@ -2886,6 +3395,43 @@ sendEmailBtn.onclick = () => {
 
     </div>
 </div>
+
+<div id="adminEmailsModal" class="modal-overlay">
+    <div class="modal-card">
+        <span class="close-modal" onclick="closeModal('adminEmailsModal')">×</span>
+
+        <h3 style="margin-top:0; color:var(--molecule-navy);">
+            🛡️ Admin Access Management
+        </h3>
+
+        <p style="color:#64748b; font-size:0.9rem;">
+            Add or remove admin email access dynamically.
+        </p>
+
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+            <input
+                type="email"
+                id="newAdminEmail"
+                placeholder="Enter admin email"
+                style="flex:1;">
+
+            <button
+                class="btn-add"
+                style="width:auto;"
+                onclick="addAdminEmail()">
+
+                Add
+            </button>
+        </div>
+
+        <div
+            id="adminEmailsList"
+            style="display:flex; flex-direction:column; gap:10px;">
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
 
