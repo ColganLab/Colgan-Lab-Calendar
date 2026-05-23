@@ -1857,13 +1857,17 @@ function logoutAdmin() {
         const draggedEvent =
             schedule[draggedEventIdx];
 
-        if (
-            !document.body.classList.contains('is-admin') &&
-            draggedEvent &&
-            draggedEvent.type !== 'CUSTOM'
-        ) {
-            alert("Only admins can move presentations and whole lab events.");
-            return;
+        /*
+        |--------------------------------------------------------------
+        | Non-admins may move CUSTOM events only
+        |--------------------------------------------------------------
+        */
+        if (!document.body.classList.contains('is-admin')) {
+
+            if (!draggedEvent || draggedEvent.type !== 'CUSTOM') {
+                alert("Only admins can move presentations and whole lab events.");
+                return;
+            }
         }
         const p = participantsObj[key];
         document.getElementById('editKey').value = key;
@@ -2497,20 +2501,23 @@ function logoutAdmin() {
     }
 
     function saveQuickEvent() {
+
+        console.log("saveQuickEvent called");
+
         saveUndoState();
         const idx = document.getElementById('qeIdx').value;
         const type = document.getElementById('qeEventType').value;
         const isAdmin = document.body.classList.contains('is-admin');
-        if ((type === 'PRES' || type === 'WHOLE') && !isAdmin) {
-            alert("Admin access required to schedule Lab Presentations and Whole Lab Updates.");
-            return;
-        }
 
         /*
         |--------------------------------------------------------------
-        | Non-admin users ARE allowed to create/edit CUSTOM events
+        | Non-admin users may ONLY create/edit CUSTOM events
         |--------------------------------------------------------------
         */
+        if (!isAdmin && type !== 'CUSTOM') {
+            alert("Admin access required to schedule Lab Presentations and Whole Lab Updates.");
+            return;
+        }
         const dateStr = document.getElementById('qeDateInput').value; 
         const timeStr = document.getElementById('qeTime').value;
         const endTimeStr = document.getElementById('qeEndTime').value;
