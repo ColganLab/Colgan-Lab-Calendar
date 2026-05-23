@@ -1800,7 +1800,22 @@ Colgan Lab`,
         }
     }
 
-    function logoutAdmin() {
+    
+/*
+|--------------------------------------------------------------------------
+| Permission Rules
+|--------------------------------------------------------------------------
+| Admins:
+|   - Can manage presentations, whole lab updates, personnel, and all events
+|
+| Non-admin users:
+|   - Can create CUSTOM events
+|   - Can move CUSTOM events
+|   - Cannot modify presentations or whole lab events
+|--------------------------------------------------------------------------
+*/
+
+function logoutAdmin() {
         document.body.classList.remove('is-admin');
         document.getElementById('adminLoginArea').innerHTML = `
             <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">🛡️ Enter Admin View</button>`;
@@ -1834,7 +1849,22 @@ Colgan Lab`,
     }
 
     function editPerson(key) {
-        if(!document.body.classList.contains('is-admin')) return;
+        /*
+        |--------------------------------------------------------------
+        | Non-admin users can move CUSTOM events only
+        |--------------------------------------------------------------
+        */
+        const draggedEvent =
+            schedule[draggedEventIdx];
+
+        if (
+            !document.body.classList.contains('is-admin') &&
+            draggedEvent &&
+            draggedEvent.type !== 'CUSTOM'
+        ) {
+            alert("Only admins can move presentations and whole lab events.");
+            return;
+        }
         const p = participantsObj[key];
         document.getElementById('editKey').value = key;
         document.getElementById('editName').value = p.name;
@@ -2475,6 +2505,12 @@ Colgan Lab`,
             alert("Admin access required to schedule Lab Presentations and Whole Lab Updates.");
             return;
         }
+
+        /*
+        |--------------------------------------------------------------
+        | Non-admin users ARE allowed to create/edit CUSTOM events
+        |--------------------------------------------------------------
+        */
         const dateStr = document.getElementById('qeDateInput').value; 
         const timeStr = document.getElementById('qeTime').value;
         const endTimeStr = document.getElementById('qeEndTime').value;
