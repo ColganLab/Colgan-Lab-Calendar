@@ -324,7 +324,31 @@ let lastScheduledDate =
             */
 
             while (iterDate <= endLimit) {
+const existingEventOnDate =
+    schedule.some(s => {
 
+        const sDate = new Date(s.date);
+
+        return (
+            sDate.getFullYear() === iterDate.getFullYear() &&
+            sDate.getMonth() === iterDate.getMonth() &&
+            sDate.getDate() === iterDate.getDate() &&
+            (
+                s.type === 'PRES' ||
+                s.type === 'WHOLE' ||
+                s.type === 'HOLIDAY'
+            )
+        );
+    });
+
+if (existingEventOnDate) {
+
+    iterDate.setDate(
+        iterDate.getDate() + 7
+    );
+
+    continue;
+}
                 while (iterDate.getDay() !== 1) {
 
                     iterDate.setDate(
