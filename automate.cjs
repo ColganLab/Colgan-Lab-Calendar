@@ -324,8 +324,8 @@ let lastScheduledDate =
             */
 
             while (iterDate <= endLimit) {
-const existingEventOnDate =
-    schedule.some(s => {
+const existingRotationEvent =
+    schedule.find(s => {
 
         const sDate = new Date(s.date);
 
@@ -336,12 +336,23 @@ const existingEventOnDate =
             (
                 s.type === 'PRES' ||
                 s.type === 'WHOLE' ||
-                s.type === 'HOLIDAY'
+                s.type === 'HOLIDAY' ||
+                s.type === 'CANCELED'
             )
         );
     });
 
-if (existingEventOnDate) {
+/*
+|--------------------------------------------------------------------------
+| Skip generation if slot already exists
+|--------------------------------------------------------------------------
+*/
+
+if (existingRotationEvent) {
+
+    console.log(
+        `⏭️ Skipping existing slot on ${iterDate.toDateString()}`
+    );
 
     iterDate.setDate(
         iterDate.getDate() + 7
