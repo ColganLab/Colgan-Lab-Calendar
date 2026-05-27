@@ -1,34 +1,21 @@
-const { initializeApp } = require('firebase/app');
-
-const {
-    getDatabase,
-require('firebase/database');
+const admin = require('firebase-admin');
 
 /*
 |--------------------------------------------------------------------------
-| Firebase Configuration
+| Firebase Admin Initialization
 |--------------------------------------------------------------------------
 */
 
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID,
-};
+const serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT
+);
 
-/*
-|--------------------------------------------------------------------------
-| Initialize Firebase
-|--------------------------------------------------------------------------
-*/
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.FIREBASE_DATABASE_URL
+});
 
-const app = initializeApp(firebaseConfig);
-
-const db = getDatabase(app);
+const db = admin.database();
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +51,8 @@ function getHoliday(date) {
 
 async function createPendingEmail(emailData) {
 
-    const snapshot = await db.ref('pendingEmails').once('value');
+    const snapshot =
+        await db.ref('pendingEmails').once('value');
 
     const existing =
         snapshot.val() || {};
@@ -106,11 +94,11 @@ async function createPendingEmail(emailData) {
         Math.random().toString(36).substring(2, 8);
 
     await db.ref(`pendingEmails/${emailId}`).set({
-            ...emailData,
-            approved: false,
-            sent: false,
-            createdAt: new Date().toISOString()
-        });
+        ...emailData,
+        approved: false,
+        sent: false,
+        createdAt: new Date().toISOString()
+    });
 
     console.log(
         `📬 Created pending email for ${emailData.presenter}`
@@ -127,7 +115,9 @@ async function runAutomation() {
 
     try {
 
-        console.log("📥 Fetching lab metadata from Firebase...");
+        console.log(
+            "📥 Fetching lab metadata from Firebase..."
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -135,9 +125,11 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        const snapshot = await db.ref().once('value');
+        const snapshot =
+            await db.ref().once('value');
 
-        const data = snapshot.val() || {};
+        const data =
+            snapshot.val() || {};
 
         const rawParticipants =
             data.participants
@@ -146,7 +138,6 @@ async function runAutomation() {
 
         /*
         |--------------------------------------------------------------------------
-        | IMPORTANT:
         | Frontend uses scheduleState
         |--------------------------------------------------------------------------
         */
@@ -160,15 +151,16 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        let schedule = rawSchedule
-            .map(s => ({
-                ...s,
-                date: new Date(s.date),
-                endDate: s.endDate
-                    ? new Date(s.endDate)
-                    : null
-            }))
-            .sort((a, b) => a.date - b.date);
+        let schedule =
+            rawSchedule
+                .map(s => ({
+                    ...s,
+                    date: new Date(s.date),
+                    endDate: s.endDate
+                        ? new Date(s.endDate)
+                        : null
+                }))
+                .sort((a, b) => a.date - b.date);
 
         /*
         |--------------------------------------------------------------------------
