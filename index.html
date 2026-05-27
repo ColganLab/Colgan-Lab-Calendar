@@ -687,12 +687,15 @@
             <div id="adminLoginArea" style="display:flex; gap:8px;">
                 <button onclick="loginAdmin()" class="btn-add" style="width:auto; padding: 8px 20px;">🛡️ Enter Admin View</button>
             </div>
-            <div class="user-select-container">
+            <div class="user-select-container" style="max-width:420px; gap:8px; align-items:flex-start;">
                 <div class="searchable-select">
                     <input type="text" id="userSearchInput" placeholder="Who are you? (Search...)" autocomplete="off">
                     <div class="dropdown-list" id="userDropdownList"></div>
                     <input type="hidden" id="currentUser" value="">
                 </div>
+                <button class="btn-io" id="changeAssignedPersonBtn" onclick="clearAssignedPerson()" style="width:auto; white-space:nowrap; padding:10px 14px;">
+                    Change Assigned Person
+                </button>
             </div>
         </div>
     </header>
@@ -800,6 +803,53 @@
 
     const auth = firebase.auth();
 
+    function getAssignedPersonStorageKey() {
+        const user = firebase.auth().currentUser;
+        if (!user || !user.email) return null;
+        return `assignedPerson_${user.email.toLowerCase()}`;
+    }
+
+    function loadAssignedPerson() {
+        const storageKey = getAssignedPersonStorageKey();
+        if (!storageKey) return;
+
+        const savedName = localStorage.getItem(storageKey);
+
+        if (!savedName) return;
+
+        const matchingParticipant = participants.find(
+            p => p.name === savedName
+        );
+
+        if (!matchingParticipant) return;
+
+        document.getElementById('currentUser').value = savedName;
+        document.getElementById('userSearchInput').value = savedName;
+
+        renderMyPresentations();
+    }
+
+    function saveAssignedPerson(name) {
+        const storageKey = getAssignedPersonStorageKey();
+        if (!storageKey) return;
+
+        localStorage.setItem(storageKey, name);
+    }
+
+    function clearAssignedPerson() {
+        const storageKey = getAssignedPersonStorageKey();
+
+        if (storageKey) {
+            localStorage.removeItem(storageKey);
+        }
+
+        document.getElementById('currentUser').value = '';
+        document.getElementById('userSearchInput').value = '';
+        document.getElementById('userDropdownList').style.display = 'none';
+
+        renderMyPresentations();
+    }
+
     auth.onAuthStateChanged((user) => {
         const overlay = document.getElementById('authOverlay');
         const status = document.getElementById('authStatus');
@@ -812,8 +862,16 @@
             if (status) {
                 status.innerHTML = `Logged in as <strong>${user.email}</strong>`;
             }
+
+            setTimeout(() => {
+                loadAssignedPerson();
+            }, 100);
+
         } else {
             overlay.style.display = 'flex';
+
+            document.getElementById('currentUser').value = '';
+            document.getElementById('userSearchInput').value = '';
 
             if (status) {
                 status.innerHTML = 'Please log in to access the calendar.';
@@ -896,6 +954,7 @@
 
         updatePersonnelUI();
         updateStats();
+        loadAssignedPerson();
     });
 
     db.ref('scheduleState').on('value', (snapshot) => {
@@ -2011,6 +2070,9 @@ function logoutAdmin() {
         document.getElementById('currentUser').value = name;
         document.getElementById('userSearchInput').value = name;
         document.getElementById('userDropdownList').style.display = 'none';
+
+        saveAssignedPerson(name);
+
         renderMyPresentations();
     }
 
