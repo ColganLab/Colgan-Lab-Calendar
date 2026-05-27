@@ -1,21 +1,9 @@
-const admin = require('firebase-admin');
+const { initializeApp } = require('firebase/app');
 
-const serviceAccount = JSON.parse(
-    process.env.FIREBASE_SERVICE_ACCOUNT
-);
+const {
+    getDatabase,
+require('firebase/database');
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DATABASE_URL
-});
-
-const db = admin.database();
-
-
-    ref,
-    get,
-    set
-} = 
 /*
 |--------------------------------------------------------------------------
 | Firebase Configuration
@@ -38,7 +26,9 @@ const firebaseConfig = {
 |--------------------------------------------------------------------------
 */
 
+const app = initializeApp(firebaseConfig);
 
+const db = getDatabase(app);
 
 /*
 |--------------------------------------------------------------------------
@@ -74,9 +64,7 @@ function getHoliday(date) {
 
 async function createPendingEmail(emailData) {
 
-    const snapshot = await get(
-        ref(db, 'pendingEmails')
-    );
+    const snapshot = await db.ref('pendingEmails').once('value');
 
     const existing =
         snapshot.val() || {};
@@ -117,15 +105,12 @@ async function createPendingEmail(emailData) {
         Date.now().toString() +
         Math.random().toString(36).substring(2, 8);
 
-    await set(
-        ref(db, `pendingEmails/${emailId}`),
-        {
+    await db.ref(`pendingEmails/${emailId}`).set({
             ...emailData,
             approved: false,
             sent: false,
             createdAt: new Date().toISOString()
-        }
-    );
+        });
 
     console.log(
         `📬 Created pending email for ${emailData.presenter}`
@@ -150,7 +135,7 @@ async function runAutomation() {
         |--------------------------------------------------------------------------
         */
 
-        const snapshot = await get(ref(db));
+        const snapshot = await db.ref().once('value');
 
         const data = snapshot.val() || {};
 
@@ -613,8 +598,7 @@ Colgan Lab Calendar`
             |--------------------------------------------------------------------------
             */
 
-            await set(
-                ref(db, 'scheduleState'),
+            await db.ref('scheduleState').set(
                 serializedSchedule
             );
 
