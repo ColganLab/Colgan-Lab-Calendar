@@ -1,12 +1,21 @@
-const { initializeApp } = require('firebase/app');
+const admin = require('firebase-admin');
 
-const {
-    getDatabase,
+const serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT
+);
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.FIREBASE_DATABASE_URL
+});
+
+const db = admin.database();
+
+
     ref,
     get,
     set
-} = require('firebase/database');
-
+} = 
 /*
 |--------------------------------------------------------------------------
 | Firebase Configuration
@@ -29,9 +38,7 @@ const firebaseConfig = {
 |--------------------------------------------------------------------------
 */
 
-const app = initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
 
 /*
 |--------------------------------------------------------------------------
