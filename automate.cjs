@@ -190,13 +190,24 @@ async function runAutomation() {
 
         const today = new Date();
 
-        let lastScheduledEvent =
-            schedule[schedule.length - 1];
+        const rotationEvents =
+    schedule.filter(
+        s =>
+            s.type === 'PRES' ||
+            s.type === 'WHOLE'
+    );
 
-        let lastScheduledDate =
-            lastScheduledEvent
-                ? lastScheduledEvent.date
-                : new Date();
+let lastScheduledEvent =
+    rotationEvents.length > 0
+        ? rotationEvents[
+            rotationEvents.length - 1
+        ]
+        : null;
+
+let lastScheduledDate =
+    lastScheduledEvent
+        ? new Date(lastScheduledEvent.date)
+        : new Date();
 
         const daysRemaining =
             (lastScheduledDate - today) /
