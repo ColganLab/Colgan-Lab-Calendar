@@ -269,9 +269,11 @@ let lastScheduledDate =
             */
 
             let lastPresDateMap = {};
+            let presentationCountMap = {};
 
             activeParticipants.forEach(p => {
                 lastPresDateMap[p.name] = 0;
+                presentationCountMap[p.name] = 0;
             });
 
             schedule.forEach(s => {
@@ -281,6 +283,7 @@ let lastScheduledDate =
                     s.presenter &&
                     lastPresDateMap[s.presenter.name] !== undefined
                 ) {
+                    presentationCountMap[s.presenter.name] = (presentationCountMap[s.presenter.name] || 0) + 1;
 
                     if (
                         s.date.getTime() >
@@ -431,9 +434,11 @@ if (existingRotationEvent) {
                     }
 
                     candidates.sort(
-                        (a, b) =>
-                            lastPresDateMap[a.name] -
-                            lastPresDateMap[b.name]
+                        (a, b) => {
+                            const countDiff = (presentationCountMap[a.name] || 0) - (presentationCountMap[b.name] || 0);
+                            if (countDiff !== 0) return countDiff;
+                            return (lastPresDateMap[a.name] || 0) - (lastPresDateMap[b.name] || 0);
+                        }
                     );
 
                     let chosen =
@@ -505,6 +510,8 @@ Colgan Lab Calendar`
                     lastPresDateMap[
                         chosen.name
                     ] = iterDate.getTime();
+
+                    presentationCountMap[chosen.name] = (presentationCountMap[chosen.name] || 0) + 1;
                 }
 
                 iterDate.setDate(
