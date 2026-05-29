@@ -310,13 +310,27 @@ let lastScheduledDate =
 
             function choosePresenter(activeParticipants, presentationCountMap, lastPresDateMap, lastGroup, iterDate) {
 
+                const DAYS_COOLDOWN = 120;
+                const GROUP_REPEAT_PENALTY = 50;
                 const now = iterDate.getTime();
                 const dayMs = 1000 * 60 * 60 * 24;
 
-                let candidates = activeParticipants.filter(p => !p.hold && !p.retired);
+                let candidates = activeParticipants.filter(
+                    p => !p.hold && !p.retired
+                );
 
-                let cooldownEligible = candidates.filter(p => {
-                    const last = lastPresDateMap[p.name] || 0;
+                if (candidates.length === 0) return null;
+
+                const neverPresented = candidates.filter(
+                    p => (presentationCountMap[p.name] || 0) === 0
+                );
+
+                if (neverPresented.length > 0) {
+                    candidates = neverPresented;
+                }
+
+                const cooldownEligible = candidates.filter(p => {
+                    const last = lastPresDateMap[p.name];
                     if (!last) return true;
                     return ((now - last) / dayMs) >= DAYS_COOLDOWN;
                 });
@@ -329,36 +343,36 @@ let lastScheduledDate =
                     ...candidates.map(p => presentationCountMap[p.name] || 0)
                 );
 
-                let preferred = candidates.filter(
-                    p => (presentationCountMap[p.name] || 0) <= minCount + 1
+                candidates = candidates.filter(
+                    p => (presentationCountMap[p.name] || 0) === minCount
                 );
 
-                if (preferred.length > 0) {
-                    candidates = preferred;
-                }
+                const scored = candidates.map(p => {
+                    const last = lastPresDateMap[p.name] || 0;
+                    const daysSince = last === 0 ? 99999 : ((now - last) / dayMs);
 
-                candidates.sort((a, b) => {
+                    let score = -daysSince;
 
-                    const countA = presentationCountMap[a.name] || 0;
-                    const countB = presentationCountMap[b.name] || 0;
-
-                    if (countA !== countB) {
-                        return countA - countB;
+                    if (lastGroup && p.group && p.group === lastGroup) {
+                        score += GROUP_REPEAT_PENALTY;
                     }
 
-                    const daysA = (now - (lastPresDateMap[a.name] || 0)) / dayMs;
-                    const daysB = (now - (lastPresDateMap[b.name] || 0)) / dayMs;
-
-                    let scoreA = -daysA;
-                    let scoreB = -daysB;
-
-                    if (a.group === lastGroup) scoreA += GROUP_REPEAT_PENALTY;
-                    if (b.group === lastGroup) scoreB += GROUP_REPEAT_PENALTY;
-
-                    return scoreA - scoreB;
+                    return { p, score, daysSince };
                 });
 
-                return candidates[0];
+                scored.sort((a, b) => a.score - b.score);
+
+                console.log(
+                    'Fairness candidates:',
+                    scored.map(x => ({
+                        name: x.p.name,
+                        count: presentationCountMap[x.p.name] || 0,
+                        daysSince: Math.round(x.daysSince),
+                        score: Math.round(x.score)
+                    }))
+                );
+
+                return scored[0].p;
             }
 
 
