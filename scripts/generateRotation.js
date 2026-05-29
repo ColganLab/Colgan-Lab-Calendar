@@ -3,12 +3,16 @@ export function getHoliday(date) {
   const m = date.getMonth();
   const day = date.getDay();
 
-  if (day !== 1) return null;
-
   if (m === 0 && d === 1) return "New Year's Day";
   if (m === 0 && d >= 15 && d <= 21) return "MLK Jr. Day";
-  if (m === 4 && d >= 25) return "Memorial Day";
-  if (m === 5 && d === 19) return "Juneteenth";
+if (
+  m === 4 &&
+  day === 1 &&
+  d + 7 > 31
+)
+{
+  return "Memorial Day";
+}  if (m === 5 && d === 19) return "Juneteenth";
   if (m === 8 && d <= 7) return "Labor Day";
   if (m === 10 && d >= 19 && d <= 25) return "Thanksgiving Break";
 
@@ -52,22 +56,33 @@ export function generateRotationLogic({
   |--------------------------------------------------------------------------
   */
 
-  const presentationCounts = {};
+  const presenterStats = {};
 
-  activeParticipants.forEach(p => {
-    presentationCounts[p.name] = 0;
-  });
+activeParticipants.forEach(p => {
+  presenterStats[p.name] = {
+    count: 0,
+    lastDate: null
+  };
+});
 
-  schedule.forEach(s => {
+schedule.forEach(s => {
+  if (
+    s.type === 'PRES' &&
+    s.presenter &&
+    presenterStats[s.presenter.name]
+  ) {
+    presenterStats[s.presenter.name].count++;
+
+    const eventDate = new Date(s.date);
+
     if (
-      s.type === 'PRES' &&
-      s.presenter &&
-      presentationCounts.hasOwnProperty(s.presenter.name) &&
-      s.date < chunkStart
+      !presenterStats[s.presenter.name].lastDate ||
+      eventDate > presenterStats[s.presenter.name].lastDate
     ) {
-      presentationCounts[s.presenter.name]++;
+      presenterStats[s.presenter.name].lastDate = eventDate;
     }
-  });
+  }
+});
 
   /*
   |--------------------------------------------------------------------------
@@ -121,23 +136,10 @@ export function generateRotationLogic({
       )
     );
 
-    if (existingEvent) {
-
-      if (
-        existingEvent.type === 'PRES' &&
-        existingEvent.presenter &&
-        presentationCounts.hasOwnProperty(
-          existingEvent.presenter.name
-        )
-      ) {
-        presentationCounts[
-          existingEvent.presenter.name
-        ]++;
-      }
-
-      iterDate.setDate(iterDate.getDate() + 7);
-      continue;
-    }
+   if (existingEvent) {
+  iterDate.setDate(iterDate.getDate() + 7);
+  continue;
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -184,17 +186,62 @@ export function generateRotationLogic({
         continue;
       }
 
-      let chosen = activeParticipants[0];
+      const DAYS_COOLDOWN = 28;
 
-      for (const person of activeParticipants) {
+function daysSince(date, currentDate) {
+  if (!date) return 99999;
 
-        if (
-          presentationCounts[person.name] <
-          presentationCounts[chosen.name]
-        ) {
-          chosen = person;
-        }
-      }
+  return Math.floor(
+    (currentDate - date) /
+    (1000 * 60 * 60 * 24)
+  );
+}
+
+const ranked = activeParticipants
+  .map(person => {
+
+    const stats = presenterStats[person.name];
+
+    const daysWaited =
+      daysSince(stats.lastDate, iterDate);
+
+    const cooldownPenalty =
+      daysWaited < DAYS_COOLDOWN
+        ? 100000
+        : 0;
+
+    const score =
+      (stats.count * 1000)
+      + cooldownPenalty
+      - daysWaited;
+
+    return {
+      person,
+      score,
+      count: stats.count,
+      daysWaited
+    };
+  })
+  .sort((a, b) => {
+
+    if (a.score !== b.score) {
+      return a.score - b.score;
+    }
+
+    if (a.count !== b.count) {
+      return a.count - b.count;
+    }
+
+    if (a.daysWaited !== b.daysWaited) {
+      return b.daysWaited - a.daysWaited;
+    }
+
+    return a.person.name.localeCompare(
+      b.person.name
+    );
+  });
+
+const chosen = ranked[0].person;
 
       newScheduleChunk.push({
         date: new Date(iterDate),
@@ -202,8 +249,10 @@ export function generateRotationLogic({
         presenter: chosen
       });
 
-      presentationCounts[chosen.name]++;
-    }
+presenterStats[chosen.name].count++;
+
+presenterStats[chosen.name].lastDate =
+  new Date(iterDate);    }
 
     iterDate.setDate(iterDate.getDate() + 7);
   }
