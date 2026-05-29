@@ -305,6 +305,16 @@ let lastScheduledDate =
 
             let lastGroup = "";
 
+/* GROUP BALANCED ROUND ROBIN */
+const groups = {};
+activeParticipants.forEach(p=>{const g=p.group||'Unassigned'; (groups[g] ||= []).push(p);});
+const groupNames = Object.keys(groups).sort();
+const rotationRing=[];
+let added=true;
+while(added){added=false; for(const g of groupNames){ if(groups[g].length){rotationRing.push(groups[g].shift()); added=true;}}}
+let rotationCursor = schedule.filter(s=>s.type==='PRES').length % Math.max(rotationRing.length,1);
+
+
             const lastPresEvent =
                 [...schedule]
                     .reverse()
@@ -414,35 +424,14 @@ if (existingRotationEvent) {
 
                 else {
 
-                    let candidates = [
-                        ...activeParticipants
-                    ];
-
-                    let diffGroupCands =
-                        candidates.filter(
-                            p =>
-                                p.group !==
-                                lastGroup
-                        );
-
-                    if (
-                        diffGroupCands.length > 0
-                    ) {
-
-                        candidates =
-                            diffGroupCands;
+                    let chosen = rotationRing[rotationCursor % rotationRing.length];
+                    let safety = 0;
+                    while (chosen && chosen.group === lastGroup && safety < rotationRing.length){
+                        rotationCursor++;
+                        chosen = rotationRing[rotationCursor % rotationRing.length];
+                        safety++;
                     }
-
-                    candidates.sort(
-                        (a, b) => {
-                            const countDiff = (presentationCountMap[a.name] || 0) - (presentationCountMap[b.name] || 0);
-                            if (countDiff !== 0) return countDiff;
-                            return (lastPresDateMap[a.name] || 0) - (lastPresDateMap[b.name] || 0);
-                        }
-                    );
-
-                    let chosen =
-                        candidates[0];
+                    rotationCursor++;
 
                     const newPresentationEvent = {
 
