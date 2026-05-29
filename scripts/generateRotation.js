@@ -56,21 +56,18 @@ export function generateRotationLogic({
     )
     .sort((a, b) => b.date - a.date);
 
-  /*
-  |--------------------------------------------------------------------------
-  | Stable Rotation Ring
-  |--------------------------------------------------------------------------
-  |
-  | Sort by name so the ring order is deterministic.
-  | If you prefer a different permanent ordering,
-  | change the sort here.
-  |--------------------------------------------------------------------------
-  */
+ /*
+|--------------------------------------------------------------------------
+| Stable Rotation Ring
+|--------------------------------------------------------------------------
+|
+| Preserve Firebase participant order.
+| This creates a true round robin based on the
+| order scientists were added to the database.
+|--------------------------------------------------------------------------
+*/
 
-  const rotationRing = [...activeParticipants]
-    .sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+const rotationRing = [...activeParticipants];
 
   /*
   |--------------------------------------------------------------------------
