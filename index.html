@@ -2304,9 +2304,11 @@ function logoutAdmin() {
         });
 
         let lastPresDateMap = {};
-        activeParticipants.forEach(p => lastPresDateMap[p.name] = 0);
+        let presentationCountMap = {};
+        activeParticipants.forEach(p => { lastPresDateMap[p.name] = 0; presentationCountMap[p.name] = 0; });
         retainedSchedule.forEach(s => {
             if (s.type === 'PRES' && s.presenter && lastPresDateMap.hasOwnProperty(s.presenter.name)) {
+                presentationCountMap[s.presenter.name]++;
                 if (s.date.getTime() > lastPresDateMap[s.presenter.name]) lastPresDateMap[s.presenter.name] = s.date.getTime();
             }
         });
@@ -2314,6 +2316,31 @@ function logoutAdmin() {
         let prevPresEvents = retainedSchedule.filter(s => s.type === 'PRES' && s.date < chunkStart);
         prevPresEvents.sort((a,b) => b.date - a.date);
         let lastGroup = prevPresEvents.length > 0 ? prevPresEvents[0].presenter.group : "";
+
+        
+        // GROUP-BALANCED ROUND ROBIN
+        const groups = {};
+        activeParticipants.forEach(p => {
+            const g = p.group || 'Unassigned';
+            (groups[g] ||= []).push(p);
+        });
+
+        const groupNames = Object.keys(groups).sort();
+        const rotationRing = [];
+        let added = true;
+        while (added) {
+            added = false;
+            for (const g of groupNames) {
+                if (groups[g].length) {
+                    rotationRing.push(groups[g].shift());
+                    added = true;
+                }
+            }
+        }
+
+        let historicalPresentationCount = retainedSchedule.filter(s => s.type === 'PRES').length;
+        let rotationCursor = historicalPresentationCount % Math.max(rotationRing.length,1);
+
 
         let newScheduleChunk = [];
         let iterDate = new Date(chunkStart);
@@ -2347,6 +2374,7 @@ function logoutAdmin() {
                     lastGroup = manualEv.presenter.group;
                     if(lastPresDateMap.hasOwnProperty(manualEv.presenter.name)) {
                         lastPresDateMap[manualEv.presenter.name] = iterDate.getTime();
+                        presentationCountMap[manualEv.presenter.name] = (presentationCountMap[manualEv.presenter.name] || 0) + 1;
                     }
                 }
                 iterDate.setDate(iterDate.getDate() + 7);
@@ -2362,12 +2390,17 @@ function logoutAdmin() {
                 let diffGroupCands = candidates.filter(p => p.group !== lastGroup);
                 if (diffGroupCands.length > 0) candidates = diffGroupCands;
                 
-                candidates.sort((a, b) => lastPresDateMap[a.name] - lastPresDateMap[b.name]);
+                candidates.sort((a, b) => {
+                    const countDiff = (presentationCountMap[a.name] || 0) - (presentationCountMap[b.name] || 0);
+                    if (countDiff !== 0) return countDiff;
+                    return (lastPresDateMap[a.name] || 0) - (lastPresDateMap[b.name] || 0);
+                });
                 let chosen = candidates[0];
 
                 newScheduleChunk.push({ date: new Date(iterDate), type: 'PRES', presenter: chosen });
                 lastGroup = chosen.group;
                 lastPresDateMap[chosen.name] = iterDate.getTime();
+                presentationCountMap[chosen.name] = (presentationCountMap[chosen.name] || 0) + 1;
             }
             iterDate.setDate(iterDate.getDate() + 7);
         }
