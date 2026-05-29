@@ -44,55 +44,30 @@ export function generateRotationLogic({
 
   /*
   |--------------------------------------------------------------------------
-  | Determine Last Presenter Before Chunk
+  | Presentation Counts
+  |--------------------------------------------------------------------------
+  |
+  | Count every presentation already assigned before the chunk.
+  | Firebase insertion order is preserved by activeParticipants.
   |--------------------------------------------------------------------------
   */
 
-  const historicalPresentations = schedule
-    .filter(s =>
+  const presentationCounts = {};
+
+  activeParticipants.forEach(p => {
+    presentationCounts[p.name] = 0;
+  });
+
+  schedule.forEach(s => {
+    if (
       s.type === 'PRES' &&
       s.presenter &&
+      presentationCounts.hasOwnProperty(s.presenter.name) &&
       s.date < chunkStart
-    )
-    .sort((a, b) => b.date - a.date);
-
- /*
-|--------------------------------------------------------------------------
-| Stable Rotation Ring
-|--------------------------------------------------------------------------
-|
-| Preserve Firebase participant order.
-| This creates a true round robin based on the
-| order scientists were added to the database.
-|--------------------------------------------------------------------------
-*/
-
-const rotationRing = [...activeParticipants];
-
-  /*
-  |--------------------------------------------------------------------------
-  | Find Next Position In Ring
-  |--------------------------------------------------------------------------
-  */
-
-  let rotationCursor = 0;
-
-  if (
-    historicalPresentations.length > 0 &&
-    rotationRing.length > 0
-  ) {
-    const lastPresenterName =
-      historicalPresentations[0].presenter.name;
-
-    const lastIndex =
-      rotationRing.findIndex(
-        p => p.name === lastPresenterName
-      );
-
-    if (lastIndex >= 0) {
-      rotationCursor = lastIndex + 1;
+    ) {
+      presentationCounts[s.presenter.name]++;
     }
-  }
+  });
 
   /*
   |--------------------------------------------------------------------------
@@ -148,26 +123,16 @@ const rotationRing = [...activeParticipants];
 
     if (existingEvent) {
 
-      /*
-      |--------------------------------------------------------------------------
-      | If a manual presentation exists, advance ring
-      | so future generations stay aligned.
-      |--------------------------------------------------------------------------
-      */
-
       if (
         existingEvent.type === 'PRES' &&
-        existingEvent.presenter
+        existingEvent.presenter &&
+        presentationCounts.hasOwnProperty(
+          existingEvent.presenter.name
+        )
       ) {
-
-        const presenterIndex =
-          rotationRing.findIndex(
-            p => p.name === existingEvent.presenter.name
-          );
-
-        if (presenterIndex >= 0) {
-          rotationCursor = presenterIndex + 1;
-        }
+        presentationCounts[
+          existingEvent.presenter.name
+        ]++;
       }
 
       iterDate.setDate(iterDate.getDate() + 7);
@@ -187,6 +152,7 @@ const rotationRing = [...activeParticipants];
         type: 'HOLIDAY',
         title: holiday
       });
+
     }
 
     /*
@@ -202,33 +168,41 @@ const rotationRing = [...activeParticipants];
         type: 'WHOLE',
         title: 'Whole Lab Update'
       });
+
     }
 
     /*
     |--------------------------------------------------------------------------
-    | True Round Robin Presenter
+    | Fair Round Robin
     |--------------------------------------------------------------------------
     */
 
     else {
 
-      if (rotationRing.length === 0) {
+      if (activeParticipants.length === 0) {
         iterDate.setDate(iterDate.getDate() + 7);
         continue;
       }
 
-      const chosen =
-        rotationRing[
-          rotationCursor % rotationRing.length
-        ];
+      let chosen = activeParticipants[0];
 
-      rotationCursor++;
+      for (const person of activeParticipants) {
+
+        if (
+          presentationCounts[person.name] <
+          presentationCounts[chosen.name]
+        ) {
+          chosen = person;
+        }
+      }
 
       newScheduleChunk.push({
         date: new Date(iterDate),
         type: 'PRES',
         presenter: chosen
       });
+
+      presentationCounts[chosen.name]++;
     }
 
     iterDate.setDate(iterDate.getDate() + 7);
