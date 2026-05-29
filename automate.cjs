@@ -299,20 +299,67 @@ let lastScheduledDate =
 
             /*
             |--------------------------------------------------------------------------
-            | Last Group Tracking
+            | Fairness-Based Rotation Settings
             |--------------------------------------------------------------------------
             */
 
+            const DAYS_COOLDOWN = 42;
+            const GROUP_REPEAT_PENALTY = 500;
+
             let lastGroup = "";
 
-/* GROUP BALANCED ROUND ROBIN */
-const groups = {};
-activeParticipants.forEach(p=>{const g=p.group||'Unassigned'; (groups[g] ||= []).push(p);});
-const groupNames = Object.keys(groups).sort();
-const rotationRing=[];
-let added=true;
-while(added){added=false; for(const g of groupNames){ if(groups[g].length){rotationRing.push(groups[g].shift()); added=true;}}}
-let rotationCursor = schedule.filter(s=>s.type==='PRES').length % Math.max(rotationRing.length,1);
+            function choosePresenter(activeParticipants, presentationCountMap, lastPresDateMap, lastGroup, iterDate) {
+
+                const now = iterDate.getTime();
+                const dayMs = 1000 * 60 * 60 * 24;
+
+                let candidates = activeParticipants.filter(p => !p.hold && !p.retired);
+
+                let cooldownEligible = candidates.filter(p => {
+                    const last = lastPresDateMap[p.name] || 0;
+                    if (!last) return true;
+                    return ((now - last) / dayMs) >= DAYS_COOLDOWN;
+                });
+
+                if (cooldownEligible.length > 0) {
+                    candidates = cooldownEligible;
+                }
+
+                const minCount = Math.min(
+                    ...candidates.map(p => presentationCountMap[p.name] || 0)
+                );
+
+                let preferred = candidates.filter(
+                    p => (presentationCountMap[p.name] || 0) <= minCount + 1
+                );
+
+                if (preferred.length > 0) {
+                    candidates = preferred;
+                }
+
+                candidates.sort((a, b) => {
+
+                    const countA = presentationCountMap[a.name] || 0;
+                    const countB = presentationCountMap[b.name] || 0;
+
+                    if (countA !== countB) {
+                        return countA - countB;
+                    }
+
+                    const daysA = (now - (lastPresDateMap[a.name] || 0)) / dayMs;
+                    const daysB = (now - (lastPresDateMap[b.name] || 0)) / dayMs;
+
+                    let scoreA = -daysA;
+                    let scoreB = -daysB;
+
+                    if (a.group === lastGroup) scoreA += GROUP_REPEAT_PENALTY;
+                    if (b.group === lastGroup) scoreB += GROUP_REPEAT_PENALTY;
+
+                    return scoreA - scoreB;
+                });
+
+                return candidates[0];
+            }
 
 
             const lastPresEvent =
@@ -424,14 +471,13 @@ if (existingRotationEvent) {
 
                 else {
 
-                    let chosen = rotationRing[rotationCursor % rotationRing.length];
-                    let safety = 0;
-                    while (chosen && chosen.group === lastGroup && safety < rotationRing.length){
-                        rotationCursor++;
-                        chosen = rotationRing[rotationCursor % rotationRing.length];
-                        safety++;
-                    }
-                    rotationCursor++;
+                    const chosen = choosePresenter(
+                        activeParticipants,
+                        presentationCountMap,
+                        lastPresDateMap,
+                        lastGroup,
+                        iterDate
+                    );
 
                     const newPresentationEvent = {
 
