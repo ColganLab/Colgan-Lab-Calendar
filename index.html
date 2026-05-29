@@ -2810,6 +2810,22 @@ function logoutAdmin() {
         saveCurrentToFirebase();
     }
 
+    function getNextNonHolidayRotationDate(date) {
+        let nextDate = new Date(date);
+
+        do {
+            nextDate.setDate(nextDate.getDate() + 7);
+        } while (schedule.some(ev =>
+            ev.type === 'HOLIDAY' &&
+            ev.date instanceof Date &&
+            ev.date.getFullYear() === nextDate.getFullYear() &&
+            ev.date.getMonth() === nextDate.getMonth() &&
+            ev.date.getDate() === nextDate.getDate()
+        ));
+
+        return nextDate;
+    }
+
     function cancelAndShift(index) {
         if (!document.body.classList.contains('is-admin')) return;
 
@@ -2883,15 +2899,15 @@ function logoutAdmin() {
         const lastOriginal = originalItems[originalItems.length - 1];
         const lastRotation = rotationSlots[rotationSlots.length - 1].item;
 
-        const newDate = new Date(lastRotation.date);
-        newDate.setDate(newDate.getDate() + 7);
+        const newDate = getNextNonHolidayRotationDate(lastRotation.date);
 
         const newEndDate = lastRotation.endDate
             ? new Date(lastRotation.endDate)
             : null;
 
         if (newEndDate) {
-            newEndDate.setDate(newEndDate.getDate() + 7);
+            const duration = newEndDate.getTime() - new Date(lastRotation.endDate).getTime();
+            newEndDate.setTime(newDate.getTime() + duration);
         }
 
         schedule.push({
