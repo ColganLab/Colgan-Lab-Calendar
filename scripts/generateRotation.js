@@ -1,4 +1,3 @@
-
 export function getHoliday(date) {
   const d = date.getDate();
   const m = date.getMonth();
@@ -79,6 +78,39 @@ export function generateRotationLogic({
     prevPresEvents.length > 0
       ? prevPresEvents[0].presenter.group
       : "";
+
+  /*
+  |--------------------------------------------------------------------------
+  | True Group-Balanced Round Robin
+  |--------------------------------------------------------------------------
+  */
+
+  const groups = {};
+
+  activeParticipants.forEach(p => {
+    const g = p.group || 'Unassigned';
+    (groups[g] ||= []).push(p);
+  });
+
+  const groupNames = Object.keys(groups).sort();
+
+  const rotationRing = [];
+  let added = true;
+
+  while (added) {
+    added = false;
+
+    for (const g of groupNames) {
+      if (groups[g].length) {
+        rotationRing.push(groups[g].shift());
+        added = true;
+      }
+    }
+  }
+
+  let rotationCursor =
+    schedule.filter(s => s.type === 'PRES').length %
+    Math.max(rotationRing.length, 1);
 
   /*
   |--------------------------------------------------------------------------
@@ -201,23 +233,20 @@ export function generateRotationLogic({
 
     else {
 
-      let candidates = activeParticipants;
+      let chosen = rotationRing[rotationCursor % rotationRing.length];
+      let safety = 0;
 
-      let diffGroupCands = candidates.filter(
-        p => p.group !== lastGroup
-      );
-
-      if (diffGroupCands.length > 0) {
-        candidates = diffGroupCands;
+      while (
+        chosen &&
+        chosen.group === lastGroup &&
+        safety < rotationRing.length
+      ) {
+        rotationCursor++;
+        chosen = rotationRing[rotationCursor % rotationRing.length];
+        safety++;
       }
 
-      candidates.sort(
-        (a, b) =>
-          lastPresDateMap[a.name] -
-          lastPresDateMap[b.name]
-      );
-
-      let chosen = candidates[0];
+      rotationCursor++;
 
       newScheduleChunk.push({
         date: new Date(iterDate),
