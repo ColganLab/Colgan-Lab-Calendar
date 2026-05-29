@@ -32,7 +32,7 @@ export function generateRotationLogic({
   |--------------------------------------------------------------------------
   */
 
-  let retainedSchedule = schedule.filter(s => {
+  const retainedSchedule = schedule.filter(s => {
     if (s.type === 'CUSTOM' || s.type === 'HOLIDAY') return true;
 
     if (s.manual) return true;
@@ -44,73 +44,58 @@ export function generateRotationLogic({
 
   /*
   |--------------------------------------------------------------------------
-  | Track Last Presentation Dates
+  | Determine Last Presenter Before Chunk
   |--------------------------------------------------------------------------
   */
 
-  let lastPresDateMap = {};
-
-  activeParticipants.forEach(p => {
-    lastPresDateMap[p.name] = 0;
-  });
-
-  retainedSchedule.forEach(s => {
-    if (
-      s.type === 'PRES' &&
-      s.presenter &&
-      lastPresDateMap.hasOwnProperty(s.presenter.name)
-    ) {
-      if (s.date.getTime() > lastPresDateMap[s.presenter.name]) {
-        lastPresDateMap[s.presenter.name] =
-          s.date.getTime();
-      }
-    }
-  });
-
-  let prevPresEvents = retainedSchedule
+  const historicalPresentations = schedule
     .filter(s =>
       s.type === 'PRES' &&
+      s.presenter &&
       s.date < chunkStart
     )
     .sort((a, b) => b.date - a.date);
 
-  let lastGroup =
-    prevPresEvents.length > 0
-      ? prevPresEvents[0].presenter.group
-      : "";
-
   /*
   |--------------------------------------------------------------------------
-  | True Group-Balanced Round Robin
+  | Stable Rotation Ring
+  |--------------------------------------------------------------------------
+  |
+  | Sort by name so the ring order is deterministic.
+  | If you prefer a different permanent ordering,
+  | change the sort here.
   |--------------------------------------------------------------------------
   */
 
-  const groups = {};
+  const rotationRing = [...activeParticipants]
+    .sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
-  activeParticipants.forEach(p => {
-    const g = p.group || 'Unassigned';
-    (groups[g] ||= []).push(p);
-  });
+  /*
+  |--------------------------------------------------------------------------
+  | Find Next Position In Ring
+  |--------------------------------------------------------------------------
+  */
 
-  const groupNames = Object.keys(groups).sort();
+  let rotationCursor = 0;
 
-  const rotationRing = [];
-  let added = true;
+  if (
+    historicalPresentations.length > 0 &&
+    rotationRing.length > 0
+  ) {
+    const lastPresenterName =
+      historicalPresentations[0].presenter.name;
 
-  while (added) {
-    added = false;
+    const lastIndex =
+      rotationRing.findIndex(
+        p => p.name === lastPresenterName
+      );
 
-    for (const g of groupNames) {
-      if (groups[g].length) {
-        rotationRing.push(groups[g].shift());
-        added = true;
-      }
+    if (lastIndex >= 0) {
+      rotationCursor = lastIndex + 1;
     }
   }
-
-  let rotationCursor =
-    schedule.filter(s => s.type === 'PRES').length %
-    Math.max(rotationRing.length, 1);
 
   /*
   |--------------------------------------------------------------------------
@@ -118,7 +103,7 @@ export function generateRotationLogic({
   |--------------------------------------------------------------------------
   */
 
-  let newScheduleChunk = [];
+  const newScheduleChunk = [];
 
   let iterDate = new Date(chunkStart);
 
@@ -149,11 +134,11 @@ export function generateRotationLogic({
 
     /*
     |--------------------------------------------------------------------------
-    | Skip Existing Manual Events
+    | Existing Event Already Occupies This Date
     |--------------------------------------------------------------------------
     */
 
-    let hasManualEvent = retainedSchedule.some(s =>
+    const existingEvent = retainedSchedule.find(s =>
       s.date.getFullYear() === iterDate.getFullYear() &&
       s.date.getMonth() === iterDate.getMonth() &&
       s.date.getDate() === iterDate.getDate() &&
@@ -164,32 +149,31 @@ export function generateRotationLogic({
       )
     );
 
-    if (hasManualEvent) {
+    if (existingEvent) {
 
-      let manualEv = retainedSchedule.find(s =>
-        s.date.getFullYear() === iterDate.getFullYear() &&
-        s.date.getMonth() === iterDate.getMonth() &&
-        s.date.getDate() === iterDate.getDate() &&
-        s.type === 'PRES'
-      );
+      /*
+      |--------------------------------------------------------------------------
+      | If a manual presentation exists, advance ring
+      | so future generations stay aligned.
+      |--------------------------------------------------------------------------
+      */
 
-      if (manualEv && manualEv.presenter) {
+      if (
+        existingEvent.type === 'PRES' &&
+        existingEvent.presenter
+      ) {
 
-        lastGroup = manualEv.presenter.group;
+        const presenterIndex =
+          rotationRing.findIndex(
+            p => p.name === existingEvent.presenter.name
+          );
 
-        if (
-          lastPresDateMap.hasOwnProperty(
-            manualEv.presenter.name
-          )
-        ) {
-          lastPresDateMap[
-            manualEv.presenter.name
-          ] = iterDate.getTime();
+        if (presenterIndex >= 0) {
+          rotationCursor = presenterIndex + 1;
         }
       }
 
       iterDate.setDate(iterDate.getDate() + 7);
-
       continue;
     }
 
@@ -206,7 +190,6 @@ export function generateRotationLogic({
         type: 'HOLIDAY',
         title: holiday
       });
-
     }
 
     /*
@@ -222,29 +205,25 @@ export function generateRotationLogic({
         type: 'WHOLE',
         title: 'Whole Lab Update'
       });
-
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Presenter Rotation
+    | True Round Robin Presenter
     |--------------------------------------------------------------------------
     */
 
     else {
 
-      let chosen = rotationRing[rotationCursor % rotationRing.length];
-      let safety = 0;
-
-      while (
-        chosen &&
-        chosen.group === lastGroup &&
-        safety < rotationRing.length
-      ) {
-        rotationCursor++;
-        chosen = rotationRing[rotationCursor % rotationRing.length];
-        safety++;
+      if (rotationRing.length === 0) {
+        iterDate.setDate(iterDate.getDate() + 7);
+        continue;
       }
+
+      const chosen =
+        rotationRing[
+          rotationCursor % rotationRing.length
+        ];
 
       rotationCursor++;
 
@@ -253,11 +232,6 @@ export function generateRotationLogic({
         type: 'PRES',
         presenter: chosen
       });
-
-      lastGroup = chosen.group;
-
-      lastPresDateMap[chosen.name] =
-        iterDate.getTime();
     }
 
     iterDate.setDate(iterDate.getDate() + 7);
@@ -274,7 +248,9 @@ export function generateRotationLogic({
     ...newScheduleChunk
   ];
 
-  finalSchedule.sort((a, b) => a.date - b.date);
+  finalSchedule.sort(
+    (a, b) => a.date - b.date
+  );
 
   return finalSchedule;
 }
