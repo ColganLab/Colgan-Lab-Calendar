@@ -268,34 +268,73 @@ let lastScheduledDate =
             |--------------------------------------------------------------------------
             */
 
-            let lastPresDateMap = {};
-            let presentationCountMap = {};
+           let lastPresDateMap = {};
+let presentationCountMap = {};
 
-            activeParticipants.forEach(p => {
-                lastPresDateMap[p.name] = 0;
-                presentationCountMap[p.name] = 0;
-            });
+activeParticipants.forEach(p => {
+    lastPresDateMap[p.name] = 0;
+    presentationCountMap[p.name] = 0;
+});
 
-            schedule.forEach(s => {
+/*
+|--------------------------------------------------------------------------
+| Fairness Window (24 Months)
+|--------------------------------------------------------------------------
+*/
 
-                if (
-                    s.type === 'PRES' &&
-                    s.presenter &&
-                    lastPresDateMap[s.presenter.name] !== undefined
-                ) {
-                    presentationCountMap[s.presenter.name] = (presentationCountMap[s.presenter.name] || 0) + 1;
+const FAIRNESS_WINDOW_DAYS = 730;
 
-                    if (
-                        s.date.getTime() >
-                        lastPresDateMap[s.presenter.name]
-                    ) {
+const FAIRNESS_WINDOW_MS =
+    FAIRNESS_WINDOW_DAYS *
+    24 *
+    60 *
+    60 *
+    1000;
 
-                        lastPresDateMap[
-                            s.presenter.name
-                        ] = s.date.getTime();
-                    }
-                }
-            });
+const now = Date.now();
+
+schedule.forEach(s => {
+
+    if (
+        s.type !== 'PRES' ||
+        !s.presenter ||
+        lastPresDateMap[s.presenter.name] === undefined
+    ) {
+        return;
+    }
+
+    const presTime =
+        s.date.getTime();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Count presentations only from last 24 months
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        now - presTime <= FAIRNESS_WINDOW_MS
+    ) {
+
+        presentationCountMap[s.presenter.name] =
+            (presentationCountMap[s.presenter.name] || 0) + 1;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Always track most recent presentation
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        presTime >
+        lastPresDateMap[s.presenter.name]
+    ) {
+
+        lastPresDateMap[s.presenter.name] =
+            presTime;
+    }
+});
 
             /*
             |--------------------------------------------------------------------------
@@ -303,8 +342,6 @@ let lastScheduledDate =
             |--------------------------------------------------------------------------
             */
 
-            const DAYS_COOLDOWN = 42;
-            const GROUP_REPEAT_PENALTY = 500;
 
             let lastGroup = "";
 
