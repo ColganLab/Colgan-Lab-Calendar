@@ -264,3 +264,7 @@ MIT License
 # Author
 
 Built for the Colgan Lab scheduling and presentation workflow. Developed by Noah Thompson with coding assistance from AI (ChatGPT, Claude, Copilot, etc).
+
+
+
+3
